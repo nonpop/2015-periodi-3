@@ -89,7 +89,7 @@ theorems-ams-extended
 enumitem
 \end_modules
 \maintain_unincluded_children false
-\language english
+\language finnish
 \language_package default
 \inputencoding utf8
 \fontencoding global
@@ -153,7 +153,7 @@ enumitem
 \tocdepth 5
 \paragraph_separation indent
 \paragraph_indentation default
-\quotes_language english
+\quotes_language swedish
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
