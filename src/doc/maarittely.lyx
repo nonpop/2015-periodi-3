@@ -215,7 +215,7 @@ Syötteen lukeminen ja frekvenssien laskeminen on
 
 .
  Puun konstruointi on 
-\begin_inset Formula $O(n\log n)$
+\begin_inset Formula $O(1)$
 \end_inset
 
  ja koodausvaihe kaiketi 
