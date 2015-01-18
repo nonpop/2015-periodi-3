@@ -1,4 +1,4 @@
-package huffman;
+package com.nonpop.huffman;
 
 public class Pair<S,T> {
     public final S fst;

@@ -1,4 +1,4 @@
-package huffman;
+package com.nonpop.huffman;
 
 public class HuffmanTree implements Comparable<HuffmanTree> {
     public HuffmanTree parent = null;

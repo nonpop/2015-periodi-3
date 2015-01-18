@@ -1,4 +1,4 @@
-package huffman;
+package com.nonpop.huffman;
 
 import java.util.ArrayList;
 import java.util.List;
