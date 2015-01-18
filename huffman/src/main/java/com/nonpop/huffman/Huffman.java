@@ -6,7 +6,7 @@ import java.util.PriorityQueue;
 
 public class Huffman {
     // data should be an array of unsigned bytes
-    private static int[] calculateFrequencies(int[] data) {
+    public static int[] calculateFrequencies(int[] data) {
         int[] freqs = new int[256];
         for (int b : data) {
             ++freqs[b];
@@ -37,9 +37,9 @@ public class Huffman {
         return new Pair<>(root, leaves);
     }
 
-    public static Pair<Integer, Integer> findCode(HuffmanTree leaf) {
-        int code = 0;
-        int pos = 0;
+    public static Pair<Byte, Byte> findCode(HuffmanTree leaf) {
+        byte code = 0;
+        byte pos = 0;
         while (true) {
             HuffmanTree parent = leaf.parent;
             if (parent == null) {
@@ -60,7 +60,7 @@ public class Huffman {
         Pair<HuffmanTree, HuffmanTree[]> tree = buildTree(freqs);
         BitOutput out = new BitOutput();
         for (int b : data) {
-            Pair<Integer, Integer> p = findCode(tree.snd[b]);
+            Pair<Byte, Byte> p = findCode(tree.snd[b]);
             for (int i = 0; i < p.snd; ++i) {
                 out.putBit((p.fst & 0x80 >> i) > 0);
             }
