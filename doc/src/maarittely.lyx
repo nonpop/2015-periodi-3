@@ -176,63 +176,96 @@ Määrittelydokumentti
 Aiheena on tiedon tiivistys alustavasti Huffman-koodauksella.
  Tämä kylläkin vaikuttaa yksinkertaiselta, joten ehkä jonkin LZ-algoritminkin
  voisi toteuttaa.
-\end_layout
-
-\begin_layout Section
-Mitä algoritmeja ja tietorakenteita toteutat työssäsi
-\end_layout
-
-\begin_layout Standard
-Pikaisen Wikipediakatsauksen perusteella tarvitaan prioriteettijono, jonka
- avulla konstruoidaan Huffman-puu.
-\end_layout
-
-\begin_layout Section
-Mitä ongelmaa ratkaiset ja miksi valitsit kyseiset algoritmit/tietorakenteet
+ Ohjelma tulee saamaan syötteenä tiivistettävän tai purettavan tiedoston
+ sekä vivun, joka kertoo, kumpi on kyseessä.
+ Ohjelman tarkoitus olisi muuntaa syöte tiiviimpään muotoon (ainakin useimmissa
+ tapauksissa) niin, että alkuperäisen tiedoston kuitenkin saa taas tästä
+ palautettua.
 \end_layout
 
 \begin_layout Standard
-Tiedon tiivistysongelmaa.
- Huffmania ehdotettiin ja netti sanoo, että näin se toteutetaan.
-\end_layout
-
-\begin_layout Section
-Mitä syötteitä ohjelma saa ja miten näitä käytetään
-\end_layout
-
-\begin_layout Standard
-Ohjelma saa tiivistettävän tai purettavan tiedoston sekä vivun, joka kertoo,
- kumpi on kyseessä.
-\end_layout
-
-\begin_layout Section
-Tavoitteena olevat aika- ja tilavaativuudet (m.m.
- O-analyysi)
+Tärkein tietorakenne tässä on Huffman-puu.
+ Siihen liittyvät puun konstruointialgoritmi sekä algoritmit, joilla puun
+ avulla koodataan ja puretaan merkkejä.
+ Puun konstruoinnissa käytetään prioriteettijonoa, joka ja johon liittyvät
+ algoritmit pitäisi myös toteuttaa.
 \end_layout
 
 \begin_layout Standard
-Syötteen lukeminen ja frekvenssien laskeminen on 
-\begin_inset Formula $O(n)$
+Alustava 
+\begin_inset Formula $O$
 \end_inset
 
-.
- Puun konstruointi on 
+-analyysi:
+\end_layout
+
+\begin_layout Enumerate
+Syötteenä on jono merkkejä, esimerkiksi 8 bitin tavuja.
+ Merkkien lukumäärä (siis aakkoston koko) on kiinteä.
+\end_layout
+
+\begin_layout Enumerate
+Ensin syötteestä lasketaan kunkin merkin esiintymislukumäärät.
+ Koska merkkien lukumäärä on ennalta annettu, niin tilavaativuudeksi tulee
+ 
 \begin_inset Formula $O(1)$
 \end_inset
 
- ja koodausvaihe kaiketi 
-\begin_inset Formula $O(n)$
+; paitsi jos sallitaan oikeasti rajattoman kokoiset syötteet, jolloin se
+ on kai ennemminkin luokkaa 
+\begin_inset Formula $O(\log n)$
 \end_inset
 
 .
- Purkuvaihekin vaikuttaa äkkiseltään olevan 
+ Aikavaativuus on suunnilleen 
 \begin_inset Formula $O(n)$
 \end_inset
 
 .
 \end_layout
 
-\begin_layout Section
+\begin_layout Enumerate
+Tämän jälkeen muodostetaan esiintymislukumääristä Huffmanin puu.
+ Puu ja sen luomisprosessi riippuvat vain esiintymislukumäärätaulukon alkioiden
+ keskinäisestä järjestyksestä, joten kaikki on vakioaikaista ja -tilaista.
+\end_layout
+
+\begin_layout Enumerate
+Lopuksi pakkauksessa ensin tulosteeseen kirjoitetaan esiintymismäärätaulukko.
+ Vakioaika.
+ Sitten jokaiselle syötteen merkille muodostetaan Huffman-koodi (vakioajassa)
+ ja se kirjoitetaan tulosteeseen.
+ Pakkaus on ajaltaan 
+\begin_inset Formula $O(n)$
+\end_inset
+
+ ja tilaltaan 
+\begin_inset Formula $O(1)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Purkuvaiheessa ensin luetaan esiintymismäärätaulukko (
+\begin_inset Formula $O(1)$
+\end_inset
+
+), jonka jälkeen muodostetaan siitä Huffman-puu (
+\begin_inset Formula $O(1)$
+\end_inset
+
+) ja sitten puretaan koodi.
+ Koska myös koodimerkkien lukumäärä on vakiolla ylhäältä rajoitettu, niin
+ yhden merkin purkamiseen menee vakioaika ja siten koko purkuprosessi on
+ 
+\begin_inset Formula $O(n)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section*
 Lähteet
 \end_layout
 
