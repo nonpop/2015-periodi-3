@@ -1,6 +1,7 @@
 package com.nonpop.huffman;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -29,8 +30,8 @@ public class HuffmanTest {
     public void tearDown() {
     }
 
-    private static int[] helloData() {
-        return new int[]{72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100};
+    private static ArrayList<Integer> helloData() {
+        return new ArrayList<>(Arrays.asList(72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100));
     }
 
     private static int[] helloFreqs() {
@@ -49,7 +50,7 @@ public class HuffmanTest {
 
     @org.junit.Test
     public void testCalculateFrequencies() {
-        int[] data = new int[0];
+        ArrayList<Integer> data = new ArrayList<>();
         int[] expResult = new int[256];
         int[] result = Huffman.calculateFrequencies(data);
         assertArrayEquals(expResult, result);
@@ -165,17 +166,17 @@ public class HuffmanTest {
     
     @org.junit.Test
     public void testCompressAndDecompress() {
-        int[] data = new int[0];
+        ArrayList<Integer> data = new ArrayList<>();
         int[] freqs = new int[256];
-        assertEquals(intArrayToList(data), Huffman.decompress(Huffman.compress(data, freqs), freqs));
+        assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));
 
-        data = new int[]{1};
+        data = new ArrayList<>(Arrays.asList(1));
         freqs = new int[256];
         freqs[1] = 1;
-        assertEquals(intArrayToList(data), Huffman.decompress(Huffman.compress(data, freqs), freqs));
+        assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));
 
         data = helloData();
         freqs = helloFreqs();
-        assertEquals(intArrayToList(data), Huffman.decompress(Huffman.compress(data, freqs), freqs));
+        assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));
     }
 }
