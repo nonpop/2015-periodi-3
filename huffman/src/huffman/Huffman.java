@@ -1,4 +1,4 @@
-package com.nonpop.huffman;
+package huffman;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

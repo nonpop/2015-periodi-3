@@ -1,4 +1,4 @@
-package com.nonpop.huffman;
+package huffman;
 
 public class HuffmanTree {
     public final HuffmanTreeNode root;
