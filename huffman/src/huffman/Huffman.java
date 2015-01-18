@@ -219,7 +219,7 @@ public class Huffman {
     }
     
     public static void main(String[] args) throws IOException {
-        args = new String[]{ "-c", "test.orig", "test.compressed" };
+        //args = new String[]{ "-c", "test.orig", "test.compressed" };
         //args = new String[]{ "-d", "test.compressed", "test.decompressed" };
         if (args.length != 3) {
             usage();
