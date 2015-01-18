@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class Huffman<T> {
+public class Huffman {
     // data should be an array of unsigned bytes
     private static int[] calculateFrequencies(int[] data) {
         int[] freqs = new int[256];
