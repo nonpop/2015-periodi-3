@@ -91,25 +91,7 @@ public class Huffman {
         return res;
     }
 
-    public static int[] toIntArray(String s) {
-        int[] res = new int[s.length()];
-        for (int i = 0; i < s.length(); ++i) {
-            res[i] = s.charAt(i);
-        }
-        return res;
-    }
-
     public static void main(String[] args) {
-        int[] data = toIntArray("Hello, World");
-        int[] freqs = calculateFrequencies(data);
-        BitOutput bits = compress(data, freqs);
-        System.out.println(bits);
-        List<Integer> out = decompress(bits, freqs);
-        StringBuilder s = new StringBuilder(out.size());
-        for (int i : out) {
-            s.append((char) i);
-        }
-        System.out.println(s);
     }
     
 }
