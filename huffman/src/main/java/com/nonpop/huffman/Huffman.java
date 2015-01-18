@@ -174,6 +174,8 @@ public class Huffman {
             ArrayList<Boolean> compressed = compress(data, freqs);
             writeHeader(outs, freqs, compressed.size());
             writeBits(outs, compressed);
+
+            System.out.println("Compressed/original = " + 100 * (compressed.size() / 8.0 + 8 + 4*256) / data.size() + "%");
         } finally {
             if (ins != null) {
                 ins.close();
@@ -217,8 +219,8 @@ public class Huffman {
     }
     
     public static void main(String[] args) throws IOException {
-        //args = new String[]{ "-c", "test.orig", "test.compressed" };
-        args = new String[]{ "-d", "test.compressed", "test.decompressed" };
+        args = new String[]{ "-c", "test.orig", "test.compressed" };
+        //args = new String[]{ "-d", "test.compressed", "test.decompressed" };
         if (args.length != 3) {
             usage();
         } else {
