@@ -1,7 +1,7 @@
 package com.nonpop.huffman;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.PriorityQueue;
 
 public class Huffman {
@@ -14,78 +14,75 @@ public class Huffman {
         return freqs;
     }
 
-    public static Pair<HuffmanTree, HuffmanTree[]> buildTree(int[] freqs) {
-        HuffmanTree[] leaves = new HuffmanTree[256];
-        PriorityQueue<HuffmanTree> q = new PriorityQueue<>();
+    public static HuffmanTree buildTree(int[] freqs) {
+        HuffmanTreeNode[] leaves = new HuffmanTreeNode[256];
+        PriorityQueue<HuffmanTreeNode> q = new PriorityQueue<>();
         for (int b = 0; b < 256; ++b) {
             int freq = freqs[b];
             if (freq > 0) {
-                HuffmanTree t = new HuffmanTree(freq, null, null, b);
+                HuffmanTreeNode t = new HuffmanTreeNode(freq, null, null, b);
                 leaves[b] = t;
                 q.add(t);
             }
         }
         while (q.size() >= 2) {
-            HuffmanTree a = q.poll();
-            HuffmanTree b = q.poll();
-            HuffmanTree t = new HuffmanTree(a.sum + b.sum, a, b, (byte)0);
+            HuffmanTreeNode a = q.poll();
+            HuffmanTreeNode b = q.poll();
+            HuffmanTreeNode t = new HuffmanTreeNode(a.sum + b.sum, a, b, (byte)0);
             a.parent = t;
             b.parent = t;
             q.add(t);
         } 
-        HuffmanTree root = (q.size() > 0)? q.poll() : null;
-        return new Pair<>(root, leaves);
+        HuffmanTreeNode root = (q.size() > 0)? q.poll() : null;
+        return new HuffmanTree(root, leaves);
     }
 
-    public static Pair<Byte, Byte> findCode(HuffmanTree leaf) {
-        byte code = 0;
-        byte pos = 0;
-        while (true) {
-            HuffmanTree parent = leaf.parent;
-            if (parent == null) {
-                break;
+    public static ArrayList<Boolean> findCode(HuffmanTreeNode node) {
+        ArrayList<Boolean> res = new ArrayList<>();
+        while (node != null && node.parent != null) {
+            if (node == node.parent.right) {
+                res.add(true);
+            } else {
+                res.add(false);
             }
-            if (leaf == parent.right) {
-                code += 1 << pos;
-            }
-            ++pos;
-            leaf = parent;
+            node = node.parent;
         }
-        code <<= 8 - pos;
-        return new Pair<>(code, pos);
-        
+        Collections.reverse(res);
+        return res;
     }
 
-    public static BitOutput compress(int[] data, int[] freqs) {
-        Pair<HuffmanTree, HuffmanTree[]> tree = buildTree(freqs);
-        BitOutput out = new BitOutput();
+    public static ArrayList<Boolean> compress(int[] data, int[] freqs) {
+        HuffmanTree tree = buildTree(freqs);
+        ArrayList<Boolean> out = new ArrayList<>();
         for (int b : data) {
-            Pair<Byte, Byte> p = findCode(tree.snd[b]);
-            for (int i = 0; i < p.snd; ++i) {
-                out.putBit((p.fst & 0x80 >> i) > 0);
-            }
+            out.addAll(findCode(tree.leaves[b]));
         }
         return out;
     }
 
-    public static List<Integer> decompress(BitOutput bits, int[] freqs) {
+    public static ArrayList<Integer> decompress(ArrayList<Boolean> bits, int[] freqs) {
         ArrayList<Integer> res = new ArrayList<>();
-        Pair<HuffmanTree, HuffmanTree[]> tree = buildTree(freqs);
-        int pos = 0;
-        while (pos < bits.getBitCount()) {
-            HuffmanTree node = tree.fst;
-            while (true) {
-                boolean bit = bits.getBit(pos);
-                if (!bit && node.left != null) {
-                    node = node.left;
-                    ++pos;
-                } else if (bit && node.right != null) {
-                    node = node.right;
-                    ++pos;
-                } else {
-                    res.add(node.data);
+        HuffmanTree tree = buildTree(freqs);
+        if (bits.isEmpty()) {
+            // there was at most one byte in the source data
+            for (HuffmanTreeNode leaf : tree.leaves) {
+                if (leaf != null) {
+                    res.add(leaf.data);
                     break;
                 }
+            }
+            return res;
+        }
+        HuffmanTreeNode node = tree.root;
+        for (boolean bit : bits) {
+            if (!bit && node.left != null) {
+                node = node.left;
+            } else if (bit && node.right != null) {
+                node = node.right;
+            }
+            if (node.left == null) {
+                res.add(node.data);
+                node = tree.root;
             }
         }
         return res;

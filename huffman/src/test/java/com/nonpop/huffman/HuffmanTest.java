@@ -60,7 +60,7 @@ public class HuffmanTest {
         assertArrayEquals(expResult, result);
     }
 
-    private static void checkHuffmanNode(HuffmanTree node, int[] freqs) {
+    private static void checkHuffmanNode(HuffmanTreeNode node, int[] freqs) {
         if (node == null) {
             return;
         }
@@ -81,7 +81,7 @@ public class HuffmanTest {
         checkHuffmanNode(node.right, freqs);
     }
 
-    private static void checkHuffmanParents(HuffmanTree node, int sum, HuffmanTree root) {
+    private static void checkHuffmanParents(HuffmanTreeNode node, int sum, HuffmanTreeNode root) {
         assertTrue(node.sum > 0);
         if (node.parent == null) {
             assertSame(root, node);
@@ -92,20 +92,20 @@ public class HuffmanTest {
         checkHuffmanParents(node.parent, sum, root);
     }
 
-    private static void checkHuffmanTree(Pair<HuffmanTree, HuffmanTree[]> tree, int[] freqs) {
-        checkHuffmanNode(tree.fst, freqs);
+    private static void checkHuffmanTree(HuffmanTree tree, int[] freqs) {
+        checkHuffmanNode(tree.root, freqs);
 
         int sum = 0;
         for (int f : freqs) {
             sum += f;
         }
 
-        for (HuffmanTree leaf : tree.snd) {
+        for (HuffmanTreeNode leaf : tree.leaves) {
             if (leaf == null) {
                 continue;
             }
             assertEquals(freqs[leaf.data], leaf.sum);
-            checkHuffmanParents(leaf, sum, tree.fst);
+            checkHuffmanParents(leaf, sum, tree.root);
         }
     }
 
@@ -118,26 +118,27 @@ public class HuffmanTest {
         checkHuffmanTree(Huffman.buildTree(freqs), freqs);
     }
 
-    private static void checkCode(byte code, int codeLength, HuffmanTree root, int expected) {
+    private static void checkCode(ArrayList<Boolean> code, HuffmanTreeNode root, int expected) {
         assertNotNull(root);
         if (root.left == null) {
-            assertEquals(0, codeLength);
+            assertEquals(0, code.size());
             assertEquals(expected, root.data);
             return;
         }
 
-        if ((code & 0x80) > 0) {
-            checkCode((byte)((code << 1) & 0xff), codeLength - 1, root.right, expected);
+        boolean nextBit = code.get(0);
+        code.remove(0);
+        if (nextBit) {
+            checkCode(code, root.right, expected);
         } else {
-            checkCode((byte)((code << 1) & 0xff), codeLength - 1, root.left, expected);
+            checkCode(code, root.left, expected);
         }
     }
 
-    private static void checkCodes(int[] freqs, Pair<HuffmanTree, HuffmanTree[]> tree) {
+    private static void checkCodes(int[] freqs, HuffmanTree tree) {
         for (int i = 0; i < 256; ++i) {
             if (freqs[i] > 0) {
-                Pair<Byte, Byte> code = Huffman.findCode(tree.snd[i]);
-                checkCode(code.fst, code.snd, tree.fst, i);
+                checkCode(Huffman.findCode(tree.leaves[i]), tree.root, i);
             }
         }
     }
@@ -145,7 +146,7 @@ public class HuffmanTest {
     @org.junit.Test
     public void testFindCode() {
         int[] freqs = new int[256];
-        Pair<HuffmanTree, HuffmanTree[]> tree = Huffman.buildTree(freqs);
+        HuffmanTree tree = Huffman.buildTree(freqs);
         checkCodes(freqs, tree);
 
         freqs = helloFreqs();
@@ -166,6 +167,11 @@ public class HuffmanTest {
     public void testCompressAndDecompress() {
         int[] data = new int[0];
         int[] freqs = new int[256];
+        assertEquals(intArrayToList(data), Huffman.decompress(Huffman.compress(data, freqs), freqs));
+
+        data = new int[]{1};
+        freqs = new int[256];
+        freqs[1] = 1;
         assertEquals(intArrayToList(data), Huffman.decompress(Huffman.compress(data, freqs), freqs));
 
         data = helloData();
