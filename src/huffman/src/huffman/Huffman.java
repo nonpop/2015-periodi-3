@@ -27,11 +27,13 @@ public class Huffman<T> {
         while (pos < bits.getBitCount()) {
             HuffmanTree node = tree;
             while (true) {
-                boolean bit = bits.getBit(pos++);
+                boolean bit = bits.getBit(pos);
                 if (!bit && node.left != null) {
                     node = node.left;
+                    ++pos;
                 } else if (bit && node.right != null) {
                     node = node.right;
+                    ++pos;
                 } else {
                     res.add(node.data);
                     break;
