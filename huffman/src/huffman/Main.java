@@ -7,30 +7,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Main {
-    public static void compressFile(String inp, String outp) throws IOException {
+    public static void processFile(String inp, String outp, boolean compress) throws IOException {
         FileInputStream ins = null;
         FileOutputStream outs = null;
         try {
             ins = new FileInputStream(inp);
             outs = new FileOutputStream(outp);
-            compressStream(ins, outs);
-        } finally {
-            if (ins != null) {
-                ins.close();
+            if (compress) {
+                compressStream(ins, outs);
+            } else {
+                decompressStream(ins, outs);
             }
-            if (outs != null) {
-                outs.close();
-            }
-        }
-    }
-
-    public static void decompressFile(String inp, String outp) throws IOException {
-        FileInputStream ins = null;
-        FileOutputStream outs = null;
-        try {
-            ins = new FileInputStream(inp);
-            outs = new FileOutputStream(outp);
-            decompressStream(ins, outs);
         } finally {
             if (ins != null) {
                 ins.close();
@@ -53,9 +40,9 @@ public class Main {
             usage();
         } else {
             if (args[0].equals("-c")) {
-                compressFile(args[1], args[2]);
+                processFile(args[1], args[2], true);
             } else if (args[0].equals("-d")) {
-                decompressFile(args[1], args[2]);
+                processFile(args[1], args[2], false);
             } else {
                 usage();
             }
