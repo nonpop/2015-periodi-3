@@ -20,23 +20,23 @@ public class Huffman {
 
     public static HuffmanTree buildTree(int[] freqs) {
         HuffmanTreeNode[] leaves = new HuffmanTreeNode[256];
-        PriorityQueue<HuffmanTreeNode> q = new PriorityQueue<>();
+        HuffmanHeap q = new HuffmanHeap(256);
         for (int b = 0; b < 256; ++b) {
             if (freqs[b] > 0) {
                 HuffmanTreeNode t = new HuffmanTreeNode(freqs[b], null, null, b);
                 leaves[b] = t;
-                q.add(t);
+                q.push(t);
             }
         }
         while (q.size() >= 2) {
-            HuffmanTreeNode a = q.poll();
-            HuffmanTreeNode b = q.poll();
+            HuffmanTreeNode a = q.pop();
+            HuffmanTreeNode b = q.pop();
             HuffmanTreeNode t = new HuffmanTreeNode(a.sum + b.sum, a, b, (byte)0);
             a.parent = t;
             b.parent = t;
-            q.add(t);
+            q.push(t);
         } 
-        HuffmanTreeNode root = (q.size() > 0)? q.poll() : null;
+        HuffmanTreeNode root = (q.size() > 0)? q.pop() : null;
         return new HuffmanTree(root, leaves);
     }
 
