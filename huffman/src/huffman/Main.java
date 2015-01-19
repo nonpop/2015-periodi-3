@@ -17,11 +17,9 @@ public class Main {
         } finally {
             if (ins != null) {
                 ins.close();
-                ins = null;
             }
             if (outs != null) {
                 outs.close();
-                outs = null;
             }
         }
     }
