@@ -1,13 +1,17 @@
 package huffman;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class HuffmanTest {
 
@@ -48,7 +52,19 @@ public class HuffmanTest {
         return f;
     }
 
-    @org.junit.Test
+    private static byte[] asByteArray(ArrayList<Integer> data) {
+        byte[] result = new byte[data.size()];
+        for (int i = 0; i < data.size(); ++i) {
+            result[i] = (byte)(data.get(i) & 0xff);
+        }
+        return result;
+    }
+    
+    private static InputStream helloStream() {
+        return new ByteArrayInputStream(asByteArray(helloData()));
+    }
+
+    @Test
     public void testCalculateFrequencies() {
         ArrayList<Integer> data = new ArrayList<>();
         int[] expResult = new int[256];
@@ -110,7 +126,7 @@ public class HuffmanTest {
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testBuildTree() {
         int[] freqs = new int[256];
         checkHuffmanTree(Huffman.buildTree(freqs), freqs);
@@ -143,8 +159,8 @@ public class HuffmanTest {
             }
         }
     }
-    
-    @org.junit.Test
+
+    @Test
     public void testFindCode() {
         int[] freqs = new int[256];
         HuffmanTree tree = Huffman.buildTree(freqs);
@@ -155,16 +171,7 @@ public class HuffmanTest {
         checkCodes(freqs, tree);
     }
 
-    // really no better way?
-    private static List<Integer> intArrayToList(int[] a) {
-        ArrayList<Integer> res = new ArrayList<>();
-        for (int i : a) {
-            res.add(i);
-        }
-        return res;
-    }
-    
-    @org.junit.Test
+    @Test
     public void testCompressAndDecompress() {
         ArrayList<Integer> data = new ArrayList<>();
         int[] freqs = new int[256];
@@ -183,5 +190,17 @@ public class HuffmanTest {
         data = helloData();
         freqs = helloFreqs();
         assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));
+    }
+
+    @Test
+    public void testCompressAndDecompressStream() throws Exception {
+        InputStream ins = helloStream();
+        ByteArrayOutputStream outs = new ByteArrayOutputStream();
+        Huffman.compressStream(ins, outs);
+        ins = new ByteArrayInputStream(outs.toByteArray());
+        outs = new ByteArrayOutputStream();
+        Huffman.decompressStream(ins, outs);
+        byte[] data = asByteArray(helloData());
+        assertArrayEquals(data, outs.toByteArray());
     }
 }

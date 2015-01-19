@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.PriorityQueue;
@@ -96,11 +98,11 @@ public class Huffman {
     private static final byte[] headerMagik = new byte[]{ 84, 76, 1, 5 };
     
     // I'm sure there are standard ways to do this
-    private static void writeInt(FileOutputStream outs, int value) throws IOException {
+    private static void writeInt(OutputStream outs, int value) throws IOException {
         outs.write(new byte[]{ (byte)(value >> 24), (byte)(value >> 16), (byte)(value >> 8), (byte)(value) });
     }
 
-    private static int readInt(FileInputStream ins) throws IOException {
+    private static int readInt(InputStream ins) throws IOException {
         int b1 = ins.read();
         int b2 = ins.read();
         int b3 = ins.read();
@@ -108,7 +110,7 @@ public class Huffman {
         return (b1 << 24) + ((b2 << 16) & 0xff0000) + ((b3 << 8) & 0xff00) + (b4 & 0xff);
     }
 
-    public static void writeHeader(FileOutputStream outs, int[] freqs, int actualBitCount) throws IOException {
+    public static void writeHeader(OutputStream outs, int[] freqs, int actualBitCount) throws IOException {
         outs.write(headerMagik);
         writeInt(outs, actualBitCount);
         for (int f : freqs) {
@@ -116,7 +118,7 @@ public class Huffman {
         }
     }
 
-    public static int readHeader(FileInputStream ins, int[] freqs) throws IOException {
+    public static int readHeader(InputStream ins, int[] freqs) throws IOException {
         for (int i = 0; i < headerMagik.length; ++i) {
             if (ins.read() != headerMagik[i]) {
                 throw new IllegalArgumentException("Bad file.");
@@ -129,7 +131,7 @@ public class Huffman {
         return actualBitCount;
     }
 
-    public static void writeBits(FileOutputStream outs, ArrayList<Boolean> bits) throws IOException {
+    public static void writeBits(OutputStream outs, ArrayList<Boolean> bits) throws IOException {
         byte b = 0;
         int pos = 0;
         for (boolean bit : bits) {
@@ -148,7 +150,7 @@ public class Huffman {
         outs.write(b);
     }
 
-    public static ArrayList<Boolean> readBits(FileInputStream ins) throws IOException {
+    public static ArrayList<Boolean> readBits(InputStream ins) throws IOException {
         ArrayList<Boolean> res = new ArrayList<>();
         int c;
         while ((c = ins.read()) != -1) {
@@ -159,58 +161,68 @@ public class Huffman {
         return res;
     }
     
-    public static void compress(String inp, String outp) throws FileNotFoundException, IOException {
+    public static void compressStream(InputStream ins, OutputStream outs) throws FileNotFoundException, IOException {
+        ArrayList<Integer> data = new ArrayList<>();
+        int c;
+        while ((c = ins.read()) != -1) {
+            data.add(c);
+        }
+
+        int[] freqs = calculateFrequencies(data);
+        ArrayList<Boolean> compressed = compress(data, freqs);
+        writeHeader(outs, freqs, compressed.size());
+        writeBits(outs, compressed);
+
+        System.out.println("Compressed/original = " + 100 * (compressed.size() / 8.0 + 8 + 4*256) / data.size() + "%");
+    }
+
+    public static void decompressStream(InputStream ins, OutputStream outs) throws FileNotFoundException, IOException {
+        int freqs[] = new int[256];
+        int dataSize = readHeader(ins, freqs);
+        ArrayList<Boolean> compressed = readBits(ins);
+        while (compressed.size() > dataSize) {
+            compressed.remove(compressed.size() - 1);
+        }
+        ArrayList<Integer> data = decompress(compressed, freqs);
+        for (int c : data) {
+            outs.write(c);
+        }
+    }
+
+    public static void compressFile(String inp, String outp) throws IOException {
         FileInputStream ins = null;
         FileOutputStream outs = null;
         try {
             ins = new FileInputStream(inp);
             outs = new FileOutputStream(outp);
-
-            ArrayList<Integer> data = new ArrayList<>();
-            int c;
-            while ((c = ins.read()) != -1) {
-                data.add(c);
-            }
-
-            int[] freqs = calculateFrequencies(data);
-            ArrayList<Boolean> compressed = compress(data, freqs);
-            writeHeader(outs, freqs, compressed.size());
-            writeBits(outs, compressed);
-
-            System.out.println("Compressed/original = " + 100 * (compressed.size() / 8.0 + 8 + 4*256) / data.size() + "%");
+            compressStream(ins, outs);
         } finally {
             if (ins != null) {
                 ins.close();
+                ins = null;
             }
             if (outs != null) {
                 outs.close();
+                outs = null;
             }
         }
     }
 
-    public static void decompress(String inp, String outp) throws FileNotFoundException, IOException {
+    public static void decompressFile(String inp, String outp) throws IOException {
         FileInputStream ins = null;
         FileOutputStream outs = null;
         try {
             ins = new FileInputStream(inp);
             outs = new FileOutputStream(outp);
-
-            int freqs[] = new int[256];
-            int dataSize = readHeader(ins, freqs);
-            ArrayList<Boolean> compressed = readBits(ins);
-            while (compressed.size() > dataSize) {
-                compressed.remove(compressed.size() - 1);
-            }
-            ArrayList<Integer> data = decompress(compressed, freqs);
-            for (int c : data) {
-                outs.write(c);
-            }
+            decompressStream(ins, outs);
         } finally {
             if (ins != null) {
                 ins.close();
+                ins = null;
             }
             if (outs != null) {
                 outs.close();
+                outs = null;
             }
         }
     }
@@ -227,9 +239,9 @@ public class Huffman {
             usage();
         } else {
             if (args[0].equals("-c")) {
-                compress(args[1], args[2]);
+                compressFile(args[1], args[2]);
             } else if (args[0].equals("-d")) {
-                decompress(args[1], args[2]);
+                decompressFile(args[1], args[2]);
             } else {
                 usage();
             }
