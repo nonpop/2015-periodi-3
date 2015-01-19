@@ -175,6 +175,11 @@ public class HuffmanTest {
         freqs[1] = 1;
         assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));
 
+        data = new ArrayList<>(Arrays.asList(1, 1));
+        freqs = new int[256];
+        freqs[1] = 2;
+        assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));
+
         data = helloData();
         freqs = helloFreqs();
         assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));

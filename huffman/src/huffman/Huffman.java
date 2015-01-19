@@ -70,7 +70,9 @@ public class Huffman {
             // there was at most one byte in the source data
             for (HuffmanTreeNode leaf : tree.leaves) {
                 if (leaf != null) {
-                    res.add(leaf.data);
+                    for (int i = 0; i < freqs[leaf.data]; ++i) {
+                        res.add(leaf.data);
+                    }
                     break;
                 }
             }
