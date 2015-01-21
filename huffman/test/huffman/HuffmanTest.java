@@ -201,7 +201,7 @@ public class HuffmanTest {
         assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
 
         System.out.print("Random: ");
-        data = randomData(1000000);
+        data = randomData(100000);
         freqs = Huffman.calculateFrequencies(data);
         assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
     }
