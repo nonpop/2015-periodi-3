@@ -117,7 +117,6 @@ public class HuffmanHeap {
      * @param x The element to add.
      * @see HuffmanHeap(int)
      */
-
     public void push(HuffmanTreeNode x) {
         int i = size++;
         while (i > 0 && heap[parent(i)].sum > x.sum) {
