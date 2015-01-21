@@ -123,7 +123,6 @@ public class Huffman {
         // codes have a length of at least one bit.
         HuffmanTreeNode node = tree.root;
         for (boolean bit : bits) {
-//            if (!bit && node.left != null) {
             if (!bit) {
                 node = node.left;
             } else {
