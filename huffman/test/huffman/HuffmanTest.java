@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -37,6 +38,15 @@ public class HuffmanTest {
         return new ArrayList<>(Arrays.asList(72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100));
     }
 
+    private static ArrayList<Integer> randomData(int size) {
+        ArrayList<Integer> res = new ArrayList<>();
+        Random r = new Random(42);
+        for (int i = 0; i < size; ++i) {
+            res.add(r.nextInt(256));
+        }
+        return res;
+    }
+
     private static int[] helloFreqs() {
         int[] f = new int[256];
         f[72] = 1;
@@ -59,8 +69,8 @@ public class HuffmanTest {
         return result;
     }
     
-    private static InputStream helloStream() {
-        return new ByteArrayInputStream(asByteArray(helloData()));
+    private static InputStream dataStream(ArrayList<Integer> data) {
+        return new ByteArrayInputStream(asByteArray(data));
     }
 
     @Test
@@ -189,11 +199,16 @@ public class HuffmanTest {
         data = helloData();
         freqs = helloFreqs();
         assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
+
+        System.out.print("Random: ");
+        data = randomData(1000000);
+        freqs = Huffman.calculateFrequencies(data);
+        assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
     }
 
     @Test
     public void testCompressAndDecompressStream() throws Exception {
-        InputStream ins = helloStream();
+        InputStream ins = dataStream(helloData());
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         Huffman.compressStream(ins, outs);
         ins = new ByteArrayInputStream(outs.toByteArray());

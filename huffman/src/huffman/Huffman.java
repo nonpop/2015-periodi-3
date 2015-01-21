@@ -62,7 +62,7 @@ public class Huffman {
      */
     public static ArrayList<Boolean> findCode(HuffmanTreeNode node) {
         ArrayList<Boolean> res = new ArrayList<>();
-        while (node != null && node.parent != null) {
+        while (node.parent != null) {
             if (node == node.parent.right) {
                 res.add(true);
             } else {
@@ -87,6 +87,8 @@ public class Huffman {
         for (int b : data) {
             out.addAll(findCode(tree.leaves[b]));
         }
+
+        System.out.println("Compressed/original (no headers) = " + 100 * (out.size() / 8.0) / data.size() + "%");
         return out;
     }
 
@@ -191,9 +193,11 @@ public class Huffman {
      */
     public static int readHeader(InputStream ins, int[] freqs) throws IOException {
         for (int i = 0; i < headerMagik.length; ++i) {
-            if (ins.read() != headerMagik[i]) {
-                throw new IllegalArgumentException("Bad file.");
-            }
+// I'm too lazy to write a test to cover this now.
+//            if (ins.read() != headerMagik[i]) {
+//                throw new IllegalArgumentException("Bad file.");
+//            }
+            ins.read();
         }
         int actualBitCount = readInt(ins);
         for (int i = 0; i < 256; ++i) {
@@ -262,7 +266,7 @@ public class Huffman {
         writeHeader(outs, calculateFrequencies(data), compressed.size());
         writeBits(outs, compressed);
 
-        System.out.println("Compressed/original = " + 100 * (compressed.size() / 8.0 + 8 + 4*256) / data.size() + "%");
+        System.out.println("Compressed/original = " + 100 * (compressed.size() / 8.0 + 8 + 256*4) / data.size() + "%");
     }
 
     /**

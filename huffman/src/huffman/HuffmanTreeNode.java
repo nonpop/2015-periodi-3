@@ -3,7 +3,7 @@ package huffman;
 /**
  * One node in a Huffman tree.
  */
-public class HuffmanTreeNode implements Comparable<HuffmanTreeNode> {
+public class HuffmanTreeNode {
 
     public HuffmanTreeNode parent = null;
     public final HuffmanTreeNode left, right;
@@ -25,13 +25,5 @@ public class HuffmanTreeNode implements Comparable<HuffmanTreeNode> {
         this.left = left;
         this.right = right;
         this.data = data;
-    }
-
-    /**
-     * Compare two nodes by comparing their sum fields.
-     */
-    @Override
-    public int compareTo(HuffmanTreeNode t) {
-        return this.sum - t.sum;
     }
 }
