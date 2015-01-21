@@ -41,7 +41,7 @@ public class Huffman {
             }
         }
 
-        // Then start pushing the nodes with least frequencies away from the root.
+        // Then start pushing the nodes with least frequencies away from the (imaginary) root.
         while (q.size() >= 2) {
             HuffmanTreeNode a = q.pop();
             HuffmanTreeNode b = q.pop();
