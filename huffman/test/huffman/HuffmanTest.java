@@ -3,7 +3,6 @@ package huffman;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.After;
@@ -175,21 +174,21 @@ public class HuffmanTest {
     public void testCompressAndDecompress() {
         ArrayList<Integer> data = new ArrayList<>();
         int[] freqs = new int[256];
-        assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));
+        assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
 
         data = new ArrayList<>(Arrays.asList(1));
         freqs = new int[256];
         freqs[1] = 1;
-        assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));
+        assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
 
         data = new ArrayList<>(Arrays.asList(1, 1));
         freqs = new int[256];
         freqs[1] = 2;
-        assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));
+        assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
 
         data = helloData();
         freqs = helloFreqs();
-        assertEquals(data, Huffman.decompress(Huffman.compress(data, freqs), freqs));
+        assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
     }
 
     @Test
