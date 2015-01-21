@@ -195,7 +195,7 @@ Virhetilanteiden tunnistamista ja käsittelyä voisi parantaa.
 un\SpecialChar \ldots{}
  Samoin listat voisi toteuttaa itse.
  Testit eivät ehkä ole ihan täydelliset eikä Main-luokkaa testata ollenkaan.
- Kommentointi ei kata ihan kaikkea.
+ Kommentointi ei kata ihan kaikkea eikä ehkä muutenkaan ole kovin hyvää.
 \end_layout
 
 \begin_layout Standard
