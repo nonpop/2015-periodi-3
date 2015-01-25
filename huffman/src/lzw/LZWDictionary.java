@@ -25,7 +25,7 @@ public class LZWDictionary {
     public LZWDictionary(int codeSize) {
         lastCode = (int)Math.pow(2, codeSize) - 1;
         for (int i = 0; i < 256; ++i) {
-            root.children[i] = new LZWDictionaryEntry(i,i);
+            root.children[i] = new LZWDictionaryEntry(i, i);
         }
     }
 
