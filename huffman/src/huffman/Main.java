@@ -8,22 +8,13 @@ import java.io.IOException;
 
 public class Main {
     public static void processFile(String inp, String outp, boolean compress) throws IOException {
-        FileInputStream ins = null;
-        FileOutputStream outs = null;
-        try {
-            ins = new FileInputStream(inp);
-            outs = new FileOutputStream(outp);
+        try (FileInputStream ins = new FileInputStream(inp);
+             FileOutputStream outs = new FileOutputStream(outp))
+        {
             if (compress) {
                 compressStream(ins, outs);
             } else {
                 decompressStream(ins, outs);
-            }
-        } finally {
-            if (ins != null) {
-                ins.close();
-            }
-            if (outs != null) {
-                outs.close();
             }
         }
     }
