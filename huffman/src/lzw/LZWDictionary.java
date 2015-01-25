@@ -25,25 +25,19 @@ public class LZWDictionary {
     public LZWDictionary(int codeSize) {
         lastCode = (int)Math.pow(2, codeSize) - 1;
         for (int i = 0; i < 256; ++i) {
-            root.children.add(new LZWDictionaryEntry(i, i));
+            root.children[i] = new LZWDictionaryEntry(i,i);
         }
     }
 
     public void addString(ArrayList<Integer> string) {
         LZWDictionaryEntry dict = root;
         int i = 0;
-        while (i < string.size()) {
+        while (true) {
             int next = string.get(i++);
-            int j = 0;
-            while (j < dict.children.size()) {
-                if (dict.children.get(j).data == next) {
-                    dict = dict.children.get(j);
-                    break;
-                }
-                ++j;
-            }
-            if (j == dict.children.size() && i == string.size()) {
-                dict.children.add(new LZWDictionaryEntry(next, generateNextCode()));
+            if (dict.children[next] != null) {
+                dict = dict.children[next];
+            } else {
+                dict.children[next] = new LZWDictionaryEntry(next, generateNextCode());
                 return;
             }
         }
@@ -59,20 +53,13 @@ public class LZWDictionary {
 
     public int getCode(List<Integer> string) {
         LZWDictionaryEntry dict = root;
-        int i = 0;
-        while (i < string.size()) {
-            int next = string.get(i++);
-            int j = 0;
-            while (j < dict.children.size()) {
-                if (dict.children.get(j).data == next) {
-                    dict = dict.children.get(j);
-                    if (i == string.size()) {
-                        return dict.code;
-                    }
-                }
-                ++j;
+        for (int i = 0; i < string.size(); ++i) {
+            int next = string.get(i);
+            if (dict.children[next] == null) {
+                return -1;
             }
+            dict = dict.children[next];
         }
-        return -1;
+        return dict.code;
     }
 }
