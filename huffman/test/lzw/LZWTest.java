@@ -10,29 +10,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class LZWTest {
-    
-    public LZWTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
-
-    /**
-     * Test of compress method, of class LZW.
-     */
     @Test
     public void testCompress() {
         ArrayList<Integer> data = new ArrayList<>(Arrays.asList(0,1,0,1,0,1,0));
@@ -60,15 +37,19 @@ public class LZWTest {
         result = LZW.compress(data);
         assertEquals(expResult, result);
 
+        data = new ArrayList<>(Arrays.asList(1,1,1,1,1,1,1,1,1,1));
+        expResult = new ArrayList<>(Arrays.asList(1,256,257,258));
+        result = LZW.compress(data);
+        assertEquals(expResult, result);
+
         data = new ArrayList<>(Arrays.asList(0,1,2,3,2,3,4,3,5,4,1,2,3));
         expResult = new ArrayList<>(Arrays.asList(0,1,2,3,258,4,3,5,4,257,3));
         result = LZW.compress(data);
         assertEquals(expResult, result);
 
-        data = new ArrayList<>(Arrays.asList(1,1,1,1,1,1,1,1,1,1));
-        expResult = new ArrayList<>(Arrays.asList(1,256,257,258));
+        data = new ArrayList<>(Arrays.asList(0,1,2,3,4,5,6,7,8,9));
+        expResult = data;
         result = LZW.compress(data);
         assertEquals(expResult, result);
     }
-    
 }
