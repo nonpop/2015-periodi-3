@@ -6,34 +6,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class HuffmanTest {
-
-    public HuffmanTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
     private static ArrayList<Integer> helloData() {
         return new ArrayList<>(Arrays.asList(72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100));
     }
