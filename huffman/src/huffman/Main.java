@@ -1,7 +1,5 @@
 package huffman;
 
-import static huffman.Huffman.compressStream;
-import static huffman.Huffman.decompressStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,9 +10,9 @@ public class Main {
              FileOutputStream outs = new FileOutputStream(outp))
         {
             if (compress) {
-                compressStream(ins, outs);
+                Huffman.compressStream(ins, outs);
             } else {
-                decompressStream(ins, outs);
+                Huffman.decompressStream(ins, outs);
             }
         }
     }
