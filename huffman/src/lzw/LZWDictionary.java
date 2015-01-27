@@ -2,7 +2,6 @@ package lzw;
 
 import java.util.ArrayList;
 import java.util.List;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Implements an LZW dictionary with fixed-size code words. The code word size
@@ -12,7 +11,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 public class LZWDictionary {
     private final int lastCode;
-    private final LZWDictionaryEntry root = new LZWDictionaryEntry(-1, -1);
+    private final LZWDictionaryEntry root = new LZWDictionaryEntry(-1, true);
     private int nextCode = 256;
 
     /**
@@ -25,7 +24,7 @@ public class LZWDictionary {
     public LZWDictionary(int codeSize) {
         lastCode = (int)Math.pow(2, codeSize) - 1;
         for (int i = 0; i < 256; ++i) {
-            root.children[i] = new LZWDictionaryEntry(i, i);
+            root.children[i] = new LZWDictionaryEntry(i, true);
         }
     }
 
@@ -34,20 +33,38 @@ public class LZWDictionary {
         int i = 0;
         while (true) {
             int next = string.get(i++);
-            if (dict.children[next] != null) {
+            if (dict.children[next] != null && dict.children[next].isValid()) {
                 dict = dict.children[next];
             } else {
-                dict.children[next] = new LZWDictionaryEntry(next, generateNextCode());
+                dict.children[next] = new LZWDictionaryEntry(generateNextCode(), false);
                 return;
             }
         }
     }
 
+    private LZWDictionaryEntry findOldest(LZWDictionaryEntry dict, LZWDictionaryEntry oldest) {
+        for (LZWDictionaryEntry child : dict.children) {
+            if (child != null) {
+                if (oldest.getAccessTime() < 0 || child.getAccessTime() < oldest.getAccessTime()) {
+                    oldest = child;
+                }
+                oldest = findOldest(child, oldest);
+            }
+        }
+        return oldest;
+    }
+    
     private int generateNextCode() {
         if (nextCode <= lastCode) {
             return nextCode++;
         } else {
-            throw new NotImplementedException();
+            LZWDictionaryEntry oldestEntry = findOldest(root, root);
+            if (oldestEntry.getAccessTime() < 0) {
+                throw new IllegalStateException("You used codeSize <= 8, didn't you?");
+            }
+            int code = oldestEntry.getCode();
+            oldestEntry.clear();
+            return code;
         }
     }
 
@@ -60,6 +77,6 @@ public class LZWDictionary {
             }
             dict = dict.children[next];
         }
-        return dict.code;
+        return dict.getCode();
     }
 }
