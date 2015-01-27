@@ -2,6 +2,7 @@ package lzw;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -76,6 +77,13 @@ public class LZWTest {
         assertEquals(data, LZW.decompress(LZW.compress(data)));
 
         data = new ArrayList<>(Arrays.asList(0,1,2,3,4,5,6,7,8,9));
+        assertEquals(data, LZW.decompress(LZW.compress(data)));
+
+        Random r = new Random(42);
+        data.clear();
+        for (int i = 0; i < 1000; ++i) {
+            data.add(r.nextInt(256));
+        }
         assertEquals(data, LZW.decompress(LZW.compress(data)));
     }
 }

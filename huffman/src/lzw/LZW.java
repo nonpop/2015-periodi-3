@@ -29,18 +29,27 @@ public class LZW {
     public static ArrayList<Integer> decompress(ArrayList<Integer> data) {
         ArrayList<Integer> decompressed = new ArrayList<>();
         HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
-        ArrayList<Integer> string = new ArrayList<>();
         for (int i = 0; i < 256; ++i) {
             dict.put(i, new ArrayList<>(Arrays.asList(i)));
         }
+        ArrayList<Integer> last = new ArrayList<>();
         int nextCode = 256;
         for (int i = 0; i < data.size(); ++i) {
             int code = data.get(i);
             if (dict.containsKey(code)) {
-                string = dict.get(code);
-                decompressed.addAll(string);
+                ArrayList<Integer> cur = new ArrayList<>(dict.get(code));
+                decompressed.addAll(cur);
+                last.add(cur.get(0));
+                if (!dict.containsValue(last)) {
+                    dict.put(nextCode++, last);
+                }
+                last = cur;
             } else {
-                
+                ArrayList<Integer> cur = new ArrayList<>(last);
+                cur.add(cur.get(0));
+                decompressed.addAll(cur);
+                dict.put(nextCode++, cur);
+                last = cur;
             }
         }
         return decompressed;
