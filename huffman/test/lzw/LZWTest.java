@@ -81,6 +81,12 @@ public class LZWTest {
 
         Random r = new Random(42);
         data.clear();
+        for (int i = 0; i < 100; ++i) {
+            data.add(r.nextInt(256));
+        }
+        assertEquals(data, LZW.decompress(LZW.compress(data)));
+
+        data.clear();
         for (int i = 0; i < 1000; ++i) {
             data.add(r.nextInt(256));
         }

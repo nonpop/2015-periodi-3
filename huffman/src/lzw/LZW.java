@@ -3,12 +3,13 @@ package lzw;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class LZW {
+    private final static int codeSize = 9;
+    
     public static ArrayList<Integer> compress(ArrayList<Integer> data) {
         ArrayList<Integer> compressed = new ArrayList<>();
-        LZWDictionary dict = new LZWDictionary(16);
+        LZWDictionary dict = new LZWDictionary(codeSize);
         ArrayList<Integer> string = new ArrayList<>();
         for (int i = 0; i < data.size(); ++i) {
             string.add(data.get(i));
