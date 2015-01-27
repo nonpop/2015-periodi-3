@@ -1,6 +1,9 @@
 package lzw;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class LZW {
     public static ArrayList<Integer> compress(ArrayList<Integer> data) {
@@ -21,5 +24,25 @@ public class LZW {
             compressed.add(dict.getCode(string));
         }
         return compressed;
+    }
+
+    public static ArrayList<Integer> decompress(ArrayList<Integer> data) {
+        ArrayList<Integer> decompressed = new ArrayList<>();
+        HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
+        ArrayList<Integer> string = new ArrayList<>();
+        for (int i = 0; i < 256; ++i) {
+            dict.put(i, new ArrayList<>(Arrays.asList(i)));
+        }
+        int nextCode = 256;
+        for (int i = 0; i < data.size(); ++i) {
+            int code = data.get(i);
+            if (dict.containsKey(code)) {
+                string = dict.get(code);
+                decompressed.addAll(string);
+            } else {
+                
+            }
+        }
+        return decompressed;
     }
 }
