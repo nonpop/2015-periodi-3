@@ -2,6 +2,7 @@ package huffman;
 
 import bitstream.BitInputStream;
 import bitstream.BitOutputStream;
+import bitstream.BitVector;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -118,7 +119,7 @@ public class HuffmanTest {
         checkHuffmanTree(Huffman.buildTree(freqs), freqs);
     }
 
-    private static void checkCode(ArrayList<Boolean> code, HuffmanTreeNode root, int expected) {
+    private static void checkCode(BitVector code, HuffmanTreeNode root, int expected) {
         assertNotNull(root);
         if (root.left == null) {
             assertEquals(0, code.size());
@@ -127,7 +128,7 @@ public class HuffmanTest {
         }
 
         boolean nextBit = code.get(0);
-        code.remove(0);
+        code.removeFirst();
         if (nextBit) {
             checkCode(code, root.right, expected);
         } else {

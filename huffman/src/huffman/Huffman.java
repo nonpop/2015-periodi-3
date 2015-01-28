@@ -2,12 +2,11 @@ package huffman;
 
 import bitstream.BitInputStream;
 import bitstream.BitOutputStream;
+import bitstream.BitVector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Methods implementing (de)compression by Huffman coding.
@@ -66,8 +65,8 @@ public class Huffman {
      * @param node A leaf node representing the character.
      * @return The code for the character.
      */
-    public static ArrayList<Boolean> findCode(HuffmanTreeNode node) {
-        ArrayList<Boolean> res = new ArrayList<>();
+    public static BitVector findCode(HuffmanTreeNode node) {
+        BitVector res = new BitVector(8);
         while (node.parent != null) {
             if (node == node.parent.right) {
                 res.add(true);
@@ -76,7 +75,7 @@ public class Huffman {
             }
             node = node.parent;
         }
-        Collections.reverse(res);
+        res.reverse();
         return res;
     }
 
@@ -93,9 +92,7 @@ public class Huffman {
         int inBytes = 0;
         int b;
         while ((b = ins.read()) != -1) {
-            for (boolean bit : findCode(tree.leaves[b])) {
-                outs.writeBits(1, bit? 1 : 0);
-            }
+            outs.writeBits(findCode(tree.leaves[b]));
             ++inBytes;
         }
 
