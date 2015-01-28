@@ -181,7 +181,7 @@ public class HuffmanTest {
     }
 
     @Test
-    public void testCompressAndDecompressStream() throws Exception {
+    public void testCompressAndDecompressFile() throws Exception {
         InputStream ins = new ByteArrayInputStream(helloData);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         Huffman.compressFile(ins, outs);
