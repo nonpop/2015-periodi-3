@@ -2,7 +2,7 @@ package lzw;
 
 public class LZWDictionaryEntry {
     private int code;
-    public final LZWDictionaryEntry[] children = new LZWDictionaryEntry[256];
+    public LZWDictionaryEntry[] children = new LZWDictionaryEntry[256];
 
     public LZWDictionaryEntry(int code) {
         this.code = code;

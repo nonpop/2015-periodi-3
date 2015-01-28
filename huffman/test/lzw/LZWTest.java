@@ -34,6 +34,7 @@ public class LZWTest {
         testCompress(new int[]{1,256,257,258}, new byte[]{1,1,1,1,1,1,1,1,1,1});
         testCompress(new int[]{0,1,2,3,258,4,3,5,4,257,3}, new byte[]{0,1,2,3,2,3,4,3,5,4,1,2,3});
         testCompress(new int[]{0,1,2,3,4,5,6,7,8,9}, new byte[]{0,1,2,3,4,5,6,7,8,9});
+        testCompress(new int[]{1,0,256,258,257,260,258}, new byte[]{1,0,1,0,1,0,1,0,1,0,1,0,1,0,1});
     }
 
 
@@ -79,6 +80,14 @@ public class LZWTest {
         }
         return res;
     }
+
+    private byte[] consecutiveData(int size) {
+        byte[] res = new byte[size];
+        for (int i = 0; i < size; ++i) {
+            res[i] = (byte)(i & 0xff);
+        }
+        return res;
+    }
     
     @Test
     public void testDecompress() throws IOException {
@@ -91,9 +100,10 @@ public class LZWTest {
         testDecompress(new byte[]{0,1,0,1,0,1,0});
         testDecompress(new byte[]{0,1,2,3,2,3,4,3,5,4,1,2,3});
         testDecompress(new byte[]{0,1,2,3,4,5,6,7,8,9});
-        testDecompress(randomData(10000, false));
-        testDecompress(randomData(10000, true));
-        testDecompress(alternatingData(100));
+        testDecompress(randomData(1000, false));
+        testDecompress(randomData(1000, true));
+        testDecompress(consecutiveData(1000));
+        testDecompress(alternatingData(1000));
     }
 
     @Test

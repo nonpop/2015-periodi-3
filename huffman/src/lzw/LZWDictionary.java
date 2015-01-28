@@ -1,8 +1,6 @@
 package lzw;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 /**
@@ -15,7 +13,6 @@ public class LZWDictionary {
     private final int lastCode;
     private final LZWDictionaryEntry root = new LZWDictionaryEntry(-1);
     private int nextCode = 256;
-    private final Deque<LZWDictionaryEntry> timeline = new ArrayDeque<>();
 
     /**
      *
@@ -31,28 +28,18 @@ public class LZWDictionary {
     }
 
     public void addString(ArrayList<Integer> string) {
-        int code = generateNextCode();
         LZWDictionaryEntry dict = root;
         for (int i = 0; i < string.size() - 1; ++i) {
             dict = dict.children[string.get(i)];
         }
-        LZWDictionaryEntry entry = new LZWDictionaryEntry(code);
+        LZWDictionaryEntry entry = new LZWDictionaryEntry(nextCode++);
         int last = string.get(string.size() - 1);
         dict.children[last] = entry;
-        timeline.addLast(entry);
     }
 
-    private int generateNextCode() {
-        if (nextCode <= lastCode) {
-            return nextCode++;
-        } else {
-            if (timeline.isEmpty()) {
-                throw new IllegalStateException("You used codeSize <= 8, didn't you?");
-            }
-            LZWDictionaryEntry oldestEntry = timeline.removeFirst();
-            int code = oldestEntry.getCode();
-            oldestEntry.clear();
-            return code;
+    public void reset() {
+        for (LZWDictionaryEntry child : root.children) {
+            child.children = new LZWDictionaryEntry[256];
         }
     }
 
@@ -65,5 +52,9 @@ public class LZWDictionary {
             dict = dict.children[next];
         }
         return dict.getCode();
+    }
+
+    public boolean isFull() {
+        return nextCode > lastCode;
     }
 }

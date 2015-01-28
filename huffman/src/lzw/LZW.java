@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class LZW {
     public final static int codeSize = 9;
@@ -18,6 +17,9 @@ public class LZW {
         int b;
         int inputSize = 0;
         while ((b = ins.read()) != -1) {
+            if (dict.isFull()) {
+                dict.reset();
+            }
             ++inputSize;
             string.add(b);
             if (dict.getCode(string) == -1) {
@@ -37,13 +39,22 @@ public class LZW {
     public static void decompress(BitInputStream ins, OutputStream outs) throws IOException {
         int lastCode = (int)Math.pow(2, codeSize) - 1;
         ArrayList<ArrayList<Integer>> dict = new ArrayList<>(lastCode + 1);
-        for (int i = 0; i < 256; ++i) {
-            dict.add(i, new ArrayList<>(Arrays.asList(i)));
+        for (int i = 0; i < lastCode + 1; ++i) {
+            if (i < 256) {
+                dict.add(new ArrayList<>(Arrays.asList(i)));
+            } else {
+                dict.add(null);
+            }
         }
         ArrayList<Integer> last = new ArrayList<>();
         int nextCode = 256;
 
         while (true) {
+            if (nextCode == 256) {
+                for (int i = 256; i < dict.size(); ++i) {
+                    dict.set(i, null);
+                }
+            }
             Integer code = ins.readBits(codeSize);
             if (code == null) {
                 break;
@@ -55,19 +66,19 @@ public class LZW {
                 }
                 last.add(cur.get(0));
                 if (!dict.contains(last)) {
-                    dict.add(nextCode++, last);
+                    dict.set(nextCode++, new ArrayList<>(last));
                     if (nextCode > lastCode) {
                         nextCode = 256;
                     }
                 }
                 last = cur;
             } else {
-                ArrayList<Integer> cur = new ArrayList<>(last);
+                ArrayList<Integer> cur = new ArrayList<>(last);//TODO:remove?
                 cur.add(cur.get(0));
                 for (int i : cur) {
                     outs.write(i);
                 }
-                dict.put(nextCode++, cur);
+                dict.set(nextCode++, new ArrayList<>(cur));
                 if (nextCode > lastCode) {
                     nextCode = 256;
                 }
