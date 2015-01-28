@@ -184,10 +184,10 @@ public class HuffmanTest {
     public void testCompressAndDecompressStream() throws Exception {
         InputStream ins = new ByteArrayInputStream(helloData);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
-        Huffman.compressStream(ins, outs);
+        Huffman.compressFile(ins, outs);
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
-        Huffman.decompressStream(ins, outs);
+        Huffman.decompressFile(ins, outs);
         assertArrayEquals(helloData, outs.toByteArray());
     }
 }
