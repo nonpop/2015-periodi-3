@@ -71,6 +71,14 @@ public class LZWTest {
         }
         return res;
     }
+
+    private byte[] alternatingData(int size) {
+        byte[] res = new byte[size];
+        for (int i = 0; i < size; i += 2) {
+            res[i] = 1;
+        }
+        return res;
+    }
     
     @Test
     public void testDecompress() throws IOException {
@@ -83,13 +91,14 @@ public class LZWTest {
         testDecompress(new byte[]{0,1,0,1,0,1,0});
         testDecompress(new byte[]{0,1,2,3,2,3,4,3,5,4,1,2,3});
         testDecompress(new byte[]{0,1,2,3,4,5,6,7,8,9});
-        testDecompress(randomData(1000, false));
-        testDecompress(randomData(1000, true));
+        testDecompress(randomData(10000, false));
+        testDecompress(randomData(10000, true));
+        testDecompress(alternatingData(100));
     }
 
     @Test
     public void testDecompressFile() throws IOException {
-        testDecompressFile(randomData(1000, false));
-        testDecompressFile(randomData(1000, true));
+        testDecompressFile(randomData(10000, false));
+        testDecompressFile(randomData(10000, true));
     }
 }

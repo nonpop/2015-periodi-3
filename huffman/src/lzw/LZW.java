@@ -35,27 +35,30 @@ public class LZW {
     }
 
     public static void decompress(BitInputStream ins, OutputStream outs) throws IOException {
-        HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
+        int lastCode = (int)Math.pow(2, codeSize) - 1;
+        ArrayList<ArrayList<Integer>> dict = new ArrayList<>(lastCode + 1);
         for (int i = 0; i < 256; ++i) {
-            dict.put(i, new ArrayList<>(Arrays.asList(i)));
+            dict.add(i, new ArrayList<>(Arrays.asList(i)));
         }
         ArrayList<Integer> last = new ArrayList<>();
         int nextCode = 256;
-        int lastCode = (int)Math.pow(2, codeSize) - 1;
 
         while (true) {
             Integer code = ins.readBits(codeSize);
             if (code == null) {
                 break;
             }
-            if (dict.containsKey(code)) {
+            if (dict.get(code) != null && (code != 256 || nextCode > 256)) {
                 ArrayList<Integer> cur = new ArrayList<>(dict.get(code));
                 for (int i : cur) {
                     outs.write(i);
                 }
                 last.add(cur.get(0));
-                if (!dict.containsValue(last)) {
-                    dict.put(nextCode++, last);
+                if (!dict.contains(last)) {
+                    dict.add(nextCode++, last);
+                    if (nextCode > lastCode) {
+                        nextCode = 256;
+                    }
                 }
                 last = cur;
             } else {
@@ -65,6 +68,9 @@ public class LZW {
                     outs.write(i);
                 }
                 dict.put(nextCode++, cur);
+                if (nextCode > lastCode) {
+                    nextCode = 256;
+                }
                 last = cur;
             }
         }
