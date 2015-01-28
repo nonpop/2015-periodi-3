@@ -24,4 +24,8 @@ public class LZWDictionaryEntry {
     public boolean isValid() {
         return code >= 0;
     }
+
+    public void invalidate() {
+        code = -1;
+    }
 }
