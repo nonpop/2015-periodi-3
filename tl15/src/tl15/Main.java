@@ -38,8 +38,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         //args = new String[]{ "-hc", "test.orig", "test.hc" };
         //args = new String[]{ "-hd", "test.hc", "test.hd" };
-        args = new String[]{ "-lc", "test.orig", "test.lc" };
-        //args = new String[]{ "-ld", "test.lc", "test.ld" };
+        //args = new String[]{ "-lc", "test.orig", "test.lc" };
+        args = new String[]{ "-ld", "test.lc", "test.ld" };
         if (args.length != 3) {
             usage();
         } else {

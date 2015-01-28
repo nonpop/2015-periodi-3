@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class LZW {
     public final static int codeSize = 12;
@@ -41,14 +43,8 @@ public class LZW {
 
     public static void decompress(BitInputStream ins, OutputStream outs) throws IOException {
         int lastCode = (int)Math.pow(2, codeSize) - 1;
-        ArrayList<ArrayList<Integer>> dict = new ArrayList<>(lastCode + 1);
-        for (int i = 0; i < lastCode + 1; ++i) {
-            if (i < 256) {
-                dict.add(new ArrayList<>(Arrays.asList(i)));
-            } else {
-                dict.add(null);
-            }
-        }
+        HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
+        HashSet<ArrayList<Integer>> values = new HashSet<>();
         ArrayList<Integer> last = new ArrayList<>();
         int nextCode = 256;
 
@@ -56,24 +52,30 @@ public class LZW {
         int outputSize = 0;
         while (true) {
             if (nextCode == 256) {
-                for (int i = 256; i < dict.size(); ++i) {
-                    dict.set(i, null);
-                }
+                dict.clear();
+                values.clear();
             }
             Integer code = ins.readBits(codeSize);
             if (code == null) {
                 break;
             }
             inputSize += codeSize;
-            if (dict.get(code) != null && (code != 256 || nextCode > 256)) {
-                ArrayList<Integer> cur = new ArrayList<>(dict.get(code));
+            if (code < 256 || (dict.get(code) != null && (code != 256 || nextCode > 256))) {
+                ArrayList<Integer> cur;
+                if (code < 256) {
+                    cur = new ArrayList<>(Arrays.asList(code));
+                } else {
+                    cur = new ArrayList<>(dict.get(code));
+                }
                 for (int i : cur) {
                     outs.write(i);
                 }
                 outputSize += cur.size();
                 last.add(cur.get(0));
-                if (!dict.contains(last)) {
-                    dict.set(nextCode++, new ArrayList<>(last));
+                if (last.size() > 1 && !values.contains(last)) {
+                    ArrayList<Integer> copy = new ArrayList<>(last);
+                    dict.put(nextCode++, copy);
+                    values.add(copy);
                     if (nextCode > lastCode) {
                         nextCode = 256;
                     }
@@ -86,7 +88,9 @@ public class LZW {
                     outs.write(i);
                 }
                 outputSize += cur.size();
-                dict.set(nextCode++, new ArrayList<>(cur));
+                ArrayList<Integer> copy = new ArrayList<>(last);
+                dict.put(nextCode++, copy);
+                values.add(copy);
                 if (nextCode > lastCode) {
                     nextCode = 256;
                 }

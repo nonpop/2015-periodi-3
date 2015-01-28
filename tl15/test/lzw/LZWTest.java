@@ -100,15 +100,14 @@ public class LZWTest {
         testDecompress(new byte[]{0,1,0,1,0,1,0});
         testDecompress(new byte[]{0,1,2,3,2,3,4,3,5,4,1,2,3});
         testDecompress(new byte[]{0,1,2,3,4,5,6,7,8,9});
-        testDecompress(randomData(1000, false));
-        testDecompress(randomData(1000, true));
-        testDecompress(consecutiveData(1000));
-        testDecompress(alternatingData(1000));
+        testDecompress(randomData(100000, false));
+        testDecompress(randomData(100000, true));
+        testDecompress(consecutiveData(100000));
+        testDecompress(alternatingData(100000));
     }
 
     @Test
     public void testDecompressFile() throws IOException {
-        testDecompressFile(randomData(10000, false));
-        testDecompressFile(randomData(10000, true));
+        testDecompressFile(randomData(876000, false));
     }
 }
