@@ -225,49 +225,6 @@ public class Huffman {
     }
 
     /**
-     * Write a list of bits to a stream. If the number of bits is 8*q + r, where 
-     * r is in (0,8), then the last 8-r bits written will be garbage.
-     * @param outs
-     * @param bits
-     * @throws IOException 
-     */
-    public static void writeBits(OutputStream outs, ArrayList<Boolean> bits) throws IOException {
-        byte b = 0;
-        int pos = 0;
-        for (boolean bit : bits) {
-            if (pos == 8) {
-                outs.write(b);
-                pos = 0;
-            }
-            int mask = 0x80 >> pos;
-            if (bit) {
-                b |= mask;
-            } else {
-                b &= ~mask;
-            }
-            ++pos;
-        }
-        outs.write(b);
-    }
-
-    /**
-     * Read a list of bits from a stream. The number of bits read is always divisible by 8.
-     * @param ins
-     * @return
-     * @throws IOException 
-     */
-    public static ArrayList<Boolean> readBits(InputStream ins) throws IOException {
-        ArrayList<Boolean> res = new ArrayList<>();
-        int c;
-        while ((c = ins.read()) != -1) {
-            for (int i = 0; i < 8; ++i) {
-                res.add((c & (0x80 >> i)) > 0);
-            }
-        }
-        return res;
-    }
-    
-    /**
      * Calculate the number of characters from the frequency table.
      * @param freqs The frequency table.
      * @return The sum of all frequencies.
