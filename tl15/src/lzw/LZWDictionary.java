@@ -39,14 +39,19 @@ public class LZWDictionary {
 
     public void reset() {
         for (LZWDictionaryEntry child : root.children) {
-            child.children = new LZWDictionaryEntry[256];
+            for (int i = 0; i < 256; ++i) {
+                if (child.children[i] != null) {
+                    child.children[i].invalidate();
+                }
+            }
         }
+        nextCode = 256;
     }
 
     public int getCode(List<Integer> string) {
         LZWDictionaryEntry dict = root;
         for (int next : string) {
-            if (dict.children[next] == null) {
+            if (dict.children[next] == null || !dict.children[next].isValid()) {
                 return -1;
             }
             dict = dict.children[next];
