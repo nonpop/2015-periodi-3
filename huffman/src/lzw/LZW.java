@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class LZW {
-    public final static int codeSize = 16;
+    public final static int codeSize = 12;
     
     public static void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary(codeSize);
@@ -29,7 +29,7 @@ public class LZW {
                 string.add(b);
             }
             if (inputSize % 10240 == 0) {
-                System.out.println(inputSize / 1024 + "K compressed into " + outs.getBitCount() / 1024 + "K");
+                System.out.println(inputSize / 1024 + "K compressed into " + (outs.getBitCount() / 8) / 1024 + "K");
             }
         }
         if (!string.isEmpty()) {
