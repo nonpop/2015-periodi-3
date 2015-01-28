@@ -5,3 +5,6 @@
 /huffman/build/
 /huffman/.jacocoverage/
 /huffman/dist/
+
+/huffman/test.*
+
