@@ -253,7 +253,7 @@ public class Huffman {
         writeHeader(outs, freqs, compressedBits.getBitCount());
         outs.write(compressedBytes.toByteArray());
 
-        System.out.println("Compressed/original = " + 100 * (compressedBytes.size() / 8.0 + 8 + 256*4) / sizeFromFreqs(freqs) + "%");
+        System.out.println("Compressed/original = " + 100 * (compressedBits.getBitCount() / 8.0 + 8 + 256*4) / sizeFromFreqs(freqs) + " %");
     }
 
     /**

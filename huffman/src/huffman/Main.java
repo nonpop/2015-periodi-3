@@ -3,37 +3,67 @@ package huffman;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import lzw.LZW;
 
 public class Main {
-    public static void processFile(String inp, String outp, boolean compress) throws IOException {
-        try (FileInputStream ins = new FileInputStream(inp);
-             FileOutputStream outs = new FileOutputStream(outp))
+    public static void processFile(String inp, String outp, boolean compress, boolean lzw) throws IOException {
+        try (InputStream ins = new ResettableFileInputStream(inp);
+             OutputStream outs = new FileOutputStream(outp))
         {
             if (compress) {
-                Huffman.compressFile(ins, outs);
+                if (lzw) {
+                    LZW.compressFile(ins, outs);
+                } else {
+                    Huffman.compressFile(ins, outs);
+                }
             } else {
-                Huffman.decompressFile(ins, outs);
+                if (lzw) {
+                    LZW.decompressFile(ins, outs);
+                } else {
+                    Huffman.decompressFile(ins, outs);
+                }
             }
         }
     }
 
     public static void usage() {
-        System.out.println("To compress 'infile' to 'outfile': java Huffman -c infile outfile");
-        System.out.println("To decompress 'infile' to 'outfile': java Huffman -d infile outfile");
+        System.out.println("To compress 'infile' to 'outfile' using Huffman coding: java Huffman -hc infile outfile");
+        System.out.println("To decompress 'infile' to 'outfile' using Huffman coding: java Huffman -hd infile outfile");
+        System.out.println("To compress 'infile' to 'outfile' using LZW coding: java Huffman -lc infile outfile");
+        System.out.println("To decompress 'infile' to 'outfile' using LZW coding: java Huffman -ld infile outfile");
     }
     
     public static void main(String[] args) throws IOException {
-        //args = new String[]{ "-c", "test.orig", "test.compressed" };
-        //args = new String[]{ "-d", "test.compressed", "test.decompressed" };
+//        InputStream ins = new FileInputStream("test.orig");
+//        byte[] data = new byte[1024];
+//        for (int i = 0; i < 1024; ++i) {
+//            data[i] = (byte) ins.read();
+//        }
+        //args = new String[]{ "-hc", "test.orig", "test.hc" };
+        //args = new String[]{ "-hd", "test.hc", "test.hd" };
+        args = new String[]{ "-lc", "test.orig", "test.lc" };
+        //args = new String[]{ "-ld", "test.lc", "test.ld" };
         if (args.length != 3) {
             usage();
         } else {
-            if (args[0].equals("-c")) {
-                processFile(args[1], args[2], true);
-            } else if (args[0].equals("-d")) {
-                processFile(args[1], args[2], false);
-            } else {
-                usage();
+            switch (args[0]) {
+                case "-hc":
+                    processFile(args[1], args[2], true, false);
+                    break;
+                case "-hd":
+                    processFile(args[1], args[2], false, false);
+                    break;
+                case "-lc":
+                    processFile(args[1], args[2], true, true);
+                    break;
+                case "-ld":
+                    processFile(args[1], args[2], false, true);
+                    break;
+                default:
+                    usage();
+                    break;
             }
         }
     }

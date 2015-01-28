@@ -6,8 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -56,12 +54,26 @@ public class LZWTest {
         LZW.decompress(new BitInputStream(ins), outs);
         assertArrayEquals(data, outs.toByteArray());
     }
+
+    public void testDecompressFile(byte[] data) throws IOException {
+        ByteArrayInputStream ins = new ByteArrayInputStream(data);
+        ByteArrayOutputStream outs = new ByteArrayOutputStream();
+        LZW.compressFile(ins, outs);
+        ins = new ByteArrayInputStream(outs.toByteArray());
+        outs = new ByteArrayOutputStream();
+        LZW.decompressFile(ins, outs);
+        assertArrayEquals(data, outs.toByteArray());
+    }
     
-    private byte[] randomData(int size) {
+    private byte[] randomData(int size, boolean nonnegative) {
         byte[] res = new byte[size];
         Random r = new Random(42);
         for (int i = 0; i < size; ++i) {
-            res[i] = (byte)(r.nextInt(256) - 128);
+            if (nonnegative) {
+                res[i] = (byte)(r.nextInt(128));
+            } else {
+                res[i] = (byte)(r.nextInt(256) - 128);
+            }
         }
         return res;
     }
@@ -77,6 +89,13 @@ public class LZWTest {
         testDecompress(new byte[]{0,1,0,1,0,1,0});
         testDecompress(new byte[]{0,1,2,3,2,3,4,3,5,4,1,2,3});
         testDecompress(new byte[]{0,1,2,3,4,5,6,7,8,9});
-        testDecompress(randomData(100));
+        testDecompress(randomData(1000, false));
+        testDecompress(randomData(1000, true));
+    }
+
+    @Test
+    public void testDecompressFile() throws IOException {
+        testDecompressFile(randomData(1000, false));
+        testDecompressFile(randomData(1000, true));
     }
 }
