@@ -1,24 +1,26 @@
 package huffman;
 
+import bitstream.BitInputStream;
+import bitstream.BitOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class HuffmanTest {
-    private static ArrayList<Integer> helloData() {
-        return new ArrayList<>(Arrays.asList(72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100));
-    }
+    private static final byte[] helloData = new byte[]{72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100};
 
-    private static ArrayList<Integer> randomData(int size) {
-        ArrayList<Integer> res = new ArrayList<>();
+    private static byte[] randomData(int size, int[] freqs) {
+        byte[] res = new byte[size];
         Random r = new Random(42);
         for (int i = 0; i < size; ++i) {
-            res.add(r.nextInt(256));
+            int next = r.nextInt(256);
+            res[i] = (byte)(next & 0xff);
+            ++freqs[next];
         }
         return res;
     }
@@ -45,20 +47,16 @@ public class HuffmanTest {
         return result;
     }
     
-    private static InputStream dataStream(ArrayList<Integer> data) {
-        return new ByteArrayInputStream(asByteArray(data));
-    }
-
     @Test
-    public void testCalculateFrequencies() {
-        ArrayList<Integer> data = new ArrayList<>();
+    public void testCalculateFrequencies() throws IOException {
+        byte[] data = new byte[]{};
         int[] expResult = new int[256];
-        int[] result = Huffman.calculateFrequencies(data);
+        int[] result = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
         assertArrayEquals(expResult, result);
 
-        data = helloData();
+        data = helloData;
         expResult = helloFreqs();
-        result = Huffman.calculateFrequencies(data);
+        result = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
         assertArrayEquals(expResult, result);
     }
 
@@ -156,41 +154,40 @@ public class HuffmanTest {
         checkCodes(freqs, tree);
     }
 
+    private void testCompressDecompress(byte[] data, int[] freqs) throws IOException {
+        ByteArrayOutputStream outs = new ByteArrayOutputStream();
+        BitOutputStream bouts = new BitOutputStream(outs);
+        Huffman.compress(new ByteArrayInputStream(data), freqs, bouts);
+        bouts.close();
+        ByteArrayInputStream ins = new ByteArrayInputStream(outs.toByteArray());
+        outs = new ByteArrayOutputStream();
+        Huffman.decompress(new BitInputStream(ins), freqs, outs);
+        assertArrayEquals(data, outs.toByteArray());
+    }
     @Test
-    public void testCompressAndDecompress() {
-        ArrayList<Integer> data = new ArrayList<>();
+    public void testCompressAndDecompress() throws IOException {
         int[] freqs = new int[256];
-        assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
-
-        data = new ArrayList<>(Arrays.asList(1));
-        freqs = new int[256];
+        testCompressDecompress(new byte[0], freqs);
         freqs[1] = 1;
-        assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
-
-        data = new ArrayList<>(Arrays.asList(1, 1));
-        freqs = new int[256];
+        testCompressDecompress(new byte[]{1}, freqs);
         freqs[1] = 2;
-        assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
-
-        data = helloData();
-        freqs = helloFreqs();
-        assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
+        testCompressDecompress(new byte[]{1, 1}, freqs);
+        testCompressDecompress(helloData, helloFreqs());
 
         System.out.print("Random: ");
-        data = randomData(100000);
-        freqs = Huffman.calculateFrequencies(data);
-        assertEquals(data, Huffman.decompress(Huffman.compress(data), freqs));
+        freqs = new int[256];
+        byte[] data = randomData(100000, freqs);
+        testCompressDecompress(data, freqs);
     }
 
     @Test
     public void testCompressAndDecompressStream() throws Exception {
-        InputStream ins = dataStream(helloData());
+        InputStream ins = new ByteArrayInputStream(helloData);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         Huffman.compressStream(ins, outs);
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
         Huffman.decompressStream(ins, outs);
-        byte[] data = asByteArray(helloData());
-        assertArrayEquals(data, outs.toByteArray());
+        assertArrayEquals(helloData, outs.toByteArray());
     }
 }

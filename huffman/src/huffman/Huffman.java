@@ -99,7 +99,7 @@ public class Huffman {
             ++inBytes;
         }
 
-        System.out.println("Compressed/original (no headers) = " + 100 * (outs.getByteCount() / 8.0) / inBytes + "%");
+        System.out.println("Compressed/original (no headers) = " + 100 * (outs.getBitCount() / 8.0) / inBytes + "%");
     }
 
     /**
@@ -137,19 +137,21 @@ public class Huffman {
         
         // The original input had at least two different characters so now all
         // codes have a length of at least one bit.
+        int bytesToWrite = sizeFromFreqs(freqs);
         HuffmanTreeNode node = tree.root;
-        while (true) {
-            Integer bit = bits.readBits(1);
-            if (bit == null) {
-                break;
-            }
-            if (bit == 1) {
+        while (bytesToWrite > 0) {
+            int bit = bits.readBits(1);
+//            if (bit == null) {
+//                break;
+//            }
+            if (bit == 0) {
                 node = node.left;
             } else {
                 node = node.right;
             }
             if (node.left == null) {
                 outs.write(node.data);
+                --bytesToWrite;
                 node = tree.root;
             }
         }
@@ -187,7 +189,6 @@ public class Huffman {
     /**
      * Write header information to a stream. The header consists of:
      *  - the four headerMagik bytes
-     *  - the number of bits in the compressed data as a 4-byte integer
      *  - a table of 256 4-byte integers containing the frequency data
      * @param outs The stream.
      * @param freqs The frequencies.
@@ -196,7 +197,6 @@ public class Huffman {
      */
     public static void writeHeader(OutputStream outs, int[] freqs, int actualBitCount) throws IOException {
         outs.write(headerMagik);
-        writeInt(outs, actualBitCount);
         for (int f : freqs) {
             writeInt(outs, f);
         }
@@ -206,11 +206,10 @@ public class Huffman {
      * Read header information from a stream.
      * @see writeHeader()
      * @param ins The stream.
-     * @param freqs An array of 256 integers. The frequencies are written here and the original data is destroyed.
-     * @return The bit count.
+     * @return The frequencies.
      * @throws IOException 
      */
-    public static int readHeader(InputStream ins, int[] freqs) throws IOException {
+    public static int[] readHeader(InputStream ins) throws IOException {
         for (int i = 0; i < headerMagik.length; ++i) {
 // I'm too lazy to write a test to cover this now.
 //            if (ins.read() != headerMagik[i]) {
@@ -218,11 +217,11 @@ public class Huffman {
 //            }
             ins.read();
         }
-        int actualBitCount = readInt(ins);
+        int[] freqs = new int[256];
         for (int i = 0; i < 256; ++i) {
             freqs[i] = readInt(ins);
         }
-        return actualBitCount;
+        return freqs;
     }
 
     /**
@@ -269,44 +268,46 @@ public class Huffman {
     }
     
     /**
+     * Calculate the number of characters from the frequency table.
+     * @param freqs The frequency table.
+     * @return The sum of all frequencies.
+     */
+    private static int sizeFromFreqs(int[] freqs) {
+        int size = 0;
+        for (int f : freqs) {
+            size += f;
+        }
+        return size;
+    }
+
+    /**
      * Compress a file into another file.
      * @param ins Input stream. Must be resettable.
      * @param outs Output stream. Will contain a header.
      * @throws IOException 
      */
     public static void compressStream(InputStream ins, OutputStream outs) throws IOException {
-        ArrayList<Integer> data = new ArrayList<>();
-        int c;
-        while ((c = ins.read()) != -1) {
-            data.add(c);
-        }
-
         int[] freqs = calculateFrequencies(ins);
         ins.reset();
-        BitOutputStream compressed = new BitOutputStream(new ByteArrayOutputStream());
-        compress(ins, freqs, compressed);
-        writeHeader(outs, freqs, compressed.getByteCount());
-        writeBits(outs, compressed);
+        ByteArrayOutputStream compressedBytes = new ByteArrayOutputStream();
+        BitOutputStream compressedBits = new BitOutputStream(compressedBytes);
+        compress(ins, freqs, compressedBits);
+        compressedBits.close();
+        writeHeader(outs, freqs, compressedBits.getBitCount());
+        outs.write(compressedBytes.toByteArray());
 
-        System.out.println("Compressed/original = " + 100 * (compressed.size() / 8.0 + 8 + 256*4) / data.size() + "%");
+        System.out.println("Compressed/original = " + 100 * (compressedBytes.size() / 8.0 + 8 + 256*4) / sizeFromFreqs(freqs) + "%");
     }
 
     /**
-     * Decompress a stream into another stream.
-     * @param ins Input stream.
+     * Decompress a file into another file.
+     * @param ins Input stream. Must contain a header.
      * @param outs Output stream.
      * @throws IOException 
      */
     public static void decompressStream(InputStream ins, OutputStream outs) throws IOException {
-        int freqs[] = new int[256];
-        int dataSize = readHeader(ins, freqs);
-        ArrayList<Boolean> compressed = readBits(ins);
-        while (compressed.size() > dataSize) {
-            compressed.remove(compressed.size() - 1);
-        }
-        ArrayList<Integer> data = decompress(compressed, freqs);
-        for (int c : data) {
-            outs.write(c);
-        }
+        BitInputStream compressed = new BitInputStream(ins);
+        int freqs[] = readHeader(compressed);
+        decompress(compressed, freqs, outs);
     }
 }

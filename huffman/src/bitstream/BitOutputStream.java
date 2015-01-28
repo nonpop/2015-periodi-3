@@ -20,7 +20,7 @@ public class BitOutputStream extends OutputStream {
     /**
      * Keeps track of how many bits have been written to the stream.
      */
-    private int byteCount = 0;
+    private int bitCount = 0;
 
     /**
      * 
@@ -49,7 +49,7 @@ public class BitOutputStream extends OutputStream {
             }
             ++bytePos;
         }
-        byteCount += n;
+        bitCount += n;
     }
 
     /**
@@ -72,8 +72,8 @@ public class BitOutputStream extends OutputStream {
      * 
      * @return The number of bits written to the stream. Might not be a multiple of 8.
      */
-    public int getByteCount() {
-        return byteCount;
+    public int getBitCount() {
+        return bitCount;
     }
 
     @Override
