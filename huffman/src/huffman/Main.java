@@ -1,6 +1,5 @@
 package huffman;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,16 +35,10 @@ public class Main {
     }
     
     public static void main(String[] args) throws IOException {
-//        InputStream ins = new FileInputStream("test.orig");
-//        byte[] data = new byte[1024];
-//        for (int i = 0; i < 1024; ++i) {
-//            data[i] = (byte) ins.read();
-//        }
         //args = new String[]{ "-hc", "test.orig", "test.hc" };
         //args = new String[]{ "-hd", "test.hc", "test.hd" };
         //args = new String[]{ "-lc", "test.orig", "test.lc" };
-        //args = new String[]{ "-ld", "test.lc", "test.ld" };
-        System.out.println(  "" + (((int)0x80) & 0xff) + "  " + (byte)(((int)128))  );
+        args = new String[]{ "-ld", "test.lc", "test.ld" };
         if (args.length != 3) {
             usage();
         } else {

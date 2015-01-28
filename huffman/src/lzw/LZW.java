@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class LZW {
-    public final static int codeSize = 9;
+    public final static int codeSize = 16;
     
     public static void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary(codeSize);
@@ -27,6 +27,9 @@ public class LZW {
                 dict.addString(string);
                 string.clear();
                 string.add(b);
+            }
+            if (inputSize % 10240 == 0) {
+                System.out.println(inputSize / 1024 + "K compressed into " + outs.getBitCount() / 1024 + "K");
             }
         }
         if (!string.isEmpty()) {
@@ -49,6 +52,8 @@ public class LZW {
         ArrayList<Integer> last = new ArrayList<>();
         int nextCode = 256;
 
+        int inputSize = 0;
+        int outputSize = 0;
         while (true) {
             if (nextCode == 256) {
                 for (int i = 256; i < dict.size(); ++i) {
@@ -59,11 +64,13 @@ public class LZW {
             if (code == null) {
                 break;
             }
+            inputSize += codeSize;
             if (dict.get(code) != null && (code != 256 || nextCode > 256)) {
                 ArrayList<Integer> cur = new ArrayList<>(dict.get(code));
                 for (int i : cur) {
                     outs.write(i);
                 }
+                outputSize += cur.size();
                 last.add(cur.get(0));
                 if (!dict.contains(last)) {
                     dict.set(nextCode++, new ArrayList<>(last));
@@ -78,11 +85,15 @@ public class LZW {
                 for (int i : cur) {
                     outs.write(i);
                 }
+                outputSize += cur.size();
                 dict.set(nextCode++, new ArrayList<>(cur));
                 if (nextCode > lastCode) {
                     nextCode = 256;
                 }
                 last = cur;
+            }
+            if ((inputSize / 8) % 10240 == 0) {
+                System.out.println((inputSize / 8) / 1024 + "K decompressed into " + outputSize / 1024 + "K");
             }
         }
     }
