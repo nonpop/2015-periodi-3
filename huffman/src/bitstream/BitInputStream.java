@@ -3,7 +3,7 @@ package bitstream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class BitInputStream {
+public class BitInputStream extends InputStream {
     private InputStream ins;
 
     /**
@@ -52,13 +52,17 @@ public class BitInputStream {
         return result;
     }
 
-    /**
-     * Closes the stream.
-     */
-    void close() throws IOException {
+    @Override
+    public void close() throws IOException {
         if (ins != null) {
             ins.close();
             ins = null;
         }
+    }
+
+    @Override
+    public int read() throws IOException {
+        Integer result = readBits(8);
+        return (result == null)? -1 : result;
     }
 }

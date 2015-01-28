@@ -3,7 +3,7 @@ package bitstream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class BitOutputStream {
+public class BitOutputStream extends OutputStream {
     private OutputStream outs;
 
     /**
@@ -55,8 +55,10 @@ public class BitOutputStream {
     /**
      * Closes the stream making sure any remaining bits are written. If there
      * are n=1..7 bits remaining, then the last 8-n bits written are zeroes.
+     * @throws java.io.IOException
      */
-    void close() throws IOException {
+    @Override
+    public void close() throws IOException {
         if (outs != null) {
             if (bytePos > 0) {
                 outs.write(curByte);
@@ -72,5 +74,10 @@ public class BitOutputStream {
      */
     public int getByteCount() {
         return byteCount;
+    }
+
+    @Override
+    public void write(int i) throws IOException {
+        writeBits(8, i);
     }
 }
