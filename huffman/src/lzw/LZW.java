@@ -1,45 +1,52 @@
 package lzw;
 
+import bitstream.BitInputStream;
+import bitstream.BitOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 public class LZW {
-    private final static int codeSize = 9;
+    public final static int codeSize = 9;
     
-    public static ArrayList<Integer> compress(ArrayList<Integer> data) {
-        ArrayList<Integer> compressed = new ArrayList<>();
+    public static void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary(codeSize);
         ArrayList<Integer> string = new ArrayList<>();
-        for (int i = 0; i < data.size(); ++i) {
-            string.add(data.get(i));
+        int b;
+        while ((b = ins.read()) != -1) {
+            string.add(b);
             if (dict.getCode(string) == -1) {
-                compressed.add(dict.getCode(string.subList(0, string.size() - 1)));
+                outs.writeBits(codeSize, dict.getCode(string.subList(0, string.size() - 1)));
                 dict.addString(string);
-                int last = string.get(string.size() - 1);
                 string.clear();
-                string.add(last);
+                string.add(b);
             }
         }
         if (!string.isEmpty()) {
-            compressed.add(dict.getCode(string));
+            outs.writeBits(codeSize, dict.getCode(string));
         }
-        return compressed;
     }
 
-    public static ArrayList<Integer> decompress(ArrayList<Integer> data) {
-        ArrayList<Integer> decompressed = new ArrayList<>();
+    public static void decompress(BitInputStream ins, OutputStream outs) throws IOException {
         HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
         for (int i = 0; i < 256; ++i) {
             dict.put(i, new ArrayList<>(Arrays.asList(i)));
         }
         ArrayList<Integer> last = new ArrayList<>();
         int nextCode = 256;
-        for (int i = 0; i < data.size(); ++i) {
-            int code = data.get(i);
+        while (true) {
+            Integer code = ins.readBits(codeSize);
+            if (code == null) {
+                break;
+            }
             if (dict.containsKey(code)) {
                 ArrayList<Integer> cur = new ArrayList<>(dict.get(code));
-                decompressed.addAll(cur);
+                for (int i : cur) {
+                    outs.write(i);
+                }
                 last.add(cur.get(0));
                 if (!dict.containsValue(last)) {
                     dict.put(nextCode++, last);
@@ -48,11 +55,12 @@ public class LZW {
             } else {
                 ArrayList<Integer> cur = new ArrayList<>(last);
                 cur.add(cur.get(0));
-                decompressed.addAll(cur);
+                for (int i : cur) {
+                    outs.write(i);
+                }
                 dict.put(nextCode++, cur);
                 last = cur;
             }
         }
-        return decompressed;
     }
 }
