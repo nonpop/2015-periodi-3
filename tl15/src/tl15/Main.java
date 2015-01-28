@@ -1,5 +1,7 @@
-package huffman;
+package tl15;
 
+import huffman.Huffman;
+import huffman.ResettableFileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,16 +30,15 @@ public class Main {
     }
 
     public static void usage() {
-        System.out.println("To compress 'infile' to 'outfile' using Huffman coding: java Huffman -hc infile outfile");
-        System.out.println("To decompress 'infile' to 'outfile' using Huffman coding: java Huffman -hd infile outfile");
-        System.out.println("To compress 'infile' to 'outfile' using LZW coding: java Huffman -lc infile outfile");
-        System.out.println("To decompress 'infile' to 'outfile' using LZW coding: java Huffman -ld infile outfile");
+        System.out.println("Usage: java -jar tl15 -[hl][cd] infile outfile");
+        System.out.println("h selects Huffman coding, l selects LZW coding");
+        System.out.println("c compresses, d decompresses");
     }
     
     public static void main(String[] args) throws IOException {
         //args = new String[]{ "-hc", "test.orig", "test.hc" };
         //args = new String[]{ "-hd", "test.hc", "test.hd" };
-        args = new String[]{ "-lc", "test.orig", "test.lc" };
+        //args = new String[]{ "-lc", "test.orig", "test.lc" };
         //args = new String[]{ "-ld", "test.lc", "test.ld" };
         if (args.length != 3) {
             usage();
