@@ -12,15 +12,6 @@ public class LZWDictionaryEntry {
         return code;
     }
 
-    public void clear() {
-        code = -1;
-        for (LZWDictionaryEntry child : children) {
-            if (child != null) {
-                child.clear();
-            }
-        }
-    }
-
     public boolean isValid() {
         return code >= 0;
     }

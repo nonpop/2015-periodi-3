@@ -5,9 +5,8 @@ import java.util.List;
 
 /**
  * Implements an LZW dictionary with fixed-size code words. The code word size
- * is given to the constructor. When the dictionary is full and a new string is
- * added, the oldest added item is replaced.
- *
+ * is given to the constructor. When the dictionary is full it must be reset
+ * before a new string can be added.
  */
 public class LZWDictionary {
     private final int lastCode;
@@ -27,6 +26,13 @@ public class LZWDictionary {
         }
     }
 
+    /**
+     * Add a new string into the dictionary. It is assumed that the prefix
+     * (all but the last character) is already in the dictionary but the string
+     * itself is not. It is also assumed that is not full, i.e. that isFull()
+     * returns false.
+     * @param string The string.
+     */
     public void addString(ArrayList<Integer> string) {
         LZWDictionaryEntry dict = root;
         for (int i = 0; i < string.size() - 1; ++i) {
@@ -37,6 +43,10 @@ public class LZWDictionary {
         dict.children[last] = entry;
     }
 
+    /**
+     * Reset the dictionary. After this the dictionary will only contain
+     * the 1-length strings.
+     */
     public void reset() {
         for (LZWDictionaryEntry child : root.children) {
             for (int i = 0; i < 256; ++i) {
@@ -48,6 +58,11 @@ public class LZWDictionary {
         nextCode = 256;
     }
 
+    /**
+     * Get the code associated to the given string.
+     * @param string The string.
+     * @return The code.
+     */
     public int getCode(List<Integer> string) {
         LZWDictionaryEntry dict = root;
         for (int next : string) {
@@ -59,6 +74,10 @@ public class LZWDictionary {
         return dict.getCode();
     }
 
+    /**
+     * Check if the dictionary is full.
+     * @return True if the dictionary is full, false otherwise.
+     */
     public boolean isFull() {
         return nextCode > lastCode;
     }

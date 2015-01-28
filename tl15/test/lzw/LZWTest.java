@@ -108,6 +108,6 @@ public class LZWTest {
 
     @Test
     public void testDecompressFile() throws IOException {
-        testDecompressFile(randomData(876000, false));
+        testDecompressFile(randomData(1000000, false));
     }
 }

@@ -53,14 +53,6 @@ public class BitInputStream extends InputStream {
     }
 
     @Override
-    public void close() throws IOException {
-        if (ins != null) {
-            ins.close();
-            ins = null;
-        }
-    }
-
-    @Override
     public int read() throws IOException {
         Integer result = readBits(8);
         return (result == null)? -1 : result;

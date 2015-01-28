@@ -15,7 +15,7 @@ public class BitOutputStream extends OutputStream {
     private int bufferBit = 0;
 
     /** Size of the buffer */
-    private static final int bufferSize = 1024;
+    private static final int bufferSize = 102400;
     
     /**
      * The buffer. <code>bufferPos</code> is a 0-based index into the *bits* of this.
