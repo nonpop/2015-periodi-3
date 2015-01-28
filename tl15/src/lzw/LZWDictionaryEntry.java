@@ -1,5 +1,8 @@
 package lzw;
 
+/**
+ * An entry in LZWDictionary.
+ */
 public class LZWDictionaryEntry {
     private int code;
     public LZWDictionaryEntry[] children = new LZWDictionaryEntry[256];

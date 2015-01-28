@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import lzw.LZW;
 
+/**
+ * The user interface.
+ */
 public class Main {
     public static void processFile(String inp, String outp, boolean compress, boolean lzw) throws IOException {
         try (InputStream ins = new ResettableFileInputStream(inp);

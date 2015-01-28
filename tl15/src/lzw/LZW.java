@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
+/**
+ * An implementation of LZW-(de)compression.
+ */
 public class LZW {
     public final static int codeSize = 12;
     
