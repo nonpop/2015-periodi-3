@@ -53,6 +53,17 @@ public class BitOutputStream extends OutputStream {
     }
 
     /**
+     * Write bits to the stream.
+     * @param bits The bits to write.
+     * @throws java.io.IOException
+     */
+    public void writeBits(BitVector bits) throws IOException {
+        for (int i = 0; i < bits.size(); ++i) {
+            writeBits(1, bits.get(i)? 1 : 0);
+        }
+    }
+
+    /**
      * Closes the stream making sure any remaining bits are written. If there
      * are n=1..7 bits remaining, then the last 8-n bits written are zeroes.
      * @throws java.io.IOException
