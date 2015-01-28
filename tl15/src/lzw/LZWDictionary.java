@@ -20,8 +20,6 @@ public class LZWDictionary {
     public LZWDictionary(int codeSize) {
         lastCode = (int) Math.pow(2, codeSize) - 1;
         for (int i = 0; i < 256; ++i) {
-            // These are not added to the timeline because we don't want to
-            // replace them ever. Same thing with root.
             root.children[i] = new LZWDictionaryEntry(i);
         }
     }
