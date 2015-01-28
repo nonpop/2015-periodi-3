@@ -243,7 +243,7 @@ public class Huffman {
      * @param outs Output stream. Will contain a header.
      * @throws IOException 
      */
-    public static void compressStream(InputStream ins, OutputStream outs) throws IOException {
+    public static void compressFile(InputStream ins, OutputStream outs) throws IOException {
         int[] freqs = calculateFrequencies(ins);
         ins.reset();
         ByteArrayOutputStream compressedBytes = new ByteArrayOutputStream();
@@ -262,7 +262,7 @@ public class Huffman {
      * @param outs Output stream.
      * @throws IOException 
      */
-    public static void decompressStream(InputStream ins, OutputStream outs) throws IOException {
+    public static void decompressFile(InputStream ins, OutputStream outs) throws IOException {
         BitInputStream compressed = new BitInputStream(ins);
         int freqs[] = readHeader(compressed);
         decompress(compressed, freqs, outs);

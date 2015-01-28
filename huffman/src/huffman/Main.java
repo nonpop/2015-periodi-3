@@ -10,9 +10,9 @@ public class Main {
              FileOutputStream outs = new FileOutputStream(outp))
         {
             if (compress) {
-                Huffman.compressStream(ins, outs);
+                Huffman.compressFile(ins, outs);
             } else {
-                Huffman.decompressStream(ins, outs);
+                Huffman.decompressFile(ins, outs);
             }
         }
     }
