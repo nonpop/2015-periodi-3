@@ -45,7 +45,8 @@ public class LZWDictionary {
     private LZWDictionaryEntry findOldest(LZWDictionaryEntry dict, LZWDictionaryEntry oldest) {
         for (LZWDictionaryEntry child : dict.children) {
             if (child != null) {
-                if (oldest.getAccessTime() < 0 || child.getAccessTime() < oldest.getAccessTime()) {
+                if (oldest.getAccessTime() < 0 || 
+                        (child.getAccessTime() >= 0 && child.getAccessTime() < oldest.getAccessTime())) {
                     oldest = child;
                 }
                 oldest = findOldest(child, oldest);
@@ -70,8 +71,7 @@ public class LZWDictionary {
 
     public int getCode(List<Integer> string) {
         LZWDictionaryEntry dict = root;
-        for (int i = 0; i < string.size(); ++i) {
-            int next = string.get(i);
+        for (int next : string) {
             if (dict.children[next] == null) {
                 return -1;
             }

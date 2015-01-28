@@ -41,6 +41,8 @@ public class LZW {
         }
         ArrayList<Integer> last = new ArrayList<>();
         int nextCode = 256;
+        int lastCode = (int)Math.pow(2, codeSize) - 1;
+
         while (true) {
             Integer code = ins.readBits(codeSize);
             if (code == null) {

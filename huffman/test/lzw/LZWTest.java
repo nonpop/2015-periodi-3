@@ -34,12 +34,6 @@ public class LZWTest {
         testCompress(new int[]{1,256,257,258}, new byte[]{1,1,1,1,1,1,1,1,1,1});
         testCompress(new int[]{0,1,2,3,258,4,3,5,4,257,3}, new byte[]{0,1,2,3,2,3,4,3,5,4,1,2,3});
         testCompress(new int[]{0,1,2,3,4,5,6,7,8,9}, new byte[]{0,1,2,3,4,5,6,7,8,9});
-
-
-//        data = new ArrayList<>(Arrays.asList(0,1,2,3,2,3,4,3,5,4,1,2,3));
-//        expResult = new ArrayList<>(Arrays.asList(0,1,2,3,258,4,3,5,4,257,3));
-//        result = LZW.compress(data);
-//        assertEquals(expResult, result);
     }
 
 
@@ -72,7 +66,7 @@ public class LZWTest {
             if (nonnegative) {
                 res[i] = (byte)(r.nextInt(128));
             } else {
-                res[i] = (byte)(r.nextInt(256) - 128);
+                res[i] = (byte)(r.nextInt(256));
             }
         }
         return res;
