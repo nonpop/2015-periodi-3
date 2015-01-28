@@ -7,14 +7,20 @@ public class BitOutputStream extends OutputStream {
     private OutputStream outs;
 
     /**
-     * Position in the current byte. 8 indicates the current byte must be written to outs.
+     * Current byte in the buffer.
      */
-    private int bytePos = 0;
+    private int bufferByte = 0;
 
+    /** Current bit in the current byte in the buffer. */
+    private int bufferBit = 0;
+
+    /** Size of the buffer */
+    private static final int bufferSize = 1024;
+    
     /**
-     * The current byte. bytePos is a 0-based index into this.
+     * The buffer. <code>bufferPos</code> is a 0-based index into the *bits* of this.
      */
-    private int curByte;
+    private byte[] buffer = new byte[bufferSize];
 
 
     /**
@@ -38,16 +44,21 @@ public class BitOutputStream extends OutputStream {
      */
     public void writeBits(int n, int bits) throws IOException {
         for (int i = n - 1; i >= 0; --i) {
-            if (bytePos == 8) {
-                outs.write(curByte);
-                curByte = 0;
-                bytePos = 0;
+            if (bufferBit == 8) {
+                ++bufferByte;
+                bufferBit = 0;
+            }
+            if (bufferByte == bufferSize) {
+                outs.write(buffer);
+                buffer = new byte[bufferSize];
+                bufferByte = 0;
+                bufferBit = 0;
             }
             int bit = bits & (1 << i);
             if (bit != 0) {     // note: using >0 fails here because signed >:[
-                curByte |= (0x80 >> bytePos);
+                buffer[bufferByte] |= (0x80 >> bufferBit);
             }
-            ++bytePos;
+            ++bufferBit;
         }
         bitCount += n;
     }
@@ -71,9 +82,7 @@ public class BitOutputStream extends OutputStream {
     @Override
     public void close() throws IOException {
         if (outs != null) {
-            if (bytePos > 0) {
-                outs.write(curByte);
-            }
+            outs.write(buffer, 0, bufferByte + ((bufferBit > 0)? 1 : 0));
             outs.close();
             outs = null;
         }
