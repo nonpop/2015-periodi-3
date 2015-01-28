@@ -3,6 +3,9 @@ package bitstream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * A bit input stream.
+ */
 public class BitInputStream extends InputStream {
     private InputStream ins;
 
