@@ -45,7 +45,7 @@ public class HuffmanHeap {
 
     /**
      * Get the right child of a node.
-     * @see left()
+     * @see #left(int)
      */
     private int right(int parent) {
         return parent * 2 + 2;
@@ -101,8 +101,8 @@ public class HuffmanHeap {
 
     /**
      * Return and remove the least element of the heap.
-     * @see peek()
-     * @return 
+     * @see #peek()
+     * @return The least element of the heap.
      */
     public HuffmanTreeNode pop() {
         HuffmanTreeNode min = heap[0];
@@ -115,7 +115,7 @@ public class HuffmanHeap {
      * Add an element to the heap.
      * 
      * @param x The element to add.
-     * @see HuffmanHeap(int)
+     * @see #HuffmanHeap(int)
      */
     public void push(HuffmanTreeNode x) {
         int i = size++;

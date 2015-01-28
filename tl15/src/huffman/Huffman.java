@@ -170,7 +170,7 @@ public class Huffman {
 
     /**
      * Read a 4-byte integer from a stream.
-     * @see writeInt()
+     * @see #writeInt(OutputStream, int)
      * @param ins Stream to read from.
      * @return The integer.
      * @throws IOException 
@@ -201,7 +201,7 @@ public class Huffman {
 
     /**
      * Read header information from a stream.
-     * @see writeHeader()
+     * @see #writeHeader(OutputStream, int[], int)
      * @param ins The stream.
      * @return The frequencies.
      * @throws IOException 
