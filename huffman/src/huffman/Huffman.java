@@ -1,5 +1,8 @@
 package huffman;
 
+import bitstream.BitInputStream;
+import bitstream.BitOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,12 +15,15 @@ import java.util.Collections;
 public class Huffman {
     /**
      * Calculate the frequencies of characters in the input.
-     * @param data A list of input characters. Each element must be between 0..255.
-     * @return An array where the element with index i is the frequency of the character i in data.
+     * @param ins The input stream. All remaining data is consumed.
+     * @return An array where the element with index <code>i</code> is the 
+     *         frequency of the character <code>i</code> in the data.
+     * @throws java.io.IOException
      */
-    public static int[] calculateFrequencies(ArrayList<Integer> data) {
+    public static int[] calculateFrequencies(InputStream ins) throws IOException {
         int[] freqs = new int[256];
-        for (int b : data) {
+        int b;
+        while ((b = ins.read()) != -1) {
             ++freqs[b];
         }
         return freqs;
@@ -77,19 +83,23 @@ public class Huffman {
     /**
      * Compress a list of bytes.
      * 
-     * @param data The input bytes. Must be a list of integers between 0..255.
-     * @return A list of bits containing the compressed data.
+     * @param ins The input data. All remaining data is consumed.
+     * @param freqs The character frequencies for <code>data</code>.
+     * @param outs The bit stream to write the compressed data to.
+     * @throws java.io.IOException
      */
-    public static ArrayList<Boolean> compress(ArrayList<Integer> data) {
-        int[] freqs = calculateFrequencies(data);
+    public static void compress(InputStream ins, int[] freqs, BitOutputStream outs) throws IOException {
         HuffmanTree tree = buildTree(freqs);
-        ArrayList<Boolean> out = new ArrayList<>();
-        for (int b : data) {
-            out.addAll(findCode(tree.leaves[b]));
+        int inBytes = 0;
+        int b;
+        while ((b = ins.read()) != -1) {
+            for (boolean bit : findCode(tree.leaves[b])) {
+                outs.writeBits(1, bit? 1 : 0);
+            }
+            ++inBytes;
         }
 
-        System.out.println("Compressed/original (no headers) = " + 100 * (out.size() / 8.0) / data.size() + "%");
-        return out;
+        System.out.println("Compressed/original (no headers) = " + 100 * (outs.getByteCount() / 8.0) / inBytes + "%");
     }
 
     /**
@@ -97,43 +107,52 @@ public class Huffman {
      * 
      * @param bits The input bits. Must be something produced by compress().
      * @param freqs The frequencies of the bytes in the original input.
-     * @return The decompressed data.
+     * @param outs The stream to append the decompressed data to.
+     * @throws java.io.IOException
      */
 
-    public static ArrayList<Integer> decompress(ArrayList<Boolean> bits, int[] freqs) {
-        ArrayList<Integer> res = new ArrayList<>();
+    public static void decompress(BitInputStream bits, int[] freqs, OutputStream outs) throws IOException {
         HuffmanTree tree = buildTree(freqs);
-        if (bits.isEmpty()) {
-            // All characters in the original input were the same so
-            // we just need to figure out which one it was and how many
-            // of it there were.
-            for (HuffmanTreeNode leaf : tree.leaves) {
-                if (leaf != null) {
-                    // This is the one. Assuming the input data is correct.
-                    for (int i = 0; i < freqs[leaf.data]; ++i) {
-                        res.add(leaf.data);
-                    }
-                    break; // if we return here then the case of empty original input will fail
+        int inputChars = 0;
+        int chr = 0, count = 0;
+        for (int i = 0; i < freqs.length; ++i) {
+            if (freqs[i] > 0) {
+                chr = i;
+                count = freqs[i];
+                ++inputChars;
+                if (inputChars >= 2) {
+                    break;
                 }
             }
-            return res;
+        }
+        if (inputChars <= 1) {
+            // All characters in the original input were the same.
+            if (inputChars == 1) {
+                for (int i = 0; i < count; ++i) {
+                    outs.write(chr);
+                }
+            }
+            return;
         }
         
         // The original input had at least two different characters so now all
         // codes have a length of at least one bit.
         HuffmanTreeNode node = tree.root;
-        for (boolean bit : bits) {
-            if (!bit) {
+        while (true) {
+            Integer bit = bits.readBits(1);
+            if (bit == null) {
+                break;
+            }
+            if (bit == 1) {
                 node = node.left;
             } else {
                 node = node.right;
             }
             if (node.left == null) {
-                res.add(node.data);
+                outs.write(node.data);
                 node = tree.root;
             }
         }
-        return res;
     }
 
     /** Just some random bytes to identify a compressed file. */
@@ -250,9 +269,9 @@ public class Huffman {
     }
     
     /**
-     * Compress a stream into another stream.
-     * @param ins Input stream.
-     * @param outs Output stream.
+     * Compress a file into another file.
+     * @param ins Input stream. Must be resettable.
+     * @param outs Output stream. Will contain a header.
      * @throws IOException 
      */
     public static void compressStream(InputStream ins, OutputStream outs) throws IOException {
@@ -262,8 +281,11 @@ public class Huffman {
             data.add(c);
         }
 
-        ArrayList<Boolean> compressed = compress(data);
-        writeHeader(outs, calculateFrequencies(data), compressed.size());
+        int[] freqs = calculateFrequencies(ins);
+        ins.reset();
+        BitOutputStream compressed = new BitOutputStream(new ByteArrayOutputStream());
+        compress(ins, freqs, compressed);
+        writeHeader(outs, freqs, compressed.getByteCount());
         writeBits(outs, compressed);
 
         System.out.println("Compressed/original = " + 100 * (compressed.size() / 8.0 + 8 + 256*4) / data.size() + "%");

@@ -16,6 +16,12 @@ public class BitOutputStream {
      */
     private int curByte;
 
+
+    /**
+     * Keeps track of how many bits have been written to the stream.
+     */
+    private int byteCount = 0;
+
     /**
      * 
      * @param outs The stream to convert into a bit stream.
@@ -43,6 +49,7 @@ public class BitOutputStream {
             }
             ++bytePos;
         }
+        byteCount += n;
     }
 
     /**
@@ -57,5 +64,13 @@ public class BitOutputStream {
             outs.close();
             outs = null;
         }
+    }
+
+    /**
+     * 
+     * @return The number of bits written to the stream. Might not be a multiple of 8.
+     */
+    public int getByteCount() {
+        return byteCount;
     }
 }
