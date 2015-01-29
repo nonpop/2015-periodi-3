@@ -5,8 +5,8 @@ import java.util.List;
 
 /**
  * Implements an LZW dictionary with fixed-size code words. The code word size
- * is given to the constructor. When the dictionary is full it must be reset
- * before a new string can be added.
+ * is given to the constructor. When the dictionary is full the addString()
+ * method will just return.
  */
 public class LZWDictionary {
     private final int lastCode;
@@ -27,11 +27,14 @@ public class LZWDictionary {
     /**
      * Add a new string into the dictionary. It is assumed that the prefix
      * (all but the last character) is already in the dictionary but the string
-     * itself is not. It is also assumed that is not full, i.e. that isFull()
-     * returns false.
+     * itself is not.
      * @param string The string.
      */
     public void addString(ArrayList<Integer> string) {
+        if (isFull()) {
+            return;
+        }
+
         LZWDictionaryEntry dict = root;
         for (int i = 0; i < string.size() - 1; ++i) {
             dict = dict.children[string.get(i)];
