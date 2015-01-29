@@ -14,9 +14,16 @@ import java.util.HashSet;
  * An implementation of LZW-(de)compression.
  */
 public class LZW {
-    public final static int codeSize = 12;
+    public final int codeSize;
+    public final boolean resetDict;
+
+    public LZW(int codeSize, boolean resetDict) {
+        assert(codeSize >= 9 && codeSize <= 31);
+        this.codeSize = codeSize;
+        this.resetDict = resetDict;
+    }
     
-    public static void compress(InputStream ins, BitOutputStream outs) throws IOException {
+    public void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary(codeSize);
         ArrayList<Integer> string = new ArrayList<>();
         int b;
@@ -41,21 +48,21 @@ public class LZW {
         System.out.println("Compressed/original (no headers): " + (100.0 * outs.getBitCount() / (inputSize * 8)) + " %");
     }
 
-    public static void decompress(BitInputStream ins, OutputStream outs) throws IOException {
+    public void decompress(BitInputStream ins, OutputStream outs) throws IOException {
         int lastCode = (int)Math.pow(2, codeSize) - 1;
         HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
         HashSet<ArrayList<Integer>> values = new HashSet<>();
         ArrayList<Integer> last = new ArrayList<>();
         int nextCode = 256;
 
-        int inputSize = 0;
-        int outputSize = 0;
+//        int inputSize = 0;
+//        int outputSize = 0;
         while (true) {
             Integer code = ins.readBits(codeSize);
             if (code == null) {
                 break;
             }
-            inputSize += codeSize;
+//            inputSize += codeSize;
             if (code < 256 || dict.get(code) != null) {
                 ArrayList<Integer> cur;
                 if (code < 256) {
@@ -66,7 +73,7 @@ public class LZW {
                 for (int i : cur) {
                     outs.write(i);
                 }
-                outputSize += cur.size();
+//                outputSize += cur.size();
                 last.add(cur.get(0));
                 if (last.size() > 1 && !values.contains(last)) {
                     ArrayList<Integer> copy = new ArrayList<>(last);
@@ -82,7 +89,7 @@ public class LZW {
                 for (int i : cur) {
                     outs.write(i);
                 }
-                outputSize += cur.size();
+//                outputSize += cur.size();
                 ArrayList<Integer> copy = new ArrayList<>(cur);
                 if (nextCode <= lastCode) {
                     dict.put(nextCode++, copy);
@@ -96,13 +103,13 @@ public class LZW {
         }
     }
 
-    public static void compressFile(InputStream ins, OutputStream outs) throws IOException {
+    public void compressFile(InputStream ins, OutputStream outs) throws IOException {
         BitOutputStream bouts = new BitOutputStream(outs);
         compress(ins, bouts);
         bouts.close();
     }
 
-    public static void decompressFile(InputStream ins, OutputStream outs) throws IOException {
+    public void decompressFile(InputStream ins, OutputStream outs) throws IOException {
         decompress(new BitInputStream(ins), outs);
     }
 }

@@ -12,14 +12,18 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class LZWTest {
+    private LZW lzw() {
+        return new LZW(12, false);
+    }
+
     private void testCompress(int[] expected, byte[] data) throws IOException {
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         BitOutputStream bouts = new BitOutputStream(outs);
-        LZW.compress(new ByteArrayInputStream(data), bouts);
+        lzw().compress(new ByteArrayInputStream(data), bouts);
         bouts.close();
         BitInputStream bins = new BitInputStream(new ByteArrayInputStream(outs.toByteArray()));
         for (int i : expected) {
-            Integer next = bins.readBits(LZW.codeSize);
+            Integer next = bins.readBits(lzw().codeSize);
             assertNotNull(next);
             assertEquals(i, (int)next);
         }
@@ -43,21 +47,21 @@ public class LZWTest {
         InputStream ins = new ByteArrayInputStream(data);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         BitOutputStream bouts = new BitOutputStream(outs);
-        LZW.compress(ins, bouts);
+        lzw().compress(ins, bouts);
         bouts.close();
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
-        LZW.decompress(new BitInputStream(ins), outs);
+        lzw().decompress(new BitInputStream(ins), outs);
         assertArrayEquals(data, outs.toByteArray());
     }
 
     public void testDecompressFile(byte[] data) throws IOException {
         ByteArrayInputStream ins = new ByteArrayInputStream(data);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
-        LZW.compressFile(ins, outs);
+        lzw().compressFile(ins, outs);
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
-        LZW.decompressFile(ins, outs);
+        lzw().decompressFile(ins, outs);
         assertArrayEquals(data, outs.toByteArray());
     }
     

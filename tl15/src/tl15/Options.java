@@ -133,7 +133,7 @@ public class Options {
                         Integer.parseInt(opt.value);
                     }
                     catch (NumberFormatException e) {
-                        System.out.println("Option -" + opt.option + " needs an integer argument");
+                        System.out.println("Option -" + opt.option + " needs an integer argument but was given \"" + opt.value + "\"");
                         return false;
                     }
                 }
