@@ -91,7 +91,7 @@ public class LZW {
                     outs.write(i);
                 }
                 outputSize += cur.size();
-                ArrayList<Integer> copy = new ArrayList<>(last);
+                ArrayList<Integer> copy = new ArrayList<>(cur);
                 dict.put(nextCode++, copy);
                 values.add(copy);
                 if (nextCode > lastCode) {
