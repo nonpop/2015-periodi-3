@@ -14,6 +14,9 @@ public class BitVector {
      * @param initialSize The initial size of the vector in bits. Must be > 0!
      */
     public BitVector(int initialSize) {
+        if (initialSize <= 0) {
+            throw new IllegalArgumentException("initialSize must be > 0");
+        }
         bits = new boolean[initialSize];
     }
 
