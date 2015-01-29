@@ -39,17 +39,24 @@ public class Main {
     }
     
     private static Options initOptions() {
-        Options opts = new Options();
-        
+        Options opts = new Options("java -jar tl15");
+        opts.addOption("algorithm", "a", "algorithm_name", "lzw", "Choose the algorithm to use. Available algorithms: huffman, lzw");
+        opts.addOption("inputFile", "i", "input_file", null, "The file to compress/decompress");   // TODO: allow -/empty for stdin
+        opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
+        opts.addFlag("lzw.reset", "lr", "Reset the LZW dictionary when it becomes full instead of just dropping new entries");
+        opts.addOption("lzw.codeSize", "ls", "code_size", "12", "The code size for LZW. Must be between 9..31");
+
+        return opts;
     }
     
     public static void main(String[] args) throws IOException {
         //args = new String[]{ "-hc", "test.orig", "test.hc" };
         //args = new String[]{ "-hd", "test.hc", "test.hd" };
-        args = new String[]{ "-lc", "test.orig", "test.lc" };
+        //args = new String[]{ "-lc", "test.orig", "test.lc" };
         //args = new String[]{ "-ld", "test.lc", "test.ld" };
         Options opts = initOptions();
-        if (args.length != 3) {
+        opts.usage();
+/*        if (args.length != 3) {
             usage();
         } else {
             switch (args[0]) {
@@ -69,6 +76,6 @@ public class Main {
                     usage();
                     break;
             }
-        }
+        }*/
     }
 }
