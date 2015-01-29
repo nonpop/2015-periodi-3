@@ -179,7 +179,7 @@ Tällä viikolla opiskelin ja toteutin LZW-koodausta.
 \end_inset
 
 32 % alkuperäisestä.
- Huffmanilla sama tiedosto tiivistyy vain 64 % alkupreäisestä koosta.
+ Huffmanilla sama tiedosto tiivistyy vain 64 % alkuperäisestä koosta.
  (Toisaalta bzip2 tiivistää tiedoston 40K kokoiseksi).
  Nopeus on siedettävä ensimmäiselle toimivalle versiolle: tuo 537K esimerkkitied
 osto tiivistyy omalla koneellani 1 sekunnissa ja laajenee takaisin 2,5 sekunniss
