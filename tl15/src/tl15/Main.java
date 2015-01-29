@@ -34,12 +34,6 @@ public class Main {
             System.out.println("Took " + (end - start) / 1000000 + "ms");
         }
     }
-
-    public static void usage() {
-        System.out.println("Usage: java -jar tl15 -[hl][cd] infile outfile");
-        System.out.println("h selects Huffman coding, l selects LZW coding");
-        System.out.println("c compresses, d decompresses");
-    }
     
     private static Options initOptions(String[] args) {
         Options opts = new Options("java -jar tl15");
