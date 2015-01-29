@@ -76,7 +76,7 @@ public class BitVector {
     }
 
     /** 
-     * Remove first bit of the vector.
+     * Remove the first bit of the vector.
      */
     public void removeFirst() {
         if (size == 0) {
