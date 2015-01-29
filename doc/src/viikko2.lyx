@@ -173,14 +173,17 @@ Viikkoraportti 2
 \end_layout
 
 \begin_layout Standard
-Tällä viikolla opiskelin LZW-koodausta.
- Tällä hetkellä se toimii joten kuten: esimerkiksi 100000 satunnaista tavua
- menee hyvin pakkaus--purkuprosessin läpi, mutta jos otetaan 1000000 tavua,
- niin lopputuloksessa on vain 999999 tavua ja ainakin osa niistä vääriä.
- Ongelma pahenee, jos koodisanojen kokoa kasvattaa yli 12 bittiin ja poistuu
- (ainakin siltä näyttää), kun koodisanan koko on pienempi.
- En tiedä vielä, missä vika on, mutta epäilen, että se liittyy LZW-purkamisessa
- olevaan kuuluisaan (?) poikkeustapaukseen.
+Tällä viikolla opiskelin ja toteutin LZW-koodausta.
+ Näyttää toimivan ja pakattuna 537K tekstitiedosto vie 173K eli n.
+\begin_inset space ~
+\end_inset
+
+32 % alkuperäisestä.
+ Huffmanilla sama tiedosto tiivistyy vain 64 % alkupreäisestä koosta.
+ (Toisaalta bzip2 tiivistää tiedoston 40K kokoiseksi).
+ Nopeus on siedettävä ensimmäiselle toimivalle versiolle: tuo 537K esimerkkitied
+osto tiivistyy omalla koneellani 1 sekunnissa ja laajenee takaisin 2,5 sekunniss
+a.
 \end_layout
 
 \begin_layout Standard
@@ -191,8 +194,8 @@ Huffman-koodista poistin ArrayListit ja korvasin ne itse tehdyllä BitVectorilla
 \end_layout
 
 \begin_layout Standard
-Seuraavaksi LZW-bugi pitää löytää ja korjata.
- LZW-koodia voisi muutenkin siistiä ja kommentoida paremmin.
+Seuraavaksi voisi LZW-koodia siistiä ja kommentoida paremmin sekä katsoa,
+ mitä tietorakenteita siinä oikeastaan olisi parasta käyttää.
 \end_layout
 
 \end_body
