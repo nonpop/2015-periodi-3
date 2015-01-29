@@ -16,6 +16,7 @@ public class Main {
         try (InputStream ins = new ResettableFileInputStream(inp);
              OutputStream outs = new FileOutputStream(outp))
         {
+            long start = System.nanoTime();
             if (compress) {
                 if (lzw) {
                     LZW.compressFile(ins, outs);
@@ -29,6 +30,8 @@ public class Main {
                     Huffman.decompressFile(ins, outs);
                 }
             }
+            long end = System.nanoTime();
+            System.out.println("Took " + (end - start) / 1000000 + "ms");
         }
     }
 

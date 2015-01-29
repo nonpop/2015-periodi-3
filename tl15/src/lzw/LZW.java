@@ -33,9 +33,9 @@ public class LZW {
                 string.clear();
                 string.add(b);
             }
-            if (inputSize % 10240 == 0) {
-                System.out.println(inputSize / 1024 + "K compressed into " + (outs.getBitCount() / 8) / 1024 + "K");
-            }
+//            if (inputSize % 10240 == 0) {
+//                System.out.println(inputSize / 1024 + "K compressed into " + (outs.getBitCount() / 8) / 1024 + "K");
+//            }
         }
         if (!string.isEmpty()) {
             outs.writeBits(codeSize, dict.getCode(string));
@@ -99,9 +99,9 @@ public class LZW {
                 }
                 last = cur;
             }
-            if ((inputSize / 8) % 10240 == 0) {
-                System.out.println((inputSize / 8) / 1024 + "K decompressed into " + outputSize / 1024 + "K");
-            }
+//            if ((inputSize / 8) % 10240 == 0) {
+//                System.out.println((inputSize / 8) / 1024 + "K decompressed into " + outputSize / 1024 + "K");
+//            }
         }
     }
 
