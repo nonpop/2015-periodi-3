@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -95,6 +96,7 @@ public class LZWTest {
         testDecompress(new byte[]{1});
         testDecompress(new byte[]{1,1});
         testDecompress(new byte[]{1,1,1});
+        testDecompress(new byte[]{1,1,1,1,1});      // 5 is the magic bug number
         testDecompress(new byte[]{1,1,1,1,1,1,1,1,1,1});
         testDecompress(new byte[]{1,2,1,1,2});
         testDecompress(new byte[]{0,1,0,1,0,1,0});
@@ -108,6 +110,30 @@ public class LZWTest {
 
     @Test
     public void testDecompressFile() throws IOException {
-        testDecompressFile(randomData(1000000, false));
+        testDecompressFile(randomData(2000000, false));
+    }
+
+    @Test
+    public void weirdBug() throws UnsupportedEncodingException, IOException {
+        String data = "#LyX 2.1 created this file. For more info see http://www.lyx.org/\n" +
+                        "\\lyxformat 474\n" +
+                        "\\begin_document\n" +
+                        "\\begin_header\n" +
+                        "\\textclass scrbook\n" +
+                        "\\begin_preamble\n" +
+                        "% For XeTeX %%%%%%%%%%%\n" +
+                        "%\\usepackage{fontspec}\n" +
+                        "%\\usepackage{xunicode}\n" +
+                        "%\\usepackage{xltxtra}\n" +
+                        "%%%%%%%%%%%%%%%%%%";
+        byte[] bytes = data.getBytes("UTF-8");
+        testDecompress(bytes);
+    }
+
+    @Test
+    public void weirdBug2() throws UnsupportedEncodingException, IOException {
+        String data = "%%%%%";
+        byte[] bytes = data.getBytes("UTF-8");
+        testDecompress(bytes);
     }
 }

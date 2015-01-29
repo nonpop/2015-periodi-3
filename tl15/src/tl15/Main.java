@@ -41,31 +41,54 @@ public class Main {
         System.out.println("c compresses, d decompresses");
     }
     
+    private static Options initOptions(String[] args) {
+        Options opts = new Options("java -jar tl15");
+        opts.addOption("algorithm", "a", "algorithm_name", "lzw", "Choose the algorithm to use. Available algorithms: huffman, lzw");
+        opts.addOption("inputFile", "i", "input_file", null, "The file to compress/decompress");   // TODO: allow -/empty for stdin
+        opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
+        opts.addFlag("lzw.reset", "lr", "Reset the LZW dictionary when it becomes full instead of just dropping new entries");
+        opts.addOption("lzw.codeSize", "ls", "code_size", 12, "The code size for LZW. Must be between 9..31");
+
+        if (!opts.parse(args)) {
+            opts.usage();
+            return null;
+        }
+
+        System.out.println("\nOptions:");
+        opts.dump();
+        System.out.println();
+
+        String alg = opts.getOptionString("algorithm");
+        if (!alg.equals("huffman") && !alg.equals("lzw")) {
+            System.out.println("Unknown algorithm: " + alg);
+            opts.usage();
+            return null;
+        }
+        if (opts.getOptionString("inputFile") == null) {
+            System.out.println("no input file given");
+            opts.usage();
+            return null;
+        }
+        if (opts.getOptionString("outputFile") == null) {
+            System.out.println("no output file given");
+            opts.usage();
+            return null;
+        }
+        int cs = opts.getOptionInteger("lzw.codeSize");
+        if (cs < 9 || cs > 31) {
+            System.out.println("lzw.codeSize out of range: " + cs);
+            opts.usage();
+            return null;
+        }
+        
+        return opts;
+    }
+    
     public static void main(String[] args) throws IOException {
-        //args = new String[]{ "-hc", "test.orig", "test.hc" };
-        //args = new String[]{ "-hd", "test.hc", "test.hd" };
-        //args = new String[]{ "-lc", "test.orig", "test.lc" };
-        args = new String[]{ "-ld", "test.lc", "test.ld" };
-        if (args.length != 3) {
-            usage();
-        } else {
-            switch (args[0]) {
-                case "-hc":
-                    processFile(args[1], args[2], true, false);
-                    break;
-                case "-hd":
-                    processFile(args[1], args[2], false, false);
-                    break;
-                case "-lc":
-                    processFile(args[1], args[2], true, true);
-                    break;
-                case "-ld":
-                    processFile(args[1], args[2], false, true);
-                    break;
-                default:
-                    usage();
-                    break;
-            }
+        args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "16"};
+        Options opts = initOptions(args);
+        if (opts == null) {
+            return;
         }
     }
 }

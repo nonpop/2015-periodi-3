@@ -22,9 +22,6 @@ public class LZW {
         int b;
         int inputSize = 0;
         while ((b = ins.read()) != -1) {
-            if (dict.isFull()) {
-                dict.reset();
-            }
             ++inputSize;
             string.add(b);
             if (dict.getCode(string) == -1) {
@@ -54,16 +51,12 @@ public class LZW {
         int inputSize = 0;
         int outputSize = 0;
         while (true) {
-            if (nextCode == 256) {
-                dict.clear();
-                values.clear();
-            }
             Integer code = ins.readBits(codeSize);
             if (code == null) {
                 break;
             }
             inputSize += codeSize;
-            if (code < 256 || (dict.get(code) != null && (code != 256 || nextCode > 256))) {
+            if (code < 256 || dict.get(code) != null) {
                 ArrayList<Integer> cur;
                 if (code < 256) {
                     cur = new ArrayList<>(Arrays.asList(code));
@@ -77,10 +70,9 @@ public class LZW {
                 last.add(cur.get(0));
                 if (last.size() > 1 && !values.contains(last)) {
                     ArrayList<Integer> copy = new ArrayList<>(last);
-                    dict.put(nextCode++, copy);
-                    values.add(copy);
-                    if (nextCode > lastCode) {
-                        nextCode = 256;
+                    if (nextCode <= lastCode) {
+                        dict.put(nextCode++, copy);
+                        values.add(copy);
                     }
                 }
                 last = cur;
@@ -92,10 +84,9 @@ public class LZW {
                 }
                 outputSize += cur.size();
                 ArrayList<Integer> copy = new ArrayList<>(cur);
-                dict.put(nextCode++, copy);
-                values.add(copy);
-                if (nextCode > lastCode) {
-                    nextCode = 256;
+                if (nextCode <= lastCode) {
+                    dict.put(nextCode++, copy);
+                    values.add(copy);
                 }
                 last = cur;
             }
