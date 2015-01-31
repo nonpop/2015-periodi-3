@@ -94,7 +94,7 @@ public class Options {
         }
     }
 
-    private Option getOption(String arg) {
+    private Option getOptionByOptionString(String arg) {
         for (Entry<String, Option> kv : options) {
             if (kv.getValue().option.equals(arg)) {
                 return kv.getValue();
@@ -114,7 +114,7 @@ public class Options {
     
     public boolean parse(String[] args) {
         for (int i = 0; i < args.length; ++i) {
-            Option opt = getOption(args[i].substring(1));
+            Option opt = getOptionByOptionString(args[i].substring(1));
             if (opt == null || args[i].charAt(0) != '-') {
                 System.out.println("Unknown option: " + args[i]);
                 return false;
