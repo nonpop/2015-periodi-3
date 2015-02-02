@@ -106,7 +106,7 @@ public class LZW {
     public void compressFile(InputStream ins, OutputStream outs) throws IOException {
         BitOutputStream bouts = new BitOutputStream(outs);
         compress(ins, bouts);
-        bouts.close();
+        bouts.flush();
     }
 
     public void decompressFile(InputStream ins, OutputStream outs) throws IOException {

@@ -1,5 +1,6 @@
 package bitstream;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -7,7 +8,7 @@ import java.io.OutputStream;
  * A bit output stream.
  */
 public class BitOutputStream extends OutputStream {
-    private OutputStream outs;
+    private final OutputStream outs;
 
     /**
      * Current byte in the buffer.
@@ -30,6 +31,13 @@ public class BitOutputStream extends OutputStream {
      * Keeps track of how many bits have been written to the stream.
      */
     private int bitCount = 0;
+
+    /**
+     * Create a bit stream over a ByteArrayOutputStream.
+     */
+    public BitOutputStream() {
+        this.outs = new ByteArrayOutputStream();
+    }
 
     /**
      * 
@@ -78,17 +86,15 @@ public class BitOutputStream extends OutputStream {
     }
 
     /**
-     * Closes the stream making sure any remaining bits are written. If there
-     * are n=1..7 bits remaining, then the last 8-n bits written are zeroes.
+     * Write the remaining buffer to the stream. If there are 8p+n, where n=1..7,
+     * bits remaining, then the last 8-n bits written are zeroes. Also flushes
+     * the underlying stream.
      * @throws java.io.IOException
      */
     @Override
-    public void close() throws IOException {
-        if (outs != null) {
-            outs.write(buffer, 0, bufferByte + ((bufferBit > 0)? 1 : 0));
-            outs.close();
-            outs = null;
-        }
+    public void flush() throws IOException {
+        outs.write(buffer, 0, bufferByte + ((bufferBit > 0)? 1 : 0));
+        outs.flush();
     }
 
     /**

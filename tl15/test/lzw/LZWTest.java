@@ -20,7 +20,7 @@ public class LZWTest {
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         BitOutputStream bouts = new BitOutputStream(outs);
         lzw().compress(new ByteArrayInputStream(data), bouts);
-        bouts.close();
+        bouts.flush();
         BitInputStream bins = new BitInputStream(new ByteArrayInputStream(outs.toByteArray()));
         for (int i : expected) {
             Integer next = bins.readBits(lzw().codeSize);
@@ -48,7 +48,7 @@ public class LZWTest {
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         BitOutputStream bouts = new BitOutputStream(outs);
         lzw().compress(ins, bouts);
-        bouts.close();
+        bouts.flush();
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
         lzw().decompress(new BitInputStream(ins), outs);

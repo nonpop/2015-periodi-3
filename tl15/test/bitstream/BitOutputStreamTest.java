@@ -15,7 +15,7 @@ public class BitOutputStreamTest {
     public void testZeroBytes() throws IOException {
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         BitOutputStream bouts = new BitOutputStream(outs);
-        bouts.close();
+        bouts.flush();
         assertEquals(0, outs.toByteArray().length);
     }
 
@@ -24,7 +24,7 @@ public class BitOutputStreamTest {
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         BitOutputStream bouts = new BitOutputStream(outs);
         bouts.writeBits(1, 1);
-        bouts.close();
+        bouts.flush();
         assertEquals(1, outs.toByteArray().length);
         assertEquals(0x80, (outs.toByteArray()[0] & 0xff));
 
@@ -38,7 +38,7 @@ public class BitOutputStreamTest {
         bouts.writeBits(1, 1);
         bouts.writeBits(1, 0);
         bouts.writeBits(1, 1);
-        bouts.close();
+        bouts.flush();
         assertEquals(1, outs.toByteArray().length);
         assertEquals(0b01001101, outs.toByteArray()[0]);
 
@@ -46,7 +46,7 @@ public class BitOutputStreamTest {
         bouts = new BitOutputStream(outs);
         bouts.writeBits(3, 0b010);
         bouts.writeBits(5, 0b01101);
-        bouts.close();
+        bouts.flush();
         assertEquals(1, outs.toByteArray().length);
         assertEquals(0b01001101, outs.toByteArray()[0]);
 
@@ -54,14 +54,14 @@ public class BitOutputStreamTest {
         bouts = new BitOutputStream(outs);
         bouts.writeBits(3, 0b010);
         bouts.writeBits(4, 0b0110);
-        bouts.close();
+        bouts.flush();
         assertEquals(1, outs.toByteArray().length);
         assertEquals(0b01001100, outs.toByteArray()[0]);
 
         outs = new ByteArrayOutputStream();
         bouts = new BitOutputStream(outs);
         bouts.writeBits(8, -1);
-        bouts.close();
+        bouts.flush();
         assertEquals(1, outs.toByteArray().length);
         assertEquals(-1, outs.toByteArray()[0]);
     }
@@ -71,7 +71,7 @@ public class BitOutputStreamTest {
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         BitOutputStream bouts = new BitOutputStream(outs);
         bouts.writeBits(16, 0);
-        bouts.close();
+        bouts.flush();
         assertEquals(2, outs.toByteArray().length);
         assertEquals(0, outs.toByteArray()[0]);
         assertEquals(0, outs.toByteArray()[1]);
@@ -79,7 +79,7 @@ public class BitOutputStreamTest {
         outs = new ByteArrayOutputStream();
         bouts = new BitOutputStream(outs);
         bouts.writeBits(16, 0b0110100100011010);
-        bouts.close();
+        bouts.flush();
         assertEquals(2, outs.toByteArray().length);
         assertEquals(0b01101001, outs.toByteArray()[0]);
         assertEquals(0b00011010, outs.toByteArray()[1]);
@@ -108,7 +108,7 @@ public class BitOutputStreamTest {
             bouts.writeBits(n, bits);
             howManyRead += n;
         }
-        bouts.close();
+        bouts.flush();
         assertArrayEquals(data, outs.toByteArray());
     }
 }

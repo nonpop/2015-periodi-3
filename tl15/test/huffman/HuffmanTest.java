@@ -159,7 +159,7 @@ public class HuffmanTest {
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         BitOutputStream bouts = new BitOutputStream(outs);
         Huffman.compress(new ByteArrayInputStream(data), freqs, bouts);
-        bouts.close();
+        bouts.flush();
         ByteArrayInputStream ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
         Huffman.decompress(new BitInputStream(ins), freqs, outs);
