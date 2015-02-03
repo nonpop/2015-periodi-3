@@ -7,13 +7,30 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunWith(Parameterized.class)
 public class LZWTest {
+    private final int codeSize;
+    
+    @Parameters
+    public static Collection<Object[]> parameters() {
+       return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {31}});
+    }
+    
+    public LZWTest(int codeSize) {
+        this.codeSize = codeSize;
+    }
+
     private LZW lzw() {
-        return new LZW(12);
+        return new LZW(codeSize);
     }
 
     private void testCompress(int[] expected, byte[] data) throws IOException {
@@ -114,7 +131,9 @@ public class LZWTest {
 
     @Test
     public void testDecompressFile() throws IOException {
-        testDecompressFile(randomData(2000000, false));
+        if (codeSize <= 16) {
+            testDecompressFile(randomData(2000000, false));
+        }
     }
 
     @Test
