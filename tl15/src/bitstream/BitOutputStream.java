@@ -33,13 +33,6 @@ public class BitOutputStream extends OutputStream {
     private int bitCount = 0;
 
     /**
-     * Create a bit stream over a ByteArrayOutputStream.
-     */
-    public BitOutputStream() {
-        this.outs = new ByteArrayOutputStream();
-    }
-
-    /**
      * 
      * @param outs The stream to convert into a bit stream.
      */
