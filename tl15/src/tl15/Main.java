@@ -17,8 +17,7 @@ public class Main {
         opts.addOption("algorithm", "a", "algorithm_name", "lzw", "Choose the algorithm to use. Available algorithms: huffman, lzw");
         opts.addOption("inputFile", "i", "input_file", null, "The file to compress/decompress");   // TODO: allow -/empty for stdin
         opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
-        opts.addFlag("compress", "c", "Compress");
-        opts.addFlag("decompress", "d", "Decompress");
+        opts.addFlag("decompress", "d", "Decompress (default is to compress)");
         opts.addOption("lzw.codeSize", "ls", "code_size", 12, "The code size for LZW. Must be between 9..31");
 
         if (!opts.parse(args)) {
@@ -43,11 +42,6 @@ public class Main {
         }
         if (opts.getOptionString("outputFile") == null) {
             System.out.println("no output file given");
-            opts.usage();
-            return null;
-        }
-        if (!(opts.getFlagState("compress") ^ opts.getFlagState("decompress"))) {
-            System.out.println("To compress, or to decompress, that is the question");
             opts.usage();
             return null;
         }
@@ -77,13 +71,13 @@ public class Main {
             long start = System.nanoTime();
             if (opts.getOptionString("algorithm").equals("lzw")) {
                 LZW l = new LZW(opts.getOptionInteger("lzw.codeSize"));
-                if (opts.getFlagState("compress")) {
+                if (!opts.getFlagState("decompress")) {
                     l.compressFile(ins, outs);
                 } else {
                     l.decompressFile(ins, outs);
                 }
             } else {
-                if (opts.getFlagState("compress")) {
+                if (!opts.getFlagState("decompress")) {
                     Huffman.compressFile(ins, outs);
                 } else {
                     Huffman.decompressFile(ins, outs);
