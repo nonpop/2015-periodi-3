@@ -20,7 +20,7 @@ public class Main {
         opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
         opts.addFlag("decompress", "d", "Decompress (default is to compress)");
         opts.addOption("lzw.codeSize", "ls", "code_size", 12, "The code size for LZW compression. Must be between 9..31");
-        opts.addFlag("lzw.resetDict", "lr", "Allow the dictionary to reset during LZW compression");
+        opts.addOption("lzw.resetDict", "lr", "treshold", 20, "Reset the LZW compression dictionary when its poorness is > treshold %. Set to 100 to disable.");
         // TODO: -h and -v
 
         if (!opts.parse(args)) {
