@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /** A stripped-down ArrayList.
- * @param <T> */
+ * @param <T> The type of the elements. */
 public class List<T> implements Iterable<T> {
     private Object[] array;
     private int size = 0;
 
     public List() {
-        array = new Object[1];      // don't put 0 here; otherwise grow() won't work
+        array = new Object[16];      // don't put 0 here; otherwise grow() won't work
     }
 
     /**
