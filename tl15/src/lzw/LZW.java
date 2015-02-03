@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import utils.List;
 import utils.Map;
+import static utils.Math.twoTo;
 
 /**
  * An implementation of LZW-(de)compression.
@@ -14,11 +15,13 @@ import utils.Map;
 public class LZW {
     public final int codeSize;
     public final int lastCode;
+    public final boolean allowReset;
 
-    public LZW(int codeSize) {
+    public LZW(int codeSize, boolean allowReset) {
         assert(codeSize >= 9 && codeSize <= 31);
         this.codeSize = codeSize;
-        lastCode = (int)Math.pow(2, codeSize) - 1;
+        lastCode = twoTo(codeSize) - 2;
+        this.allowReset = allowReset;
     }
     
     /**
@@ -32,24 +35,51 @@ public class LZW {
         List<Integer> string = new List<>();
         int b;
         int inputSize = 0;
+        // hits and misses when the dictionary is full
+        int hits = 0;
+        int misses = 0;
+        int resetCount = 0;
         while ((b = ins.read()) != -1) {
-            ++inputSize;
+            inputSize += 8;
             string.add(b);
             if (dict.getCode(string) == -1) {
                 string.removeLast();    // temporarily remove the last element
                                         // so we don't have to create a sublist
                 outs.writeBits(codeSize, dict.getCode(string));
                 string.add(b);
+                if (dict.isFull()) {
+                    misses += string.size();
+                }
                 dict.addString(string);
                 string.clear();
                 string.add(b);
+                if (allowReset && dict.isFull()) {
+                    double total = hits + misses;
+                    if (total > 100) {
+                        if (misses / total > 0.25) {
+                            // poor dictionary. Let's try a new one
+                            outs.writeBits(codeSize, lastCode + 1); // write dictionary reset code
+                            dict.reset();
+                            hits = 0;
+                            misses = 0;
+                            ++resetCount;
+                        }
+                    }
+                }
+            } else {
+                if (dict.isFull()) {
+                    hits += string.size();
+                }
             }
         }
         if (!string.isEmpty()) {
             outs.writeBits(codeSize, dict.getCode(string));
         }
         
-        System.out.println("Compressed/original (no headers): " + (100.0 * outs.getBitCount() / (inputSize * 8)) + " %");
+        System.out.println("Compressed/original (no headers): " + (100.0 * outs.getBitCount() / inputSize) + " %");
+        if (allowReset) {
+            System.out.println("Dictionary was reset " + resetCount + " times");
+        }
     }
 
     /**
@@ -82,6 +112,19 @@ public class LZW {
             Integer code = ins.readBits(codeSize);
             if (code == null) {
                 break;
+            }
+            if (code == lastCode + 1) {
+                dict.clear();
+                values.clear();
+                nextCode = 256;
+                for (int i = 0; i < 256; ++i) {
+                    List<Integer> l = new List<>();
+                    l.add(i);
+                    dict.put(i, l);
+                    values.put(l, true);
+                }
+                lastOutput.clear();
+                continue;
             }
             List<Integer> decoded = dict.get(code);
             List<Integer> toDict;
@@ -117,8 +160,8 @@ public class LZW {
      * @param codeSize
      * @throws IOException 
      */
-    public static void compressFile(InputStream ins, OutputStream outs, int codeSize) throws IOException {
-        LZW lzw = new LZW(codeSize);
+    public static void compressFile(InputStream ins, OutputStream outs, int codeSize, boolean allowReset) throws IOException {
+        LZW lzw = new LZW(codeSize, allowReset);
         BitOutputStream bouts = new BitOutputStream(outs);
 
         // the header
@@ -142,7 +185,7 @@ public class LZW {
             throw new IllegalArgumentException("Bad file.");
         }
         int fileCodeSize = bins.readBits(5);
-        LZW lzw = new LZW(fileCodeSize);
+        LZW lzw = new LZW(fileCodeSize, true);
         
         lzw.decompress(bins, bouts);
         bouts.flush();

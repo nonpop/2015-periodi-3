@@ -1,6 +1,7 @@
 package lzw;
 
 import utils.List;
+import static utils.Math.twoTo;
 
 
 /**
@@ -18,7 +19,8 @@ public class LZWDictionary {
      * @param codeSize The code word size in bits. Must be 9..31.
      */
     public LZWDictionary(int codeSize) {
-        lastCode = (int) Math.pow(2, codeSize) - 1;
+        lastCode = twoTo(codeSize) - 2;     // 2^(codeSize-1) is the 
+                                            // dictionary reset code
         for (int i = 0; i < 256; ++i) {
             root.children[i] = new LZWDictionaryEntry(i);
         }
@@ -31,10 +33,9 @@ public class LZWDictionary {
      * @param string The string.
      */
     public void addString(List<Integer> string) {
-        if (nextCode > lastCode) {
+        if (isFull()) {
             return;
         }
-
         LZWDictionaryEntry dict = root;
         for (int i = 0; i < string.size() - 1; ++i) {
             dict = dict.children[string.get(i)];
@@ -42,6 +43,17 @@ public class LZWDictionary {
         LZWDictionaryEntry entry = new LZWDictionaryEntry(nextCode++);
         int last = string.get(string.size() - 1);
         dict.children[last] = entry;
+    }
+
+    public boolean isFull() {
+        return nextCode > lastCode;
+    }
+
+    public void reset() {
+        nextCode = 256;
+        for (int i = 0; i < 256; ++i) {
+            root.children[i] = new LZWDictionaryEntry(i);
+        }
     }
 
     /**

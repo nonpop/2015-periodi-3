@@ -20,6 +20,7 @@ public class Main {
         opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
         opts.addFlag("decompress", "d", "Decompress (default is to compress)");
         opts.addOption("lzw.codeSize", "ls", "code_size", 12, "The code size for LZW compression. Must be between 9..31");
+        opts.addFlag("lzw.resetDict", "lr", "Allow the dictionary to reset during LZW compression");
 
         if (!opts.parse(args)) {
             opts.usage();
@@ -57,7 +58,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        //args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "16"};
+        //args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "10", "-lr"};
+        //args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "11"};
         //args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
         //args = new String[]{"-i", "test.orig", "-o", "test.hc", "-a", "huffman"};
         //args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
@@ -74,7 +76,7 @@ public class Main {
             long start = System.nanoTime();
             if (opts.getOptionString("algorithm").equals("lzw")) {
                 if (!opts.getFlagState("decompress")) {
-                    LZW.compressFile(ins, outs, opts.getOptionInteger("lzw.codeSize"));
+                    LZW.compressFile(ins, outs, opts.getOptionInteger("lzw.codeSize"), opts.getFlagState("lzw.resetDict"));
                 } else {
                     LZW.decompressFile(ins, outs);
                 }
