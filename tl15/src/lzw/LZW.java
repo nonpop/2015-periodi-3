@@ -45,7 +45,7 @@ public class LZW {
         System.out.println("Compressed/original (no headers): " + (100.0 * outs.getBitCount() / (inputSize * 8)) + " %");
     }
 
-    public void decompress(BitInputStream ins, OutputStream outs) throws IOException {
+    public void decompress(BitInputStream ins, BitOutputStream outs) throws IOException {
         HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
         HashSet<ArrayList<Integer>> values = new HashSet<>();
         for (int i = 0; i < 256; ++i) {
@@ -84,6 +84,7 @@ public class LZW {
                 outs.write(i);
             }
         }
+        outs.flush();
     }
 
     public void compressFile(InputStream ins, OutputStream outs) throws IOException {
@@ -93,6 +94,6 @@ public class LZW {
     }
 
     public void decompressFile(InputStream ins, OutputStream outs) throws IOException {
-        decompress(new BitInputStream(ins), outs);
+        decompress(new BitInputStream(ins), new BitOutputStream(outs));
     }
 }

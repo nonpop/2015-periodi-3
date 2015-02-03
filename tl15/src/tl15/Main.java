@@ -57,7 +57,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         //args = new String[]{"-i", "test.orig", "-o", "test.lc", "-c"};
-        //args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
+        args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
         Options opts = initOptions(args);
         if (opts == null) {
             return;

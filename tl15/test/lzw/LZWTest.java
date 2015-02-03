@@ -65,7 +65,7 @@ public class LZWTest {
         bouts.flush();
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
-        lzw.decompress(new BitInputStream(ins), outs);
+        lzw.decompress(new BitInputStream(ins), new BitOutputStream(outs));
         assertArrayEquals(data, outs.toByteArray());
     }
 
