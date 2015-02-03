@@ -45,9 +45,13 @@ public class Map<K, V> {
     public void put(K key, V value) {
         int i = calculateIndex(key);
         List<Pair<K, V>> kv = hashMap.get(i);
-        kv.add(new Pair<>(key, value)); // NOTE: if the delete operation is implemented,
-                                        // it must go through the whole list since
-                                        // we might have duplicates there.
+        for (i = 0; i < kv.size(); ++i) {
+            if (kv.get(i).first.equals(key)) {
+                kv.get(i).second = value;
+                return;
+            }
+        }
+        kv.add(new Pair<>(key, value));
     }
 
     /**
