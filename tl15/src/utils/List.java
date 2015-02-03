@@ -44,9 +44,6 @@ public class List<T> implements Iterable<T> {
      * @return The element.
      */
     public T get(int i) {
-        if (i < 0 || i >= size) {
-            throw new IndexOutOfBoundsException();
-        }
         return (T)array[i];
     }
 
