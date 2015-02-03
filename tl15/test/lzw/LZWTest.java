@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 
 public class LZWTest {
     private LZW lzw() {
-        return new LZW(12, false);
+        return new LZW(12);
     }
 
     private void testCompress(int[] expected, byte[] data) throws IOException {

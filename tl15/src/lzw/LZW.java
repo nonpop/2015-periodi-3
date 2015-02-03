@@ -15,12 +15,10 @@ import java.util.HashSet;
  */
 public class LZW {
     public final int codeSize;
-    public final boolean resetDict;
 
-    public LZW(int codeSize, boolean resetDict) {
+    public LZW(int codeSize) {
         assert(codeSize >= 9 && codeSize <= 31);
         this.codeSize = codeSize;
-        this.resetDict = resetDict;
     }
     
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {

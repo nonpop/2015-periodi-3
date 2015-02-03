@@ -19,7 +19,6 @@ public class Main {
         opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
         opts.addFlag("compress", "c", "Compress");
         opts.addFlag("decompress", "d", "Decompress");
-        opts.addFlag("lzw.reset", "lr", "Reset the LZW dictionary when it becomes full instead of just dropping new entries");
         opts.addOption("lzw.codeSize", "ls", "code_size", 12, "The code size for LZW. Must be between 9..31");
 
         if (!opts.parse(args)) {
@@ -77,7 +76,7 @@ public class Main {
         {
             long start = System.nanoTime();
             if (opts.getOptionString("algorithm").equals("lzw")) {
-                LZW l = new LZW(opts.getOptionInteger("lzw.codeSize"), opts.getFlagState("lzw.reset"));
+                LZW l = new LZW(opts.getOptionInteger("lzw.codeSize"));
                 if (opts.getFlagState("compress")) {
                     l.compressFile(ins, outs);
                 } else {
