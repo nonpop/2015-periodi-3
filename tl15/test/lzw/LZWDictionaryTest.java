@@ -12,10 +12,8 @@ public class LZWDictionaryTest {
         string.add(0);
         for (int i = 0; i < 4096 - 256; ++i) {
             string.add(i % 256);
-            assertFalse(dict.isFull());
             dict.addString(string);
         }
-        assertTrue(dict.isFull());
         assertEquals(4095, dict.getCode(string));
         string.clear();
         string.add(0);
@@ -23,8 +21,6 @@ public class LZWDictionaryTest {
         string.add(0);
         assertEquals(256, dict.getCode(string));
 
-        dict.reset();
-        assertFalse(dict.isFull());
         string.clear();
         string.add(0);
         assertEquals(0, dict.getCode(string));

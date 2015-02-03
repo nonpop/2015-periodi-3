@@ -31,7 +31,7 @@ public class LZWDictionary {
      * @param string The string.
      */
     public void addString(List<Integer> string) {
-        if (isFull()) {
+        if (nextCode > lastCode) {
             return;
         }
 
@@ -42,21 +42,6 @@ public class LZWDictionary {
         LZWDictionaryEntry entry = new LZWDictionaryEntry(nextCode++);
         int last = string.get(string.size() - 1);
         dict.children[last] = entry;
-    }
-
-    /**
-     * Reset the dictionary. After this the dictionary will only contain
-     * the 1-length strings.
-     */
-    public void reset() {
-        for (LZWDictionaryEntry child : root.children) {
-            for (int i = 0; i < 256; ++i) {
-                if (child.children[i] != null) {
-                    child.children[i].invalidate();
-                }
-            }
-        }
-        nextCode = 256;
     }
 
     /**
@@ -73,13 +58,5 @@ public class LZWDictionary {
             dict = dict.children[next];
         }
         return dict.getCode();
-    }
-
-    /**
-     * Check if the dictionary is full.
-     * @return True if the dictionary is full, false otherwise.
-     */
-    public boolean isFull() {
-        return nextCode > lastCode;
     }
 }
