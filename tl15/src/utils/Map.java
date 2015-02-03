@@ -7,10 +7,13 @@ package utils;
  */
 public class Map<K, V> {
     private final List<List<Pair<K, V>>> hashMap;
-    private final int capacity;
 
+    /**
+     * 
+     * @param capacity Must be > 0.
+     */
     public Map(int capacity) {
-        this.capacity = capacity;
+        assert(capacity > 0);
         hashMap = new List<>(capacity);
         for (int i = 0; i < capacity; ++i) {
             hashMap.add(new List<Pair<K, V>>());
@@ -21,13 +24,13 @@ public class Map<K, V> {
      * Clear the map.
      */
     public void clear() {
-        for (int i = 0; i < capacity; ++i) {
+        for (int i = 0; i < hashMap.size(); ++i) {
             hashMap.set(i, new List<Pair<K, V>>());
         }
     }
 
     private int calculateIndex(K key) {
-        int i = key.hashCode() % capacity;
+        int i = key.hashCode() % hashMap.size();
         if (i < 0) {
             i += hashMap.size();
         }
