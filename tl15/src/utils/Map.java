@@ -17,6 +17,15 @@ public class Map<K, V> {
         }
     }
 
+    /**
+     * Clear the map.
+     */
+    public void clear() {
+        for (int i = 0; i < capacity; ++i) {
+            hashMap.set(i, new List<Pair<K, V>>());
+        }
+    }
+
     private int calculateIndex(K key) {
         int i = key.hashCode() % capacity;
         if (i < 0) {
