@@ -18,7 +18,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class LZWTest {
-    private final int codeSize;
+    private final LZW lzw;
     
     @Parameters
     public static Collection<Object[]> parameters() {
@@ -26,21 +26,17 @@ public class LZWTest {
     }
     
     public LZWTest(int codeSize) {
-        this.codeSize = codeSize;
-    }
-
-    private LZW lzw() {
-        return new LZW(codeSize);
+        this.lzw = new LZW(codeSize);
     }
 
     private void testCompress(int[] expected, byte[] data) throws IOException {
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         BitOutputStream bouts = new BitOutputStream(outs);
-        lzw().compress(new ByteArrayInputStream(data), bouts);
+        lzw.compress(new ByteArrayInputStream(data), bouts);
         bouts.flush();
         BitInputStream bins = new BitInputStream(new ByteArrayInputStream(outs.toByteArray()));
         for (int i : expected) {
-            Integer next = bins.readBits(lzw().codeSize);
+            Integer next = bins.readBits(lzw.codeSize);
             assertNotNull(next);
             assertEquals(i, (int)next);
         }
@@ -64,21 +60,21 @@ public class LZWTest {
         InputStream ins = new ByteArrayInputStream(data);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         BitOutputStream bouts = new BitOutputStream(outs);
-        lzw().compress(ins, bouts);
+        lzw.compress(ins, bouts);
         bouts.flush();
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
-        lzw().decompress(new BitInputStream(ins), outs);
+        lzw.decompress(new BitInputStream(ins), outs);
         assertArrayEquals(data, outs.toByteArray());
     }
 
     public void testDecompressFile(byte[] data) throws IOException {
         ByteArrayInputStream ins = new ByteArrayInputStream(data);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
-        lzw().compressFile(ins, outs);
+        lzw.compressFile(ins, outs);
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
-        lzw().decompressFile(ins, outs);
+        lzw.decompressFile(ins, outs);
         assertArrayEquals(data, outs.toByteArray());
     }
     
@@ -131,7 +127,7 @@ public class LZWTest {
 
     @Test
     public void testDecompressFile() throws IOException {
-        if (codeSize <= 16) {
+        if (lzw.codeSize <= 16) {
             testDecompressFile(randomData(2000000, false));
         }
     }
