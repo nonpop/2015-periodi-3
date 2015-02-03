@@ -7,7 +7,7 @@ import java.io.InputStream;
  * A bit input stream.
  */
 public class BitInputStream extends InputStream {
-    private InputStream ins;
+    private final InputStream ins;
 
     /**
      * Position in the current byte. 8 indicates a new byte must be read from ins.
