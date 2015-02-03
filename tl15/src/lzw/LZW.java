@@ -15,13 +15,13 @@ import static utils.Math.twoTo;
 public class LZW {
     public final int codeSize;
     public final int lastCode;
-    public final boolean allowReset;
+    public final int resetDict;
 
-    public LZW(int codeSize, boolean allowReset) {
+    public LZW(int codeSize, int resetDict) {
         assert(codeSize >= 9 && codeSize <= 31);
         this.codeSize = codeSize;
         lastCode = twoTo(codeSize) - 2;
-        this.allowReset = allowReset;
+        this.resetDict = resetDict;
     }
     
     /**
@@ -48,16 +48,15 @@ public class LZW {
                 outs.writeBits(codeSize, dict.getCode(string));
                 string.add(b);
                 if (dict.isFull()) {
-                    misses += string.size();
+                    ++misses;
                 }
                 dict.addString(string);
                 string.clear();
                 string.add(b);
-                if (allowReset && dict.isFull()) {
+                if (dict.isFull()) {
                     double total = hits + misses;
-                    if (total > 100) {
-                        if (misses / total > 0.25) {
-                            // poor dictionary. Let's try a new one
+                    if (total > 1000) {
+                        if (100 * misses / total > resetDict) {
                             outs.writeBits(codeSize, lastCode + 1); // write dictionary reset code
                             dict.reset();
                             hits = 0;
@@ -68,7 +67,7 @@ public class LZW {
                 }
             } else {
                 if (dict.isFull()) {
-                    hits += string.size();
+                    ++hits;
                 }
             }
         }
@@ -77,7 +76,7 @@ public class LZW {
         }
         
         System.out.println("Compressed/original (no headers): " + (100.0 * outs.getBitCount() / inputSize) + " %");
-        if (allowReset) {
+        if (resetDict < 100) {
             System.out.println("Dictionary was reset " + resetCount + " times");
         }
     }
@@ -160,8 +159,8 @@ public class LZW {
      * @param codeSize
      * @throws IOException 
      */
-    public static void compressFile(InputStream ins, OutputStream outs, int codeSize, boolean allowReset) throws IOException {
-        LZW lzw = new LZW(codeSize, allowReset);
+    public static void compressFile(InputStream ins, OutputStream outs, int codeSize, int resetDict) throws IOException {
+        LZW lzw = new LZW(codeSize, resetDict);
         BitOutputStream bouts = new BitOutputStream(outs);
 
         // the header
@@ -185,7 +184,7 @@ public class LZW {
             throw new IllegalArgumentException("Bad file.");
         }
         int fileCodeSize = bins.readBits(5);
-        LZW lzw = new LZW(fileCodeSize, true);
+        LZW lzw = new LZW(fileCodeSize, 30);
         
         lzw.decompress(bins, bouts);
         bouts.flush();

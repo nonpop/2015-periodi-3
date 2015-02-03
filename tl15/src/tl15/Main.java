@@ -21,6 +21,7 @@ public class Main {
         opts.addFlag("decompress", "d", "Decompress (default is to compress)");
         opts.addOption("lzw.codeSize", "ls", "code_size", 12, "The code size for LZW compression. Must be between 9..31");
         opts.addFlag("lzw.resetDict", "lr", "Allow the dictionary to reset during LZW compression");
+        // TODO: -h and -v
 
         if (!opts.parse(args)) {
             opts.usage();
@@ -34,23 +35,24 @@ public class Main {
         String alg = opts.getOptionString("algorithm");
         if (!alg.equals("huffman") && !alg.equals("lzw")) {
             System.out.println("Unknown algorithm: " + alg);
-            opts.usage();
             return null;
         }
         if (opts.getOptionString("inputFile") == null) {
             System.out.println("no input file given");
-            opts.usage();
             return null;
         }
         if (opts.getOptionString("outputFile") == null) {
             System.out.println("no output file given");
-            opts.usage();
             return null;
         }
         int cs = opts.getOptionInteger("lzw.codeSize");
         if (cs < 9 || cs > 31) {
             System.out.println("lzw.codeSize out of range: " + cs);
-            opts.usage();
+            return null;
+        }
+        int poorness = opts.getOptionInteger("lzw.resetDict");
+        if (poorness < 0 || poorness > 100) {
+            System.out.println("lzw.resetDict out of range: " + poorness);
             return null;
         }
 
@@ -58,8 +60,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        //args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "10", "-lr"};
-        //args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "11"};
+        //args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "12", "-lr", "20"};
         //args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
         //args = new String[]{"-i", "test.orig", "-o", "test.hc", "-a", "huffman"};
         //args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
@@ -76,7 +77,9 @@ public class Main {
             long start = System.nanoTime();
             if (opts.getOptionString("algorithm").equals("lzw")) {
                 if (!opts.getFlagState("decompress")) {
-                    LZW.compressFile(ins, outs, opts.getOptionInteger("lzw.codeSize"), opts.getFlagState("lzw.resetDict"));
+                    LZW.compressFile(ins, outs, 
+                            opts.getOptionInteger("lzw.codeSize"),
+                            opts.getOptionInteger("lzw.resetDict"));
                 } else {
                     LZW.decompressFile(ins, outs);
                 }

@@ -22,12 +22,12 @@ public class LZWTest {
     
     @Parameters
     public static Collection<Object[]> parameters() {
-       //return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {31}});
-       return Arrays.asList(new Object[][]{{9}});
+       return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {31}});
+       //return Arrays.asList(new Object[][]{{9}});
     }
     
     public LZWTest(int codeSize) {
-        this.lzw = new LZW(codeSize, true);
+        this.lzw = new LZW(codeSize, 30);
     }
 
     private void testCompress(int[] expected, byte[] data) throws IOException {
@@ -74,7 +74,7 @@ public class LZWTest {
     public void testDecompressFile(byte[] data) throws IOException {
         ByteArrayInputStream ins = new ByteArrayInputStream(data);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
-        LZW.compressFile(ins, outs, lzw.codeSize, true);
+        LZW.compressFile(ins, outs, lzw.codeSize, 30);
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
         LZW.decompressFile(ins, outs);
@@ -123,15 +123,15 @@ public class LZWTest {
         testDecompress(new byte[]{0,1,2,3,2,3,4,3,5,4,1,2,3});
         testDecompress(new byte[]{0,1,2,3,4,5,6,7,8,9});
         testDecompress(randomData(100000, false));
-        //testDecompress(randomData(100000, true));
-        //testDecompress(consecutiveData(100000));
-        //testDecompress(alternatingData(100000));
+        testDecompress(randomData(100000, true));
+        testDecompress(consecutiveData(100000));
+        testDecompress(alternatingData(100000));
     }
 
     @Test
     public void testDecompressFile() throws IOException {
         if (lzw.codeSize <= 16) {
-            //testDecompressFile(randomData(2000000, false));
+            testDecompressFile(randomData(2000000, false));
         }
     }
 
