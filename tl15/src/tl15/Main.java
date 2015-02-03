@@ -20,7 +20,7 @@ public class Main {
         opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
         opts.addFlag("decompress", "d", "Decompress (default is to compress)");
         opts.addOption("lzw.codeSize", "ls", "code_size", 12, "The code size for LZW compression. Must be between 9..31");
-        opts.addOption("lzw.resetDict", "lr", "treshold", 20, "Reset the LZW compression dictionary when its poorness is > treshold %. Set to 100 to disable.");
+        opts.addOption("lzw.resetDict", "lr", "treshold", 25, "Reset the LZW compression dictionary when its poorness is > treshold %. Set to 100 to disable.");
         // TODO: -h and -v
 
         if (!opts.parse(args)) {
@@ -60,8 +60,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "16", "-lr", "20"};
-        //args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
+        //args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "16", "-lr", "25"};
+        args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
         //args = new String[]{"-i", "test.orig", "-o", "test.hc", "-a", "huffman"};
         //args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
         Options opts = initOptions(args);
