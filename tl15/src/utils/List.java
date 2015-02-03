@@ -138,7 +138,7 @@ public class List<T> implements Iterable<T> {
 
             @Override
             public void remove() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
         };
     }
