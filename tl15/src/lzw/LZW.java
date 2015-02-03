@@ -5,8 +5,8 @@ import bitstream.BitOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import utils.List;
+import utils.Map;
 
 /**
  * An implementation of LZW-(de)compression.
@@ -53,14 +53,22 @@ public class LZW {
     }
 
     /**
+     * Calculate a suitable size for the hash table in decompress();
+     * @return A very good number.
+     */
+    private int hashTableSize() {
+        return 98299;  // a random prime close to the middle of 2^16 and 2^17
+    }
+    
+    /**
      * Decompress ins into outs. The output stream is not flushed.
      * @param ins
      * @param outs
      * @throws IOException 
      */
     public void decompress(BitInputStream ins, BitOutputStream outs) throws IOException {
-        HashMap<Integer, List<Integer>> dict = new HashMap<>();
-        HashMap<List<Integer>, Boolean> values = new HashMap<>();
+        Map<Integer, List<Integer>> dict = new Map<>(hashTableSize());
+        Map<List<Integer>, Boolean> values = new Map<>(hashTableSize());
         for (int i = 0; i < 256; ++i) {
             List<Integer> l = new List<>();
             l.add(i);
