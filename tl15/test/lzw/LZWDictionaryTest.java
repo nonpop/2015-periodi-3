@@ -20,13 +20,5 @@ public class LZWDictionaryTest {
         assertEquals(0, dict.getCode(string));
         string.add(0);
         assertEquals(256, dict.getCode(string));
-
-        string.clear();
-        string.add(0);
-        assertEquals(0, dict.getCode(string));
-        string.add(0);
-        assertEquals(-1, dict.getCode(string));
-        dict.addString(string);
-        assertEquals(256, dict.getCode(string));
     }
 }
