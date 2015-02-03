@@ -15,10 +15,12 @@ import java.util.HashSet;
  */
 public class LZW {
     public final int codeSize;
+    public final int lastCode;
 
     public LZW(int codeSize) {
         assert(codeSize >= 9 && codeSize <= 31);
         this.codeSize = codeSize;
+        lastCode = (int)Math.pow(2, codeSize) - 1;
     }
     
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {
@@ -47,8 +49,6 @@ public class LZW {
     }
 
     public void decompress(BitInputStream ins, OutputStream outs) throws IOException {
-        int lastCode = (int)Math.pow(2, codeSize) - 1;
-
         HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
         HashSet<ArrayList<Integer>> values = new HashSet<>();
         for (int i = 0; i < 256; ++i) {
