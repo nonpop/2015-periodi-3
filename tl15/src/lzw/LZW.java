@@ -157,6 +157,7 @@ public class LZW {
      * @param ins
      * @param outs
      * @param codeSize
+     * @param resetDict
      * @throws IOException 
      */
     public static void compressFile(InputStream ins, OutputStream outs, int codeSize, int resetDict) throws IOException {
