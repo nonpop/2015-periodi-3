@@ -5,9 +5,7 @@ import bitstream.BitOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import utils.List;
 
 /**
@@ -62,11 +60,12 @@ public class LZW {
      */
     public void decompress(BitInputStream ins, BitOutputStream outs) throws IOException {
         HashMap<Integer, List<Integer>> dict = new HashMap<>();
-        HashSet<List<Integer>> values = new HashSet<>();
+        HashMap<List<Integer>, Boolean> values = new HashMap<>();
         for (int i = 0; i < 256; ++i) {
-            List<Integer> l = new List<>(Arrays.asList(i));
+            List<Integer> l = new List<>();
+            l.add(i);
             dict.put(i, l);
-            values.add(l);
+            values.put(l, true);
         }
         int nextCode = 256;
 
@@ -89,10 +88,10 @@ public class LZW {
                 toDict.add(decoded.get(0));
                 lastOutput = new List<>(decoded);
             }
-            if (!values.contains(toDict)) {
+            if (!values.containsKey(toDict)) {
                 if (nextCode <= lastCode) {
                     dict.put(nextCode++, toDict);
-                    values.add(toDict);
+                    values.put(toDict, true);
                 }
             }
             for (int i : decoded) {
