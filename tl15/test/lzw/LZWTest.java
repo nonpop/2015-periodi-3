@@ -65,17 +65,19 @@ public class LZWTest {
         bouts.flush();
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
-        lzw.decompress(new BitInputStream(ins), new BitOutputStream(outs));
+        bouts = new BitOutputStream(outs);
+        lzw.decompress(new BitInputStream(ins), bouts);
+        bouts.flush();
         assertArrayEquals(data, outs.toByteArray());
     }
 
     public void testDecompressFile(byte[] data) throws IOException {
         ByteArrayInputStream ins = new ByteArrayInputStream(data);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
-        lzw.compressFile(ins, outs);
+        LZW.compressFile(ins, outs, lzw.codeSize);
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
-        lzw.decompressFile(ins, outs);
+        LZW.decompressFile(ins, outs);
         assertArrayEquals(data, outs.toByteArray());
     }
     

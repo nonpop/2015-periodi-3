@@ -23,6 +23,12 @@ public class LZW {
         lastCode = (int)Math.pow(2, codeSize) - 1;
     }
     
+    /**
+     * Compress ins stream into outs. The output stream is not flushed.
+     * @param ins
+     * @param outs
+     * @throws IOException 
+     */
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary(codeSize);
         ArrayList<Integer> string = new ArrayList<>();
@@ -45,6 +51,12 @@ public class LZW {
         System.out.println("Compressed/original (no headers): " + (100.0 * outs.getBitCount() / (inputSize * 8)) + " %");
     }
 
+    /**
+     * Decompress ins into outs. The output stream is not flushed.
+     * @param ins
+     * @param outs
+     * @throws IOException 
+     */
     public void decompress(BitInputStream ins, BitOutputStream outs) throws IOException {
         HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
         HashSet<ArrayList<Integer>> values = new HashSet<>();
@@ -84,16 +96,45 @@ public class LZW {
                 outs.write(i);
             }
         }
-        outs.flush();
     }
 
-    public void compressFile(InputStream ins, OutputStream outs) throws IOException {
+    private static final int headerMagik = ('T' << 24) | ('L' << 16) | (1 << 8) | 6;
+    
+    /**
+     * Compress ins into outs using the given code size. A header is written to the output stream.
+     * @param ins
+     * @param outs
+     * @param codeSize
+     * @throws IOException 
+     */
+    public static void compressFile(InputStream ins, OutputStream outs, int codeSize) throws IOException {
+        LZW lzw = new LZW(codeSize);
         BitOutputStream bouts = new BitOutputStream(outs);
-        compress(ins, bouts);
+
+        // the header
+        bouts.writeBits(32, headerMagik);
+        bouts.writeBits(32, codeSize);
+
+        lzw.compress(ins, bouts);
         bouts.flush();
     }
 
-    public void decompressFile(InputStream ins, OutputStream outs) throws IOException {
-        decompress(new BitInputStream(ins), new BitOutputStream(outs));
+    /**
+     * Decompress ins into outs. The input stream must contain a header.
+     * @param ins
+     * @param outs
+     * @throws IOException 
+     */
+    public static void decompressFile(InputStream ins, OutputStream outs) throws IOException {
+        BitInputStream bins = new BitInputStream(ins);
+        BitOutputStream bouts = new BitOutputStream(outs);
+        if (bins.readBits(32) != headerMagik) {
+            throw new IllegalArgumentException();
+        }
+        int fileCodeSize = bins.readBits(32);
+        LZW lzw = new LZW(fileCodeSize);
+        
+        lzw.decompress(bins, bouts);
+        bouts.flush();
     }
 }
