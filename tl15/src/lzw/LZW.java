@@ -48,56 +48,44 @@ public class LZW {
 
     public void decompress(BitInputStream ins, OutputStream outs) throws IOException {
         int lastCode = (int)Math.pow(2, codeSize) - 1;
+
         HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
         HashSet<ArrayList<Integer>> values = new HashSet<>();
-        ArrayList<Integer> last = new ArrayList<>();
+        for (int i = 0; i < 256; ++i) {
+            ArrayList<Integer> l = new ArrayList<>(Arrays.asList(i));
+            dict.put(i, l);
+            values.add(l);
+        }
         int nextCode = 256;
 
-//        int inputSize = 0;
-//        int outputSize = 0;
+        ArrayList<Integer> lastOutput = new ArrayList<>();
         while (true) {
             Integer code = ins.readBits(codeSize);
             if (code == null) {
                 break;
             }
-//            inputSize += codeSize;
-            if (code < 256 || dict.get(code) != null) {
-                ArrayList<Integer> cur;
-                if (code < 256) {
-                    cur = new ArrayList<>(Arrays.asList(code));
-                } else {
-                    cur = new ArrayList<>(dict.get(code));
-                }
-                for (int i : cur) {
-                    outs.write(i);
-                }
-//                outputSize += cur.size();
-                last.add(cur.get(0));
-                if (last.size() > 1 && !values.contains(last)) {
-                    ArrayList<Integer> copy = new ArrayList<>(last);
-                    if (nextCode <= lastCode) {
-                        dict.put(nextCode++, copy);
-                        values.add(copy);
-                    }
-                }
-                last = cur;
+            ArrayList<Integer> decoded = dict.get(code);
+            ArrayList<Integer> toDict;
+            if (decoded == null) {
+                // code is not in the dictionary; this is the exception case
+                // in the LZW decompression algorithm
+                lastOutput.add(lastOutput.get(0));
+                decoded = lastOutput;
+                toDict = decoded;
             } else {
-                ArrayList<Integer> cur = new ArrayList<>(last);//TODO:remove?
-                cur.add(cur.get(0));
-                for (int i : cur) {
-                    outs.write(i);
-                }
-//                outputSize += cur.size();
-                ArrayList<Integer> copy = new ArrayList<>(cur);
-                if (nextCode <= lastCode) {
-                    dict.put(nextCode++, copy);
-                    values.add(copy);
-                }
-                last = cur;
+                toDict = new ArrayList<>(lastOutput);
+                toDict.add(decoded.get(0));
+                lastOutput = new ArrayList<>(decoded);
             }
-//            if ((inputSize / 8) % 10240 == 0) {
-//                System.out.println((inputSize / 8) / 1024 + "K decompressed into " + outputSize / 1024 + "K");
-//            }
+            if (!values.contains(toDict)) {
+                if (nextCode <= lastCode) {
+                    dict.put(nextCode++, toDict);
+                    values.add(toDict);
+                }
+            }
+            for (int i : decoded) {
+                outs.write(i);
+            }
         }
     }
 
