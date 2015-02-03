@@ -58,6 +58,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         //args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "16"};
         //args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
+        //args = new String[]{"-i", "test.orig", "-o", "test.hc", "-a", "huffman"};
+        //args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
         Options opts = initOptions(args);
         if (opts == null) {
             return;

@@ -155,19 +155,34 @@ public class Huffman {
     }
 
     /** Just some random bytes to identify a compressed file. */
-    private static final byte[] headerMagik = new byte[]{ 84, 76, 1, 5 };
+    private static final int headerMagik = ('T' << 24) | ('L' << 16) | (1 << 8) | 5;
     
     /**
      * Write header information to a stream. The header consists of:
      *  - the four headerMagik bytes
-     *  - a table of 256 4-byte integers containing the frequency data
+     *  - a byte 'n' telling how many entries the following table has
+     *  - a table of 'n' pairs (b,i), where b is a byte and i 4-byte integer 
+     *    expressing the frequency of byte b
      * @param outs The stream.
      * @param freqs The frequencies.
      * @param actualBitCount The bit count.
      * @throws IOException 
      */
     public static void writeHeader(BitOutputStream outs, int[] freqs, int actualBitCount) throws IOException {
-        outs.write(headerMagik);
+        outs.writeBits(32, headerMagik);
+        int nonZeros = 0;
+        for (int f : freqs) {
+            if (f > 0) {
+                ++nonZeros;
+            }
+        }
+        outs.writeBits(8, nonZeros);
+        for (int i = 0; i < 256; ++i) {
+            if (freqs[i] > 0) {
+                outs.writeBits(8, i);
+                outs.writeBits(32, freqs[i]);
+            }
+        }
         for (int f : freqs) {
             outs.writeBits(32, f);
         }
@@ -181,14 +196,15 @@ public class Huffman {
      * @throws IOException 
      */
     public static int[] readHeader(BitInputStream ins) throws IOException {
-        for (int i = 0; i < headerMagik.length; ++i) {
-// I'm too lazy to write a test to cover this now.
-//            if (ins.read() != headerMagik[i]) {
-//                throw new IllegalArgumentException("Bad file.");
-//            }
-            ins.read();
+        if (ins.readBits(32) != headerMagik) {
+            throw new IllegalArgumentException("Bad file.");
         }
         int[] freqs = new int[256];
+        int nonZeros = ins.readBits(8);
+        for (int i = 0; i < nonZeros; ++i) {
+            int b = ins.readBits(8);
+            freqs[b] = ins.readBits(32);
+        }
         for (int i = 0; i < 256; ++i) {
             freqs[i] = ins.readBits(32);
         }

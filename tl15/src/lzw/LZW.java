@@ -113,7 +113,7 @@ public class LZW {
 
         // the header
         bouts.writeBits(32, headerMagik);
-        bouts.writeBits(32, codeSize);
+        bouts.writeBits(5, codeSize);
 
         lzw.compress(ins, bouts);
         bouts.flush();
@@ -129,9 +129,9 @@ public class LZW {
         BitInputStream bins = new BitInputStream(ins);
         BitOutputStream bouts = new BitOutputStream(outs);
         if (bins.readBits(32) != headerMagik) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Bad file.");
         }
-        int fileCodeSize = bins.readBits(32);
+        int fileCodeSize = bins.readBits(5);
         LZW lzw = new LZW(fileCodeSize);
         
         lzw.decompress(bins, bouts);
