@@ -1,4 +1,4 @@
-package bitstream;
+package utils;
 
 import utils.BitVector;
 import org.junit.Test;
