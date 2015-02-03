@@ -14,7 +14,7 @@ public class List<T> implements Iterable<T> {
 
     /**
      * 
-     * @param initialSize The initial size of the vector in bits. Must be > 0!
+     * @param initialSize The initial size of the list. Must be > 0!
      */
     public List(int initialSize) {
         if (initialSize <= 0) {
