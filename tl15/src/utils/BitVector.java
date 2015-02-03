@@ -1,4 +1,4 @@
-package bitstream;
+package utils;
 
 /** A stripped-down ArrayList of booleans */
 public class BitVector {

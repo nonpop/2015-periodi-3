@@ -1,5 +1,6 @@
 package bitstream;
 
+import utils.BitVector;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

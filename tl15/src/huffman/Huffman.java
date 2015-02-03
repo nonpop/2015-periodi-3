@@ -2,7 +2,7 @@ package huffman;
 
 import bitstream.BitInputStream;
 import bitstream.BitOutputStream;
-import bitstream.BitVector;
+import utils.BitVector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

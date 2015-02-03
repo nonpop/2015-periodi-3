@@ -1,7 +1,8 @@
 package tl15;
 
+import utils.Options;
 import huffman.Huffman;
-import huffman.ResettableFileInputStream;
+import utils.ResettableFileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
