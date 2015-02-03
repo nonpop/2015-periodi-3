@@ -1,5 +1,7 @@
 package utils;
 
+import static utils.Math.max;
+
 /**
  * A class to handle command line arguments.
  */
@@ -70,9 +72,9 @@ public class Options {
         for (Pair<String, Option> kv : options) {
             Option opt = kv.second;
             if (opt.takesArgument) {
-                longest = Math.max(longest, (opt.option + " " + opt.argName).length());
+                longest = max(longest, (opt.option + " " + opt.argName).length());
             } else {
-                longest = Math.max(longest, opt.option.length());
+                longest = max(longest, opt.option.length());
             }
         }
         String fmt = "  -%-" + longest + "s  :  %s";
