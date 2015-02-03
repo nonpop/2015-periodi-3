@@ -5,10 +5,10 @@ import bitstream.BitOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import utils.List;
 
 /**
  * An implementation of LZW-(de)compression.
@@ -31,14 +31,17 @@ public class LZW {
      */
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary(codeSize);
-        ArrayList<Integer> string = new ArrayList<>();
+        List<Integer> string = new List<>();
         int b;
         int inputSize = 0;
         while ((b = ins.read()) != -1) {
             ++inputSize;
             string.add(b);
             if (dict.getCode(string) == -1) {
-                outs.writeBits(codeSize, dict.getCode(string.subList(0, string.size() - 1)));
+                string.removeLast();    // temporarily remove the last element
+                                        // so we don't have to create a sublist
+                outs.writeBits(codeSize, dict.getCode(string));
+                string.add(b);
                 dict.addString(string);
                 string.clear();
                 string.add(b);
@@ -58,23 +61,23 @@ public class LZW {
      * @throws IOException 
      */
     public void decompress(BitInputStream ins, BitOutputStream outs) throws IOException {
-        HashMap<Integer, ArrayList<Integer>> dict = new HashMap<>();
-        HashSet<ArrayList<Integer>> values = new HashSet<>();
+        HashMap<Integer, List<Integer>> dict = new HashMap<>();
+        HashSet<List<Integer>> values = new HashSet<>();
         for (int i = 0; i < 256; ++i) {
-            ArrayList<Integer> l = new ArrayList<>(Arrays.asList(i));
+            List<Integer> l = new List<>(Arrays.asList(i));
             dict.put(i, l);
             values.add(l);
         }
         int nextCode = 256;
 
-        ArrayList<Integer> lastOutput = new ArrayList<>();
+        List<Integer> lastOutput = new List<>();
         while (true) {
             Integer code = ins.readBits(codeSize);
             if (code == null) {
                 break;
             }
-            ArrayList<Integer> decoded = dict.get(code);
-            ArrayList<Integer> toDict;
+            List<Integer> decoded = dict.get(code);
+            List<Integer> toDict;
             if (decoded == null) {
                 // code is not in the dictionary; this is the exception case
                 // in the LZW decompression algorithm
@@ -82,9 +85,9 @@ public class LZW {
                 decoded = lastOutput;
                 toDict = decoded;
             } else {
-                toDict = new ArrayList<>(lastOutput);
+                toDict = new List<>(lastOutput);
                 toDict.add(decoded.get(0));
-                lastOutput = new ArrayList<>(decoded);
+                lastOutput = new List<>(decoded);
             }
             if (!values.contains(toDict)) {
                 if (nextCode <= lastCode) {

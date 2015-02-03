@@ -2,12 +2,11 @@ package huffman;
 
 import bitstream.BitInputStream;
 import bitstream.BitOutputStream;
-import utils.BitVector;
+import utils.List;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Random;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -40,13 +39,13 @@ public class HuffmanTest {
         return f;
     }
 
-    private static byte[] asByteArray(ArrayList<Integer> data) {
-        byte[] result = new byte[data.size()];
-        for (int i = 0; i < data.size(); ++i) {
-            result[i] = (byte)(data.get(i) & 0xff);
-        }
-        return result;
-    }
+//    private static byte[] asByteArray(List<Integer> data) {
+//        byte[] result = new byte[data.size()];
+//        for (int i = 0; i < data.size(); ++i) {
+//            result[i] = (byte)(data.get(i) & 0xff);
+//        }
+//        return result;
+//    }
     
     @Test
     public void testCalculateFrequencies() throws IOException {
@@ -119,7 +118,7 @@ public class HuffmanTest {
         checkHuffmanTree(Huffman.buildTree(freqs), freqs);
     }
 
-    private static void checkCode(BitVector code, HuffmanTreeNode root, int expected) {
+    private static void checkCode(List<Boolean> code, HuffmanTreeNode root, int expected) {
         assertNotNull(root);
         if (root.left == null) {
             assertEquals(0, code.size());

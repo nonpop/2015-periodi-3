@@ -1,7 +1,7 @@
 package lzw;
 
-import java.util.ArrayList;
-import java.util.List;
+import utils.List;
+
 
 /**
  * Implements an LZW dictionary with fixed-size code words. The code word size
@@ -30,7 +30,7 @@ public class LZWDictionary {
      * itself is not.
      * @param string The string.
      */
-    public void addString(ArrayList<Integer> string) {
+    public void addString(List<Integer> string) {
         if (isFull()) {
             return;
         }
@@ -64,7 +64,7 @@ public class LZWDictionary {
      * @param string The string.
      * @return The code.
      */
-    public int getCode(List<Integer> string) {
+    public int getCode(Iterable<Integer> string) {
         LZWDictionaryEntry dict = root;
         for (int next : string) {
             if (dict.children[next] == null || !dict.children[next].isValid()) {

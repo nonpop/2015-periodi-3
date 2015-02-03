@@ -1,14 +1,14 @@
 package lzw;
 
-import java.util.ArrayList;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import utils.List;
 
 public class LZWDictionaryTest {
     @Test
     public void test() {
         LZWDictionary dict = new LZWDictionary(12);
-        ArrayList<Integer> string = new ArrayList<>();
+        List<Integer> string = new List<>();
         string.add(0);
         for (int i = 0; i < 4096 - 256; ++i) {
             string.add(i % 256);

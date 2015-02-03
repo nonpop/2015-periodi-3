@@ -2,7 +2,7 @@ package huffman;
 
 import bitstream.BitInputStream;
 import bitstream.BitOutputStream;
-import utils.BitVector;
+import utils.List;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,8 +65,8 @@ public class Huffman {
      * @param node A leaf node representing the character.
      * @return The code for the character.
      */
-    public static BitVector findCode(HuffmanTreeNode node) {
-        BitVector res = new BitVector(8);
+    public static List<Boolean> findCode(HuffmanTreeNode node) {
+        List<Boolean> res = new List<>(8);
         while (node.parent != null) {
             if (node == node.parent.right) {
                 res.add(true);

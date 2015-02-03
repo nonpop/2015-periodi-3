@@ -1,13 +1,12 @@
 package utils;
 
-import utils.BitVector;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class BitVectorTest {
+public class ListTest {
     @Test
     public void test() {
-        BitVector v = new BitVector(1);
+        List v = new List(1);
         assertEquals(0, v.size());
         v.add(true);
         assertEquals(1, v.size());

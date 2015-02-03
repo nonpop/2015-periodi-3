@@ -1,6 +1,6 @@
 package bitstream;
 
-import utils.BitVector;
+import utils.List;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -72,7 +72,7 @@ public class BitOutputStream extends OutputStream {
      * @param bits The bits to write.
      * @throws java.io.IOException
      */
-    public void writeBits(BitVector bits) throws IOException {
+    public void writeBits(List<Boolean> bits) throws IOException {
         for (int i = 0; i < bits.size(); ++i) {
             writeBits(1, bits.get(i)? 1 : 0);
         }

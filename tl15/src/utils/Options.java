@@ -1,7 +1,6 @@
 package utils;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.Map.Entry;
 
 /**
@@ -9,7 +8,7 @@ import java.util.Map.Entry;
  */
 public class Options {
     private final String runCommand;
-    ArrayList<Entry<String, Option>> options = new ArrayList<>();
+    List<Entry<String, Option>> options = new List<>();
 
     /**
      * 
