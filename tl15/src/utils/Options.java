@@ -1,14 +1,11 @@
 package utils;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Map.Entry;
-
 /**
  * A class to handle command line arguments.
  */
 public class Options {
     private final String runCommand;
-    List<Entry<String, Option>> options = new List<>();
+    List<Pair<String, Option>> options = new List<>();
 
     /**
      * 
@@ -32,7 +29,7 @@ public class Options {
         assert(name != null);
         assert(argName != null);
         assert(description != null);
-        options.add(new SimpleEntry<>(name, new Option(option, true, argName, false, defValue, description)));
+        options.add(new Pair<>(name, new Option(option, true, argName, false, defValue, description)));
     }
 
     /**
@@ -49,7 +46,7 @@ public class Options {
         assert(name != null);
         assert(argName != null);
         assert(description != null);
-        options.add(new SimpleEntry<>(name, new Option(option, true, argName, true, "" + defValue, description)));
+        options.add(new Pair<>(name, new Option(option, true, argName, true, "" + defValue, description)));
     }
 
     /**
@@ -63,15 +60,15 @@ public class Options {
         assert(option != null);
         assert(name != null);
         assert(description != null);
-        options.add(new SimpleEntry<>(name, new Option(option, false, null, false, null, description)));
+        options.add(new Pair<>(name, new Option(option, false, null, false, null, description)));
     }
 
     public void usage() {
         System.out.println("Usage: " + runCommand + " *arguments*");
         System.out.println("Available arguments:");
         int longest = 0;
-        for (Entry<String, Option> kv : options) {
-            Option opt = kv.getValue();
+        for (Pair<String, Option> kv : options) {
+            Option opt = kv.second;
             if (opt.takesArgument) {
                 longest = Math.max(longest, (opt.option + " " + opt.argName).length());
             } else {
@@ -79,8 +76,8 @@ public class Options {
             }
         }
         String fmt = "  -%-" + longest + "s  :  %s";
-        for (Entry<String, Option> kv : options) {
-            Option opt = kv.getValue();
+        for (Pair<String, Option> kv : options) {
+            Option opt = kv.second;
             String name = opt.option;
             if (opt.takesArgument) {
                 name += " " + opt.argName;
@@ -94,18 +91,18 @@ public class Options {
     }
 
     private Option getOptionByOptionString(String arg) {
-        for (Entry<String, Option> kv : options) {
-            if (kv.getValue().option.equals(arg)) {
-                return kv.getValue();
+        for (Pair<String, Option> kv : options) {
+            if (kv.second.option.equals(arg)) {
+                return kv.second;
             }
         }
         return null;
     }
 
     private Option getOptionByName(String name) {
-        for (Entry<String, Option> kv : options) {
-            if (kv.getKey().equals(name)) {
-                return kv.getValue();
+        for (Pair<String, Option> kv : options) {
+            if (kv.first.equals(name)) {
+                return kv.second;
             }
         }
         return null;
@@ -176,9 +173,9 @@ public class Options {
 
     public boolean getFlagState(String name) {
         // TODO: remove copy-paste
-        for (Entry<String, Option> kv : options) {
-            if (kv.getKey().equals(name)) {
-                Option opt = kv.getValue();
+        for (Pair<String, Option> kv : options) {
+            if (kv.first.equals(name)) {
+                Option opt = kv.second;
                 if (opt.takesArgument) {
                     throw new IllegalArgumentException("option " + name + " is not a flag");
                 }
@@ -219,8 +216,8 @@ public class Options {
     }
 
     public void dump() {
-        for (Entry<String, Option> kv : options) {
-            System.out.println(kv.getKey() + " = " + formatValue(kv.getValue()));
+        for (Pair<String, Option> kv : options) {
+            System.out.println(kv.first + " = " + formatValue(kv.second));
         }
     }
 }

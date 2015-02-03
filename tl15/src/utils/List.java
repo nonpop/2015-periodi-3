@@ -1,6 +1,5 @@
 package utils;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 /** A stripped-down ArrayList.
@@ -150,8 +149,9 @@ public class List<T> implements Iterable<T> {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 11 * hash + Arrays.deepHashCode(this.array);
-        hash = 11 * hash + this.size;
+        for (int i = 0; i < size; ++i) {
+            hash = 11 * hash + array[i].hashCode();
+        }
         return hash;
     }
 
@@ -163,12 +163,14 @@ public class List<T> implements Iterable<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final List<?> other = (List<?>) obj;
-        if (!Arrays.deepEquals(this.array, other.array)) {
-            return false;
-        }
+        final List<T> other = (List<T>) obj;
         if (this.size != other.size) {
             return false;
+        }
+        for (int i = 0; i < size; ++i) {
+            if (!this.array[i].equals(other.array[i])) {
+                return false;
+            }
         }
         return true;
     }
