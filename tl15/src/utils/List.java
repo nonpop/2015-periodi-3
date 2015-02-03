@@ -64,6 +64,18 @@ public class List<T> implements Iterable<T> {
     }
 
     /**
+     * Replace an element in the list.
+     * @param i
+     * @param element
+     */
+    public void set(int i, T element) {
+        if (i < 0 || i >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        array[i] = element;
+    }
+
+    /**
      * Double the capacity of the list.
      */
     private void grow() {
