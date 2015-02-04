@@ -13,6 +13,7 @@ public class LZWDictionary {
     private final int lastCode;
     private final LZWDictionaryEntry root = new LZWDictionaryEntry(-1);
     private int nextCode = 256;
+    private LZWDictionaryEntry currentEntry = root;
 
     /**
      *
@@ -26,49 +27,44 @@ public class LZWDictionary {
         }
     }
 
-    /**
-     * Add a new string into the dictionary. It is assumed that the prefix
-     * (all but the last character) is already in the dictionary but the string
-     * itself is not.
-     * @param string The string.
-     */
-    public void addString(List<Integer> string) {
-        if (isFull()) {
-            return;
-        }
-        LZWDictionaryEntry dict = root;
-        for (int i = 0; i < string.size() - 1; ++i) {
-            dict = dict.children[string.get(i)];
-        }
-        LZWDictionaryEntry entry = new LZWDictionaryEntry(nextCode++);
-        int last = string.get(string.size() - 1);
-        dict.children[last] = entry;
-    }
-
     public boolean isFull() {
         return nextCode > lastCode;
     }
 
     public void reset() {
-        nextCode = 256;
         for (int i = 0; i < 256; ++i) {
+//            root.children[i].invalidate();        // for some reason this is much slower than creating a new object
             root.children[i] = new LZWDictionaryEntry(i);
         }
+        nextCode = 256;
+        currentEntry = root;
+    }
+
+    public boolean hasNextChar(Integer character) {
+        return currentEntry.children[character] != null && currentEntry.children[character].isValid();
+    }
+
+    public Integer getCurrentCode() {
+        return currentEntry.getCode();
     }
 
     /**
-     * Get the code associated to the given string.
-     * @param string The string.
-     * @return The code.
+     * Add code and restart traversing.
+     * @param character 
      */
-    public int getCode(Iterable<Integer> string) {
-        LZWDictionaryEntry dict = root;
-        for (int next : string) {
-            if (dict.children[next] == null || !dict.children[next].isValid()) {
-                return -1;
-            }
-            dict = dict.children[next];
+    public void add(Integer character) {
+        if (isFull()) {
+            return;
         }
-        return dict.getCode();
+        currentEntry.children[character] = new LZWDictionaryEntry(nextCode++);
+        currentEntry = root.children[character];
+    }
+
+    public void advance(Integer character) {
+        currentEntry = currentEntry.children[character];
+    }
+
+    public boolean isTraversing() {
+        return currentEntry != root;
     }
 }
