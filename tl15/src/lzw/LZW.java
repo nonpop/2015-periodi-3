@@ -81,7 +81,7 @@ public class LZW {
      * @return A very good number.
      */
     private int hashTableSize() {
-        return 1531;
+        return 1531;    // TODO: This should bepend on codeSize
     }
 
     /**
@@ -94,12 +94,6 @@ public class LZW {
     public void decompress(BitInputStream ins, OutputStream outs) throws IOException {
         Map<Integer, List<Integer>> dict = new Map<>(hashTableSize());
         Map<List<Integer>, Boolean> values = new Map<>(hashTableSize());
-        for (int i = 0; i < 256; ++i) {
-            List<Integer> l = new List<>();
-            l.add(i);
-            dict.put(i, l);
-            values.put(l, true);
-        }
         int nextCode = 256;
 
         List<Integer> lastOutput = new List<>();
@@ -111,37 +105,39 @@ public class LZW {
             if (code == lastCode + 1) {
                 dict.clear();
                 values.clear();
-                nextCode = 256;
-                for (int i = 0; i < 256; ++i) {
-                    List<Integer> l = new List<>();
-                    l.add(i);
-                    dict.put(i, l);
-                    values.put(l, true);
-                }
                 lastOutput.clear();
+                nextCode = 256;
                 continue;
             }
-            List<Integer> decoded = dict.get(code);
             List<Integer> toDict;
-            if (decoded == null) {
-                // code is not in the dictionary; this is the exception case
-                // in the LZW decompression algorithm
-                lastOutput.add(lastOutput.get(0));
-                decoded = lastOutput;
-                toDict = new List<>(decoded);
-            } else {
+            if (code < 256) {
                 toDict = new List<>(lastOutput);
-                toDict.add(decoded.get(0));
-                lastOutput = new List<>(decoded);
+                toDict.add(code);
+                lastOutput = new List<>();
+                lastOutput.add(code);
+                outs.write(code);
+            } else {
+                List<Integer> decoded = dict.get(code);
+                if (decoded == null) {
+                    // code is not in the dictionary; this is the exception case
+                    // in the LZW decompression algorithm
+                    lastOutput.add(lastOutput.get(0));
+                    decoded = lastOutput;
+                    toDict = new List<>(decoded);
+                } else {
+                    toDict = new List<>(lastOutput);
+                    toDict.add(decoded.get(0));
+                    lastOutput = new List<>(decoded);
+                }
+                for (int i : decoded) {
+                    outs.write(i);
+                }
             }
-            if (!values.containsKey(toDict)) {
+            if (toDict.size() > 1 && !values.containsKey(toDict)) {
                 if (nextCode <= lastCode) {
                     dict.put(nextCode++, toDict);
                     values.put(toDict, true);
                 }
-            }
-            for (int i : decoded) {
-                outs.write(i);
             }
         }
     }
