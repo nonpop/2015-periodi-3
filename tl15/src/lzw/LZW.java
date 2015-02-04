@@ -188,6 +188,7 @@ public class LZW {
             throw new IllegalArgumentException("Bad file.");
         }
         int fileCodeSize = bins.readBits(5);
+        System.out.println("Using code size " + fileCodeSize);
         LZW lzw = new LZW(fileCodeSize, 30);
         lzw.decompress(bins, outs);
     }
