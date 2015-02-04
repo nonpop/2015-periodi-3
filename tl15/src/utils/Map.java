@@ -25,7 +25,8 @@ public class Map<K, V> {
      */
     public void clear() {
         for (int i = 0; i < hashMap.size(); ++i) {
-            hashMap.set(i, new List<Pair<K, V>>());
+//            hashMap.set(i, new List<Pair<K, V>>());
+            hashMap.get(i).clear();     // for some reason HERE this is faster than creating a new object?
         }
     }
 
