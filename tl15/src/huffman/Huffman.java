@@ -231,6 +231,10 @@ public class Huffman {
      * @throws IOException 
      */
     public static void compressFile(InputStream ins, OutputStream outs) throws IOException {
+        if (!ins.markSupported()) {
+            throw new IllegalArgumentException("input stream must support mark");
+        }
+        ins.mark(Integer.MAX_VALUE);
         int[] freqs = calculateFrequencies(ins);
         ins.reset();
 

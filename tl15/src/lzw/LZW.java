@@ -92,7 +92,7 @@ public class LZW {
      * @param outs
      * @throws IOException
      */
-    public void decompress(BitInputStream ins, BitOutputStream outs) throws IOException {
+    public void decompress(BitInputStream ins, OutputStream outs) throws IOException {
         Map<Integer, List<Integer>> dict = new Map<>(hashTableSize());
         Map<List<Integer>, Boolean> values = new Map<>(hashTableSize());
         for (int i = 0; i < 256; ++i) {
@@ -180,14 +180,11 @@ public class LZW {
      */
     public static void decompressFile(InputStream ins, OutputStream outs) throws IOException {
         BitInputStream bins = new BitInputStream(ins);
-        BitOutputStream bouts = new BitOutputStream(outs);
         if (bins.readBits(32) != headerMagik) {
             throw new IllegalArgumentException("Bad file.");
         }
         int fileCodeSize = bins.readBits(5);
         LZW lzw = new LZW(fileCodeSize, 30);
-
-        lzw.decompress(bins, bouts);
-        bouts.flush();
+        lzw.decompress(bins, outs);
     }
 }

@@ -20,13 +20,13 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class LZWTest {
     private final LZW lzw;
-//    private final boolean slowTests = true;
-    private final boolean slowTests = false;
+    private final boolean slowTests = true;
+//    private final boolean slowTests = false;
     
     @Parameters
     public static Collection<Object[]> parameters() {
-       return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {31}});
-//       return Arrays.asList(new Object[][]{{16}});
+//       return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {31}});
+       return Arrays.asList(new Object[][]{{16}});
     }
     
     public LZWTest(int codeSize) {
@@ -68,9 +68,7 @@ public class LZWTest {
         bouts.flush();
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
-        bouts = new BitOutputStream(outs);
-        lzw.decompress(new BitInputStream(ins), bouts);
-        bouts.flush();
+        lzw.decompress(new BitInputStream(ins), outs);
         assertArrayEquals(data, outs.toByteArray());
     }
 

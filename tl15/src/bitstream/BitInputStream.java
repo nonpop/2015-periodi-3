@@ -17,7 +17,7 @@ public class BitInputStream extends InputStream {
     /**
      * The current byte. bytePos is a 0-based index into this.
      */
-    private int curByte;
+    private int curByte = 0;
 
     /**
      * 
@@ -42,15 +42,15 @@ public class BitInputStream extends InputStream {
             if (bytePos == 8) {
                 curByte = ins.read();
                 if (curByte == -1) {
+                    curByte = 0;
                     return null;
                 }
                 bytePos = 0;
             }
-            int bit = curByte & (0x80 >> bytePos);  // isolate the next bit
-            bit >>= 7 - bytePos;
+            if ((curByte & (0x80 >> bytePos)) != 0) {
+                result |= 1 << (bitsToRead - 1);
+            }
             ++bytePos;
-            bit <<= (bitsToRead - 1);
-            result |= bit;
             --bitsToRead;
         }
         return result;

@@ -2,7 +2,9 @@ package tl15;
 
 import utils.Options;
 import huffman.Huffman;
-import utils.ResettableFileInputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,10 +62,10 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "12", "-lr", "25"};
+//        args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "12", "-lr", "25"};
 //        args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
-        //args = new String[]{"-i", "test.orig", "-o", "test.hc", "-a", "huffman"};
-        //args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
+//        args = new String[]{"-i", "test.orig", "-o", "test.hc", "-a", "huffman"};
+//        args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
         Options opts = initOptions(args);
         if (opts == null) {
             return;
@@ -71,8 +73,8 @@ public class Main {
         String inp = opts.getOptionString("inputFile");
         String outp = opts.getOptionString("outputFile");
 
-        try (InputStream ins = new ResettableFileInputStream(inp);
-             OutputStream outs = new FileOutputStream(outp))
+        try (InputStream ins = new BufferedInputStream(new FileInputStream(inp));
+             OutputStream outs = new BufferedOutputStream(new FileOutputStream(outp)))
         {
             long start = System.nanoTime();
             if (opts.getOptionString("algorithm").equals("lzw")) {
