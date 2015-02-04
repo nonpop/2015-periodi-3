@@ -78,4 +78,12 @@ public class BitInputStreamTest {
         bins = new BitInputStream(ins);
         assertEquals((Integer)0b0110100100011010, bins.readBits(16));
     }
+
+    @Test
+    public void testBigByte() throws Exception {
+        byte[] data = new byte[]{ (byte)0xff };
+        InputStream ins = new ByteArrayInputStream(data);
+        BitInputStream bins = new BitInputStream(ins);
+        assertEquals((Integer)255, bins.readBits(8));
+    }
 }
