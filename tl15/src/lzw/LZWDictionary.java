@@ -54,6 +54,7 @@ public class LZWDictionary {
      */
     public void add(Integer character) {
         if (isFull()) {
+            currentEntry = root.children[character];
             return;
         }
         currentEntry.children[character] = new LZWDictionaryEntry(nextCode++);

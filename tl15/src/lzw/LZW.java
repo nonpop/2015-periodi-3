@@ -33,26 +33,25 @@ public class LZW {
      */
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary(codeSize);
-        int b;
         int inputSize = 0;
         // hits and misses when the dictionary is full
         int hits = 0;
         int misses = 0;
         int resetCount = 0;
+        int b;
         while ((b = ins.read()) != -1) {
             inputSize += 8;
             if (!dict.hasNextChar(b)) {
                 outs.writeBits(codeSize, dict.getCurrentCode());
-                if (dict.isFull()) {
-                    ++misses;
-                }
                 dict.add(b);
                 if (dict.isFull()) {
+                    ++misses;
                     double total = hits + misses;
                     if (total > 1000) {
                         if (100 * misses / total > resetDict) {
                             outs.writeBits(codeSize, lastCode + 1); // write dictionary reset code
                             dict.reset();
+                            dict.advance(b);
                             hits = 0;
                             misses = 0;
                             ++resetCount;
