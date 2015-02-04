@@ -4,6 +4,7 @@ import bitstream.BitInputStream;
 import bitstream.BitOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -23,8 +24,8 @@ public class LZWTest {
     
     @Parameters
     public static Collection<Object[]> parameters() {
-       return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {31}});
-       //return Arrays.asList(new Object[][]{{9}});
+       //return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {31}});
+       return Arrays.asList(new Object[][]{{16}});
     }
     
     public LZWTest(int codeSize) {
@@ -164,11 +165,16 @@ public class LZWTest {
 
     @Test
     public void weirdBug3() throws UnsupportedEncodingException, IOException {
-        byte[] bytes = new byte[]{ (byte)0xef, (byte)0xbb, (byte)0xbf, 0x0d,
-                                   0x0a, 0x20, 0x20, 0x52,
-                                   0x48, 0x3b, 0x0d, 0x0a,
-                                   0x20, 0x20, 0x45, 0x2c,
-                                   0x0d, 0x0a, 0x0d, 0x0a };
-        testDecompressFile(bytes);
+        //if (slowTests) {
+        if (!slowTests) {
+            FileInputStream ins = new FileInputStream("testdata/pg48138.txt");
+            ByteArrayOutputStream outs = new ByteArrayOutputStream();
+            int b;
+            while ((b = ins.read()) != -1) {
+                outs.write(b);
+            }
+            ins.close();
+            testDecompressFile(outs.toByteArray());
+        }
     }
 }
