@@ -9,7 +9,7 @@ public class List<T> implements Iterable<T> {
     private int size = 0;
 
     public List() {
-        array = new Object[1];      // don't put 0 here; otherwise grow() won't work
+        array = new Object[2];      // don't put 0 here; otherwise grow() won't work
     }
 
     /**
