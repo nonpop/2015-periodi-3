@@ -135,7 +135,10 @@ public class List<T> implements Iterable<T> {
      * Clears the list.
      */
     public void clear() {
-        array = new Object[array.length];
+        //array = new Object[array.length];
+        for (int i = 0; i < array.length; ++i) {
+            array[i] = null;
+        }
         size = 0;
     }
 
