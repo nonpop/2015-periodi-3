@@ -135,7 +135,7 @@ public class LZW {
                 // in the LZW decompression algorithm
                 lastOutput.add(lastOutput.get(0));
                 decoded = lastOutput;
-                toDict = decoded;
+                toDict = new List<>(decoded);
             } else {
                 toDict = new List<>(lastOutput);
                 toDict.add(decoded.get(0));
