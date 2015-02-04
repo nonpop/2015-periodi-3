@@ -111,7 +111,7 @@ public class LZW {
             }
             List<Integer> toDict;
             if (code < 256) {
-                toDict = new List<>(lastOutput);
+                toDict = lastOutput;
                 toDict.add(code);
                 lastOutput = new List<>();
                 lastOutput.add(code);
