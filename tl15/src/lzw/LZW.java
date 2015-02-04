@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import utils.List;
-import utils.Map;
+import utils.Set;
 import static utils.Math.twoTo;
 
 /**
@@ -99,7 +99,7 @@ public class LZW {
     public void decompress(BitInputStream ins, OutputStream outs) throws IOException {
         List<List<Integer>> dict = new List<>(lastCode + 1);
         dict.setSize(lastCode + 1);
-        Map<List<Integer>, Boolean> values = new Map<>(hashTableSize());
+        Set<List<Integer>> values = new Set<>(hashTableSize());
         int nextCode = 256;
 
         List<Integer> lastOutput = new List<>();
@@ -141,10 +141,10 @@ public class LZW {
                     outs.write(i);
                 }
             }
-            if (toDict.size() > 1 && !values.containsKey(toDict)) {
+            if (toDict.size() > 1 && !values.contains(toDict)) {
                 if (nextCode <= lastCode) {
                     dict.set(nextCode++, toDict);
-                    values.put(toDict, true);
+                    values.put(toDict);
                 }
             }
         }
