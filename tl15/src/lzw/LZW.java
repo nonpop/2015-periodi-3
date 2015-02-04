@@ -13,6 +13,7 @@ import static utils.Math.twoTo;
  * An implementation of LZW-(de)compression.
  */
 public class LZW {
+
     public final int codeSize;
     public final int lastCode;
     public final int resetDict;
@@ -23,16 +24,16 @@ public class LZW {
         lastCode = twoTo(codeSize) - 2;
         this.resetDict = resetDict;
     }
-    
+
     /**
      * Compress ins stream into outs. The output stream is not flushed.
      * @param ins
      * @param outs
-     * @throws IOException 
+     * @throws IOException
      */
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary(codeSize);
-        List<Integer> string = new List<>();
+        List<Integer> longest = new List<>();
         int b;
         int inputSize = 0;
         // hits and misses when the dictionary is full
@@ -41,18 +42,18 @@ public class LZW {
         int resetCount = 0;
         while ((b = ins.read()) != -1) {
             inputSize += 8;
-            string.add(b);
-            if (dict.getCode(string) == -1) {
-                string.removeLast();    // temporarily remove the last element
-                                        // so we don't have to create a sublist
-                outs.writeBits(codeSize, dict.getCode(string));
-                string.add(b);
+            longest.add(b);
+            if (dict.getCode(longest) == -1) {
+                longest.removeLast();    // temporarily remove the last element
+                // so we don't have to create a sublist
+                outs.writeBits(codeSize, dict.getCode(longest));
+                longest.add(b);
                 if (dict.isFull()) {
                     ++misses;
                 }
-                dict.addString(string);
-                string.clear();
-                string.add(b);
+                dict.addString(longest);
+                longest.clear();
+                longest.add(b);
                 if (dict.isFull()) {
                     double total = hits + misses;
                     if (total > 1000) {
@@ -71,10 +72,10 @@ public class LZW {
                 }
             }
         }
-        if (!string.isEmpty()) {
-            outs.writeBits(codeSize, dict.getCode(string));
+        if (!longest.isEmpty()) {
+            outs.writeBits(codeSize, dict.getCode(longest));
         }
-        
+
         System.out.println("Compressed/original (no headers): " + (100.0 * outs.getBitCount() / inputSize) + " %");
         if (resetDict < 100) {
             System.out.println("Dictionary was reset " + resetCount + " times");
@@ -83,17 +84,19 @@ public class LZW {
 
     /**
      * Calculate a suitable size for the hash table in decompress();
+     *
      * @return A very good number.
      */
     private int hashTableSize() {
         return 98299;  // a random prime close to the middle of 2^16 and 2^17
     }
-    
+
     /**
      * Decompress ins into outs. The output stream is not flushed.
+     *
      * @param ins
      * @param outs
-     * @throws IOException 
+     * @throws IOException
      */
     public void decompress(BitInputStream ins, BitOutputStream outs) throws IOException {
         Map<Integer, List<Integer>> dict = new Map<>(hashTableSize());
@@ -151,14 +154,16 @@ public class LZW {
     }
 
     private static final int headerMagik = ('T' << 24) | ('L' << 16) | (1 << 8) | 6;
-    
+
     /**
-     * Compress ins into outs using the given code size. A header is written to the output stream.
+     * Compress ins into outs using the given code size. A header is written to
+     * the output stream.
+     *
      * @param ins
      * @param outs
      * @param codeSize
      * @param resetDict
-     * @throws IOException 
+     * @throws IOException
      */
     public static void compressFile(InputStream ins, OutputStream outs, int codeSize, int resetDict) throws IOException {
         LZW lzw = new LZW(codeSize, resetDict);
@@ -174,9 +179,10 @@ public class LZW {
 
     /**
      * Decompress ins into outs. The input stream must contain a header.
+     *
      * @param ins
      * @param outs
-     * @throws IOException 
+     * @throws IOException
      */
     public static void decompressFile(InputStream ins, OutputStream outs) throws IOException {
         BitInputStream bins = new BitInputStream(ins);
@@ -186,7 +192,7 @@ public class LZW {
         }
         int fileCodeSize = bins.readBits(5);
         LZW lzw = new LZW(fileCodeSize, 30);
-        
+
         lzw.decompress(bins, bouts);
         bouts.flush();
     }

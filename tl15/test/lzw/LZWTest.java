@@ -20,12 +20,12 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class LZWTest {
     private final LZW lzw;
-    private final boolean slowTests = false;
+    private final boolean slowTests = true;
     
     @Parameters
     public static Collection<Object[]> parameters() {
-       //return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {31}});
-       return Arrays.asList(new Object[][]{{16}});
+       return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {31}});
+       //return Arrays.asList(new Object[][]{{16}});
     }
     
     public LZWTest(int codeSize) {
@@ -165,8 +165,7 @@ public class LZWTest {
 
     @Test
     public void weirdBug3() throws UnsupportedEncodingException, IOException {
-        //if (slowTests) {
-        if (!slowTests) {
+        if (slowTests) {
             FileInputStream ins = new FileInputStream("testdata/pg48138.txt");
             ByteArrayOutputStream outs = new ByteArrayOutputStream();
             int b;
