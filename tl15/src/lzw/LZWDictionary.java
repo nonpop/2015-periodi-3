@@ -33,6 +33,7 @@ public class LZWDictionary {
 
     public void reset() {
         for (int i = 0; i < 256; ++i) {
+//            root.children[i].invalidate();        // for some reason this is much slower than creating a new object
             root.children[i] = new LZWDictionaryEntry(i);
         }
         nextCode = 256;
