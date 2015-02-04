@@ -19,6 +19,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class LZWTest {
     private final LZW lzw;
+    private final boolean slowTests = false;
     
     @Parameters
     public static Collection<Object[]> parameters() {
@@ -122,15 +123,17 @@ public class LZWTest {
         testDecompress(new byte[]{0,1,0,1,0,1,0});
         testDecompress(new byte[]{0,1,2,3,2,3,4,3,5,4,1,2,3});
         testDecompress(new byte[]{0,1,2,3,4,5,6,7,8,9});
-        testDecompress(randomData(100000, false));
-        testDecompress(randomData(100000, true));
-        testDecompress(consecutiveData(100000));
-        testDecompress(alternatingData(100000));
+        if (slowTests) {
+            testDecompress(randomData(100000, false));
+            testDecompress(randomData(100000, true));
+            testDecompress(consecutiveData(100000));
+            testDecompress(alternatingData(100000));
+        }
     }
 
     @Test
     public void testDecompressFile() throws IOException {
-        if (lzw.codeSize <= 16) {
+        if (lzw.codeSize <= 16 && slowTests) {
             testDecompressFile(randomData(2000000, false));
         }
     }
@@ -157,5 +160,15 @@ public class LZWTest {
         String data = "%%%%%";
         byte[] bytes = data.getBytes("UTF-8");
         testDecompress(bytes);
+    }
+
+    @Test
+    public void weirdBug3() throws UnsupportedEncodingException, IOException {
+        byte[] bytes = new byte[]{ (byte)0xef, (byte)0xbb, (byte)0xbf, 0x0d,
+                                   0x0a, 0x20, 0x20, 0x52,
+                                   0x48, 0x3b, 0x0d, 0x0a,
+                                   0x20, 0x20, 0x45, 0x2c,
+                                   0x0d, 0x0a, 0x0d, 0x0a };
+        testDecompressFile(bytes);
     }
 }
