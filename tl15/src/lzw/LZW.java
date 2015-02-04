@@ -81,7 +81,7 @@ public class LZW {
      * @return A very good number.
      */
     private int hashTableSize() {
-        return 98299;  // a random prime close to the middle of 2^16 and 2^17
+        return 1531;
     }
 
     /**
