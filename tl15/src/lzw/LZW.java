@@ -97,7 +97,8 @@ public class LZW {
      * @throws IOException
      */
     public void decompress(BitInputStream ins, OutputStream outs) throws IOException {
-        Map<Integer, List<Integer>> dict = new Map<>(hashTableSize());
+        List<List<Integer>> dict = new List<>(lastCode + 1);
+        dict.setSize(lastCode + 1);
         Map<List<Integer>, Boolean> values = new Map<>(hashTableSize());
         int nextCode = 256;
 
@@ -109,11 +110,11 @@ public class LZW {
             }
             if (code == lastCode + 1) {
                 dict.clear();
+                dict.setSize(lastCode + 1);
                 values.clear();
                 lastOutput.clear();
                 nextCode = 256;
-                System.out.println("dict load factor = " + dict.loadFactor());
-                System.out.println("values load factor = " + values.loadFactor());
+//                System.out.println("values load factor = " + values.loadFactor());
                 continue;
             }
             List<Integer> toDict;
@@ -142,13 +143,12 @@ public class LZW {
             }
             if (toDict.size() > 1 && !values.containsKey(toDict)) {
                 if (nextCode <= lastCode) {
-                    dict.put(nextCode++, toDict);
+                    dict.set(nextCode++, toDict);
                     values.put(toDict, true);
                 }
             }
         }
-        System.out.println("dict load factor = " + dict.loadFactor());
-        System.out.println("values load factor = " + values.loadFactor());
+//        System.out.println("values load factor = " + values.loadFactor());
     }
 
     private static final int headerMagik = ('T' << 24) | ('L' << 16) | (1 << 8) | 6;

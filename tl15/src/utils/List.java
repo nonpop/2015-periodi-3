@@ -39,6 +39,17 @@ public class List<T> implements Iterable<T> {
     }
 
     /**
+     * Artificially set the size of the list.
+     * @param newSize
+     */
+    public void setSize(int newSize) {
+        if (newSize < 0 || newSize > array.length) {
+            throw new IllegalArgumentException();
+        }
+        size = newSize;
+    }
+
+    /**
      * Get an element  from the list.
      * @param i The index of the element to get.
      * @return The element.
@@ -121,10 +132,10 @@ public class List<T> implements Iterable<T> {
     }
 
     /**
-     * Clears the list by setting the element counter to zero.
-     * No resources are actually freed.
+     * Clears the list.
      */
     public void clear() {
+        array = new Object[array.length];
         size = 0;
     }
 
