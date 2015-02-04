@@ -7,6 +7,8 @@ package utils;
  */
 public class Map<K, V> {
     private final List<List<Pair<K, V>>> hashMap;
+    public int keyLists = 0;
+    public int totalKeys = 0;
 
     /**
      * 
@@ -46,13 +48,21 @@ public class Map<K, V> {
     public void put(K key, V value) {
         int i = calculateIndex(key);
         List<Pair<K, V>> kv = hashMap.get(i);
+        if (kv.isEmpty()) {
+            ++keyLists;
+        }
         for (i = 0; i < kv.size(); ++i) {
             if (kv.get(i).first.equals(key)) {
                 kv.get(i).second = value;
                 return;
             }
         }
+        ++totalKeys;
         kv.add(new Pair<>(key, value));
+    }
+
+    public double loadFactor() {
+        return 1.0 * totalKeys / keyLists;
     }
 
     /**

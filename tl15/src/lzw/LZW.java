@@ -81,7 +81,12 @@ public class LZW {
      * @return A very good number.
      */
     private int hashTableSize() {
-        return 1531;    // TODO: This should bepend on codeSize
+        // some prime close to 2^n+2^(n+1) should be best
+//        return 769;
+//        return 1531;    // TODO: This should bepend on codeSize
+//        return 3067;
+//        return 6143;
+        return 12289;
     }
 
     /**
@@ -107,6 +112,8 @@ public class LZW {
                 values.clear();
                 lastOutput.clear();
                 nextCode = 256;
+                System.out.println("dict load factor = " + dict.loadFactor());
+                System.out.println("values load factor = " + values.loadFactor());
                 continue;
             }
             List<Integer> toDict;
@@ -140,6 +147,8 @@ public class LZW {
                 }
             }
         }
+        System.out.println("dict load factor = " + dict.loadFactor());
+        System.out.println("values load factor = " + values.loadFactor());
     }
 
     private static final int headerMagik = ('T' << 24) | ('L' << 16) | (1 << 8) | 6;
