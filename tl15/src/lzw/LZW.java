@@ -33,7 +33,6 @@ public class LZW {
      */
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary(codeSize);
-        List<Integer> longest = new List<>();
         int b;
         int inputSize = 0;
         // hits and misses when the dictionary is full
@@ -42,18 +41,12 @@ public class LZW {
         int resetCount = 0;
         while ((b = ins.read()) != -1) {
             inputSize += 8;
-            longest.add(b);
-            if (dict.getCode(longest) == -1) {
-                longest.removeLast();    // temporarily remove the last element
-                // so we don't have to create a sublist
-                outs.writeBits(codeSize, dict.getCode(longest));
-                longest.add(b);
+            if (!dict.hasNextChar(b)) {
+                outs.writeBits(codeSize, dict.getCurrentCode());
                 if (dict.isFull()) {
                     ++misses;
                 }
-                dict.addString(longest);
-                longest.clear();
-                longest.add(b);
+                dict.add(b);
                 if (dict.isFull()) {
                     double total = hits + misses;
                     if (total > 1000) {
@@ -67,13 +60,14 @@ public class LZW {
                     }
                 }
             } else {
+                dict.advance(b);
                 if (dict.isFull()) {
                     ++hits;
                 }
             }
         }
-        if (!longest.isEmpty()) {
-            outs.writeBits(codeSize, dict.getCode(longest));
+        if (dict.isTraversing()) {
+            outs.writeBits(codeSize, dict.getCurrentCode());
         }
 
         System.out.println("Compressed/original (no headers): " + (100.0 * outs.getBitCount() / inputSize) + " %");
