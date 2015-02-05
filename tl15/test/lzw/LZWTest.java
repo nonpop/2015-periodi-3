@@ -16,6 +16,7 @@ import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import static utils.Math.twoTo;
 
 @RunWith(Parameterized.class)
 public class LZWTest {
@@ -25,8 +26,8 @@ public class LZWTest {
     
     @Parameters
     public static Collection<Object[]> parameters() {
-       return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {20}});
-//       return Arrays.asList(new Object[][]{{16}});
+//       return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {20}});
+       return Arrays.asList(new Object[][]{{12}});
     }
     
     public LZWTest(int codeSize) {
@@ -39,8 +40,14 @@ public class LZWTest {
         lzw.compress(new ByteArrayInputStream(data), bouts);
         bouts.flush();
         BitInputStream bins = new BitInputStream(new ByteArrayInputStream(outs.toByteArray()));
+        int curCodeSize = 9;
         for (int i : expected) {
-            Integer next = bins.readBits(lzw.codeSize);
+            Integer next = bins.readBits(curCodeSize);
+            if (next == twoTo(curCodeSize) - 2) {
+                ++curCodeSize;
+            } else if (next == twoTo(curCodeSize) - 1) {
+                curCodeSize = 9;
+            }
             assertNotNull(next);
             assertEquals(i, (int)next);
         }
@@ -75,7 +82,7 @@ public class LZWTest {
     public void testDecompressFile(byte[] data) throws IOException {
         ByteArrayInputStream ins = new ByteArrayInputStream(data);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
-        LZW.compressFile(ins, outs, lzw.codeSize, 30);
+        LZW.compressFile(ins, outs, lzw.maxCodeSize, 30);
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
         LZW.decompressFile(ins, outs);
@@ -133,7 +140,7 @@ public class LZWTest {
 
     @Test
     public void testDecompressFile() throws IOException {
-        if (lzw.codeSize <= 16 && slowTests) {
+        if (lzw.maxCodeSize <= 16 && slowTests) {
             testDecompressFile(randomData(2000000, false));
         }
     }

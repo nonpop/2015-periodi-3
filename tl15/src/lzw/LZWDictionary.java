@@ -1,6 +1,7 @@
 package lzw;
 
-import utils.List;
+import static utils.Math.max;
+import static utils.Math.min;
 import static utils.Math.twoTo;
 
 
@@ -10,6 +11,7 @@ import static utils.Math.twoTo;
  * method will just return.
  */
 public class LZWDictionary {
+    private final int maxCodeSize;
     private final int lastCode;
     private final LZWDictionaryEntry root = new LZWDictionaryEntry(-1);
     private int nextCode = 256;
@@ -17,10 +19,11 @@ public class LZWDictionary {
 
     /**
      *
-     * @param codeSize The code word size in bits. Must be 9..31.
+     * @param maxCodeSize The code word size in bits. Must be 9..31.
      */
-    public LZWDictionary(int codeSize) {
-        lastCode = twoTo(codeSize) - 2;     // 2^(codeSize-1) is the 
+    public LZWDictionary(int maxCodeSize) {
+        this.maxCodeSize = maxCodeSize;
+        lastCode = twoTo(maxCodeSize) - 2;     // 2^(codeSize-1) is the 
                                             // dictionary reset code
         for (int i = 0; i < 256; ++i) {
             root.children[i] = new LZWDictionaryEntry(i);
@@ -51,14 +54,30 @@ public class LZWDictionary {
     /**
      * Add code and restart traversing.
      * @param character 
+     * @return True if the next addition will grow code size.
      */
-    public void add(Integer character) {
+    public boolean add(Integer character) {
         if (isFull()) {
             currentEntry = root.children[character];
-            return;
+            return false;
         }
         currentEntry.children[character] = new LZWDictionaryEntry(nextCode++);
         currentEntry = root.children[character];
+        if (nextCode == twoTo(currentCodeSize()) - 2) {
+            nextCode += 2;
+        }
+
+        return nextCode == twoTo(currentCodeSize()) - 3 && currentCodeSize() < maxCodeSize;
+    }
+
+    private int currentCodeSize() {
+        int res = 8;
+        int c = nextCode >> 8;
+        while (c > 0) {
+            c >>= 1;
+            ++res;
+        }
+        return max(9, res);
     }
 
     public void advance(Integer character) {

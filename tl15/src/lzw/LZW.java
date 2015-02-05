@@ -14,14 +14,14 @@ import static utils.Math.twoTo;
  */
 public class LZW {
 
-    public final int codeSize;
+    public final int maxCodeSize;
     public final int lastCode;
     public final int resetDict;
 
     public LZW(int codeSize, int resetDict) {
         assert(codeSize >= 9 && codeSize <= 31);
-        this.codeSize = codeSize;
-        lastCode = twoTo(codeSize) - 2;
+        this.maxCodeSize = codeSize;
+        lastCode = twoTo(codeSize) - 3;
         this.resetDict = resetDict;
     }
 
@@ -32,25 +32,30 @@ public class LZW {
      * @throws IOException
      */
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {
-        LZWDictionary dict = new LZWDictionary(codeSize);
+        LZWDictionary dict = new LZWDictionary(maxCodeSize);
         int inputSize = 0;
         // hits and misses when the dictionary is full
         int hits = 0;
         int misses = 0;
         int resetCount = 0;
+        int currentCodeSize = 9;
         int b;
         while ((b = ins.read()) != -1) {
             inputSize += 8;
             if (!dict.hasNextChar(b)) {
-                outs.writeBits(codeSize, dict.getCurrentCode());
-                dict.add(b);
+                outs.writeBits(currentCodeSize, dict.getCurrentCode());
+                if (dict.add(b)) {
+                    outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 2);
+                    ++currentCodeSize;
+                }
                 if (dict.isFull()) {
                     ++misses;
                     double total = hits + misses;
                     if (total > 1000) {
                         if (100 * misses / total > resetDict) {
-                            outs.writeBits(codeSize, lastCode + 1); // write dictionary reset code
+                            outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 1);
                             dict.reset();
+                            currentCodeSize = 9;
                             dict.advance(b);
                             hits = 0;
                             misses = 0;
@@ -66,7 +71,7 @@ public class LZW {
             }
         }
         if (dict.isTraversing()) {
-            outs.writeBits(codeSize, dict.getCurrentCode());
+            outs.writeBits(currentCodeSize, dict.getCurrentCode());
         }
 
         System.out.println("Compressed/original (no headers): " + (100.0 * outs.getBitCount() / inputSize) + " %");
@@ -88,7 +93,7 @@ public class LZW {
 //        return 6143;
         return 12289;
     }
-
+    
     /**
      * Decompress ins into outs. The output stream is not flushed.
      *
@@ -101,19 +106,25 @@ public class LZW {
         dict.setSize(lastCode + 1);
         Set<List<Integer>> values = new Set<>(hashTableSize());
         int nextCode = 256;
+        int curCodeSize = 9;
 
         List<Integer> lastOutput = new List<>();
         while (true) {
-            Integer code = ins.readBits(codeSize);
+            Integer code = ins.readBits(curCodeSize);
             if (code == null) {
                 break;
             }
-            if (code == lastCode + 1) {
+            if (code == twoTo(curCodeSize) - 2) {
+                ++curCodeSize;
+                continue;
+            }
+            if (code == twoTo(curCodeSize) - 1) {
                 dict.clear();
                 dict.setSize(lastCode + 1);
                 values.clear();
                 lastOutput.clear();
                 nextCode = 256;
+                curCodeSize = 9;
 //                System.out.println("values load factor = " + values.loadFactor());
                 continue;
             }
@@ -188,7 +199,7 @@ public class LZW {
             throw new IllegalArgumentException("Bad file.");
         }
         int fileCodeSize = bins.readBits(5);
-        System.out.println("Using code size " + fileCodeSize);
+        System.out.println("Using max code size " + fileCodeSize);
         LZW lzw = new LZW(fileCodeSize, 30);
         lzw.decompress(bins, outs);
     }
