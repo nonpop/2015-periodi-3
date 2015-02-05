@@ -32,23 +32,32 @@ public class LZW {
      * @throws IOException
      */
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {
-        LZWDictionary dict = new LZWDictionary(maxCodeSize);
+        LZWDictionary dict = new LZWDictionary();
         int inputSize = 0;
         // hits and misses when the dictionary is full
         int hits = 0;
         int misses = 0;
         int resetCount = 0;
         int currentCodeSize = 9;
+        int nextGrow = twoTo(currentCodeSize) - 2;
         int b;
         while ((b = ins.read()) != -1) {
             inputSize += 8;
             if (!dict.hasNextChar(b)) {
-                outs.writeBits(currentCodeSize, dict.getCurrentCode());
-                if (dict.add(b)) {
+                int code = dict.getCurrentCode();
+                while (code >= nextGrow) {
                     outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 2);
                     ++currentCodeSize;
+                    nextGrow = twoTo(currentCodeSize) - 2;
                 }
-                if (dict.isFull()) {
+                outs.writeBits(currentCodeSize, code);
+                if (dict.getNextCode() <= lastCode) {
+                    dict.add(b);
+                }
+                dict.restartTraverse();
+                dict.advance(b);
+                if (dict.getNextCode() > lastCode) {
+                    // dictionary is full
                     ++misses;
                     double total = hits + misses;
                     if (total > 1000) {
@@ -56,6 +65,7 @@ public class LZW {
                             outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 1);
                             dict.reset();
                             currentCodeSize = 9;
+                            nextGrow = twoTo(currentCodeSize) - 2;
                             dict.advance(b);
                             hits = 0;
                             misses = 0;
@@ -65,8 +75,8 @@ public class LZW {
                 }
             } else {
                 dict.advance(b);
-                if (dict.isFull()) {
-                    ++hits;
+                if (dict.getNextCode() > lastCode) {
+                    ++misses;
                 }
             }
         }
