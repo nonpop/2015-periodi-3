@@ -1,5 +1,6 @@
 package bitstream;
 
+import utils.BitInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;

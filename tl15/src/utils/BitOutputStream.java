@@ -1,4 +1,4 @@
-package bitstream;
+package utils;
 
 import utils.List;
 import java.io.IOException;

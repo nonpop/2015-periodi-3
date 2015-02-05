@@ -1,7 +1,7 @@
 package lzw;
 
-import bitstream.BitInputStream;
-import bitstream.BitOutputStream;
+import utils.BitInputStream;
+import utils.BitOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;

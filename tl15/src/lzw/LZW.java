@@ -1,7 +1,7 @@
 package lzw;
 
-import bitstream.BitInputStream;
-import bitstream.BitOutputStream;
+import utils.BitInputStream;
+import utils.BitOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

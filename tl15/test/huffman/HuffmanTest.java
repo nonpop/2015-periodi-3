@@ -1,7 +1,7 @@
 package huffman;
 
-import bitstream.BitInputStream;
-import bitstream.BitOutputStream;
+import utils.BitInputStream;
+import utils.BitOutputStream;
 import utils.List;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
