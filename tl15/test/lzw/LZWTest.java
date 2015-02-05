@@ -21,13 +21,13 @@ import static utils.Math.twoTo;
 @RunWith(Parameterized.class)
 public class LZWTest {
     private final LZW lzw;
-//    private final boolean slowTests = true;
-    private final boolean slowTests = false;
+    private final boolean slowTests = true;
+//    private final boolean slowTests = false;
     
     @Parameters
     public static Collection<Object[]> parameters() {
-       return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {20}});
-//       return Arrays.asList(new Object[][]{{10}});
+//       return Arrays.asList(new Object[][]{{9}, {10}, {11}, {12}, {16}, {20}});
+       return Arrays.asList(new Object[][]{{10}});
     }
     
     public LZWTest(int codeSize) {

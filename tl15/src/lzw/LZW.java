@@ -48,7 +48,9 @@ public class LZW {
         while ((b = ins.read()) != -1) {
             inputSize += 8;
             if (!dict.hasNextChar(b)) {
-                ++hits;
+                if (dict.getNextCode() > lastCode) {
+                    ++hits;
+                }
                 List<Integer> str = dict.getString();
                 str.add(b);
                 if (dict.getNextCode() > lastCode) {
