@@ -69,8 +69,8 @@ public class LZW {
                 dict.restartTraverse();
                 dict.advance(b);
                 if (dict.getNextCode() > lastCode) {
-                    double total = hits + misses;
-                    if (total > 100) {
+                    if (hits > 100) {
+                        double total = hits + misses;
                         if (100 * misses / total > resetDict) {
                             outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 1);
                             overflow.clear();
