@@ -5,9 +5,11 @@ package lzw;
  */
 public class LZWDictionaryEntry {
     private int code;
+    public final LZWDictionaryEntry parent;
     public LZWDictionaryEntry[] children = new LZWDictionaryEntry[256];
 
-    public LZWDictionaryEntry(int code) {
+    public LZWDictionaryEntry(LZWDictionaryEntry parent, int code) {
+        this.parent = parent;
         this.code = code;
     }
 

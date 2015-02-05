@@ -9,6 +9,7 @@ public class Set<T> {
     public int totalBuckets = 0;
     public int totalElements = 0;
 
+    // TODO: rehash and parameterless constructor
     /**
      * 
      * @param capacity Must be > 0.

@@ -33,17 +33,27 @@ public class LZW {
      */
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary();
-        int inputSize = 0;
-        // hits and misses when the dictionary is full
+        Set<List<Integer>> overflow = new Set<>(101);
         int hits = 0;
         int misses = 0;
         int resetCount = 0;
+        int inputSize = 0;
         int currentCodeSize = 9;
         int nextGrow = twoTo(currentCodeSize) - 2;
         int b;
         while ((b = ins.read()) != -1) {
             inputSize += 8;
             if (!dict.hasNextChar(b)) {
+                ++hits;
+                List<Integer> str = dict.getString();
+                str.add(b);
+                if (dict.getNextCode() > lastCode) {
+                    if (!overflow.contains(str)) {
+                        overflow.put(str);
+                    } else {
+                        ++misses;
+                    }
+                }
                 int code = dict.getCurrentCode();
                 while (code >= nextGrow) {
                     outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 2);
@@ -53,16 +63,17 @@ public class LZW {
                 outs.writeBits(currentCodeSize, code);
                 if (dict.getNextCode() <= lastCode) {
                     dict.add(b);
+                } else {
+                    overflow.put(str);
                 }
                 dict.restartTraverse();
                 dict.advance(b);
                 if (dict.getNextCode() > lastCode) {
-                    // dictionary is full
-                    ++misses;
                     double total = hits + misses;
-                    if (total > 1000) {
+                    if (total > 100) {
                         if (100 * misses / total > resetDict) {
                             outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 1);
+                            overflow.clear();
                             dict.reset();
                             currentCodeSize = 9;
                             nextGrow = twoTo(currentCodeSize) - 2;
@@ -75,9 +86,6 @@ public class LZW {
                 }
             } else {
                 dict.advance(b);
-                if (dict.getNextCode() > lastCode) {
-                    ++misses;
-                }
             }
         }
         if (dict.isTraversing()) {
