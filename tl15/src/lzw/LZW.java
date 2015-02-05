@@ -67,8 +67,6 @@ public class LZW {
                 outs.writeBits(currentCodeSize, code);
                 if (dict.getNextCode() <= lastCode) {
                     dict.add(b);
-                } else {
-                    overflow.put(str);
                 }
                 dict.restartTraverse();
                 dict.advance(b);
