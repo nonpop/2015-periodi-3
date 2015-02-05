@@ -7,23 +7,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Random;
 import static org.junit.Assert.*;
 import org.junit.Test;
+import static utils.DataSources.randomData;
+import static utils.DataSources.weighedExponentialRandomData;
+import static utils.DataSources.weighedLinearRandomData;
 
 public class HuffmanTest {
+    private static final int bigSize = 10000;
     private static final byte[] helloData = new byte[]{72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100};
-
-    private static byte[] randomData(int size, int[] freqs) {
-        byte[] res = new byte[size];
-        Random r = new Random(42);
-        for (int i = 0; i < size; ++i) {
-            int next = r.nextInt(256);
-            res[i] = (byte)(next & 0xff);
-            ++freqs[next];
-        }
-        return res;
-    }
 
     private static int[] helloFreqs() {
         int[] f = new int[256];
@@ -175,8 +167,18 @@ public class HuffmanTest {
         testCompressDecompress(helloData, helloFreqs());
 
         System.out.print("Random: ");
-        freqs = new int[256];
-        byte[] data = randomData(100000, freqs);
+        byte[] data = randomData(bigSize, false);
+        freqs = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
+        testCompressDecompress(data, freqs);
+
+        System.out.print("Random weighed linear: ");
+        data = weighedLinearRandomData(bigSize);
+        freqs = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
+        testCompressDecompress(data, freqs);
+
+        System.out.print("Random weighed exponential: ");
+        data = weighedExponentialRandomData(bigSize);
+        freqs = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
         testCompressDecompress(data, freqs);
     }
 

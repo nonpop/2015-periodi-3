@@ -10,19 +10,23 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import static utils.DataSources.alternatingData;
+import static utils.DataSources.consecutiveData;
+import static utils.DataSources.randomData;
+import static utils.DataSources.weighedExponentialRandomData;
+import static utils.DataSources.weighedLinearRandomData;
 import static utils.Math.twoTo;
 
 @RunWith(Parameterized.class)
 public class LZWTest {
     private final LZW lzw;
-    private final boolean slowTests = true;
-//    private final boolean slowTests = false;
+    private final int bigSize = 10000;
+//    private final int bigSize = 100000;
     
     @Parameters
     public static Collection<Object[]> parameters() {
@@ -88,36 +92,7 @@ public class LZWTest {
         LZW.decompressFile(ins, outs);
         assertArrayEquals(data, outs.toByteArray());
     }
-    
-    private byte[] randomData(int size, boolean nonnegative) {
-        byte[] res = new byte[size];
-        Random r = new Random(42);
-        for (int i = 0; i < size; ++i) {
-            if (nonnegative) {
-                res[i] = (byte)(r.nextInt(128));
-            } else {
-                res[i] = (byte)(r.nextInt(256));
-            }
-        }
-        return res;
-    }
 
-    private byte[] alternatingData(int size) {
-        byte[] res = new byte[size];
-        for (int i = 0; i < size; i += 2) {
-            res[i] = 1;
-        }
-        return res;
-    }
-
-    private byte[] consecutiveData(int size) {
-        byte[] res = new byte[size];
-        for (int i = 0; i < size; ++i) {
-            res[i] = (byte)(i & 0xff);
-        }
-        return res;
-    }
-    
     @Test
     public void testDecompress() throws IOException {
         testDecompress(new byte[]{});
@@ -130,19 +105,23 @@ public class LZWTest {
         testDecompress(new byte[]{0,1,0,1,0,1,0});
         testDecompress(new byte[]{0,1,2,3,2,3,4,3,5,4,1,2,3});
         testDecompress(new byte[]{0,1,2,3,4,5,6,7,8,9});
-        if (slowTests) {
-            testDecompress(randomData(100000, false));
-            testDecompress(randomData(100000, true));
-            testDecompress(consecutiveData(100000));
-            testDecompress(alternatingData(100000));
-        }
+        System.out.println("Random " + bigSize);
+        testDecompress(randomData(bigSize, false));
+        System.out.println("Random " + bigSize + ", nonnegative");
+        testDecompress(randomData(bigSize, true));
+        System.out.println("Consecutive " + bigSize);
+        testDecompress(consecutiveData(bigSize));
+        System.out.println("Alternating " + bigSize);
+        testDecompress(alternatingData(bigSize));
+        System.out.println("Weighed linear " + bigSize);
+        testDecompress(weighedLinearRandomData(bigSize));
+        System.out.println("Weighed exponential " + bigSize);
+        testDecompress(weighedExponentialRandomData(bigSize));
     }
 
     @Test
     public void testDecompressFile() throws IOException {
-        if (lzw.maxCodeSize <= 16 && slowTests) {
-            testDecompressFile(randomData(2000000, false));
-        }
+        testDecompressFile(randomData(bigSize, false));
     }
 
     @Test
@@ -171,15 +150,13 @@ public class LZWTest {
 
     @Test
     public void weirdBug3() throws UnsupportedEncodingException, IOException {
-        if (slowTests) {
-            FileInputStream ins = new FileInputStream("testdata/pg48138.txt");
-            ByteArrayOutputStream outs = new ByteArrayOutputStream();
-            int b;
-            while ((b = ins.read()) != -1) {
-                outs.write(b);
-            }
-            ins.close();
-            testDecompressFile(outs.toByteArray());
+        FileInputStream ins = new FileInputStream("testdata/pg48138.txt");
+        ByteArrayOutputStream outs = new ByteArrayOutputStream();
+        int b;
+        while ((b = ins.read()) != -1) {
+            outs.write(b);
         }
+        ins.close();
+        testDecompressFile(outs.toByteArray());
     }
 }
