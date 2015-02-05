@@ -21,8 +21,8 @@ import static utils.Math.twoTo;
 @RunWith(Parameterized.class)
 public class LZWTest {
     private final LZW lzw;
-    private final boolean slowTests = true;
-//    private final boolean slowTests = false;
+//    private final boolean slowTests = true;
+    private final boolean slowTests = false;
     
     @Parameters
     public static Collection<Object[]> parameters() {

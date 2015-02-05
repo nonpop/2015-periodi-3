@@ -1,7 +1,7 @@
 package utils;
 
 /**
- *
+ * A stripped-down HashSet
  * @param <T>
  */
 public class Set<T> {
@@ -11,12 +11,12 @@ public class Set<T> {
 
     // TODO: rehash and parameterless constructor
     /**
-     * 
+     * Construct a set with given initial capacity.
      * @param capacity Must be > 0.
      */
     public Set(int capacity) {
         assert(capacity > 0);
-        hashTable = new List<>(capacity);
+        hashTable = new List<>(capacity, false);
         for (int i = 0; i < capacity; ++i) {
             hashTable.add(new List<T>());
         }
@@ -41,7 +41,7 @@ public class Set<T> {
     }
     
     /**
-     * 
+     * Put an element into the set.
      * @param element Must not be null.
      */
     public void put(T element) {
@@ -59,12 +59,15 @@ public class Set<T> {
         bucket.add(element);
     }
 
+    /**
+     * @return The load factor of the hash set.
+     */
     public double loadFactor() {
         return 1.0 * totalElements / totalBuckets;
     }
 
     /**
-     * 
+     * Check if the set contains the given element.
      * @param element Must not be null.
      * @return 
      */

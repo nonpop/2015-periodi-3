@@ -65,6 +65,9 @@ public class Options {
         options.add(new Pair<>(name, new Option(option, false, null, false, null, description)));
     }
 
+    /**
+     * Print usage information.
+     */
     public void usage() {
         System.out.println("Usage: " + runCommand + " *arguments*");
         System.out.println("Available arguments:");
@@ -110,6 +113,11 @@ public class Options {
         return null;
     }
     
+    /**
+     * Parse the command line and set options accordingly.
+     * @param args
+     * @return True if succeeded.
+     */
     public boolean parse(String[] args) {
         for (int i = 0; i < args.length; ++i) {
             Option opt = getOptionByOptionString(args[i].substring(1));
@@ -140,6 +148,11 @@ public class Options {
         return true;
     }
 
+    /**
+     * Get the value of a string option.
+     * @param name
+     * @return 
+     */
     public String getOptionString(String name) {
         Option opt = getOptionByName(name);
         if (opt == null) {
@@ -155,6 +168,11 @@ public class Options {
         }
     }
 
+    /**
+     * Get the value of an integer option.
+     * @param name
+     * @return 
+     */
     public int getOptionInteger(String name) {
         Option opt = getOptionByName(name);
         if (opt == null) {
@@ -173,6 +191,11 @@ public class Options {
         }
     }
 
+    /**
+     * Get the value of a flag.
+     * @param name
+     * @return 
+     */
     public boolean getFlagState(String name) {
         // TODO: remove copy-paste
         for (Pair<String, Option> kv : options) {
@@ -217,6 +240,9 @@ public class Options {
         return fmt;
     }
 
+    /**
+     * Print out all current options with their values and default values.
+     */
     public void dump() {
         for (Pair<String, Option> kv : options) {
             System.out.println(kv.first + " = " + formatValue(kv.second));

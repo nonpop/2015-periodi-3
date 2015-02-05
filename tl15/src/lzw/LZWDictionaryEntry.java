@@ -4,7 +4,7 @@ package lzw;
  * An entry in LZWDictionary.
  */
 public class LZWDictionaryEntry {
-    private int code;
+    private final int code;
     public final LZWDictionaryEntry parent;
     public LZWDictionaryEntry[] children = new LZWDictionaryEntry[256];
 
@@ -15,13 +15,5 @@ public class LZWDictionaryEntry {
 
     public int getCode() {
         return code;
-    }
-
-    public boolean isValid() {
-        return code >= 0;
-    }
-
-    public void invalidate() {
-        code = -1;
     }
 }

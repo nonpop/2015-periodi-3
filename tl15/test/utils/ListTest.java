@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 public class ListTest {
     @Test
     public void test() {
-        List v = new List(1);
+        List v = new List(1, false);
         assertEquals(0, v.size());
         v.add(true);
         assertEquals(1, v.size());

@@ -8,21 +8,33 @@ public class List<T> implements Iterable<T> {
     private Object[] array;
     private int size = 0;
 
+    /**
+     * Construct an empty list.
+     */
     public List() {
         array = new Object[2];      // don't put 0 here; otherwise grow() won't work
     }
 
     /**
-     * 
-     * @param initialSize The initial size of the list. Must be > 0!
+     * Construct an empty list with a given capacity.
+     * @param initialCapacity The initial capacity of the list. Must be > 0!
+     * @param fill If true the list will be filled with nulls, thus making the list
+     * have initialCapacity many elements.
      */
-    public List(int initialSize) {
-        if (initialSize <= 0) {
-            throw new IllegalArgumentException("initialSize must be > 0");
+    public List(int initialCapacity, boolean fill) {
+        if (initialCapacity <= 0) {
+            throw new IllegalArgumentException("initialCapacity must be > 0");
         }
-        array = new Object[initialSize];
+        array = new Object[initialCapacity];
+        if (fill) {
+            size = initialCapacity;
+        }
     }
 
+    /**
+     * Construct a list from an iterable object.
+     * @param source The object.
+     */
     public List(Iterable<T> source) {
         array = new Object[1];
         for (T element : source) {
@@ -39,18 +51,7 @@ public class List<T> implements Iterable<T> {
     }
 
     /**
-     * Artificially set the size of the list.
-     * @param newSize
-     */
-    public void setSize(int newSize) {
-        if (newSize < 0 || newSize > array.length) {
-            throw new IllegalArgumentException();
-        }
-        size = newSize;
-    }
-
-    /**
-     * Get an element  from the list.
+     * Get an element from the list.
      * @param i The index of the element to get.
      * @return The element.
      */

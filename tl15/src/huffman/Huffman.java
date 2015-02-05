@@ -66,7 +66,7 @@ public class Huffman {
      * @return The code for the character.
      */
     public static List<Boolean> findCode(HuffmanTreeNode node) {
-        List<Boolean> res = new List<>(8);
+        List<Boolean> res = new List<>(8, false);
         while (node.parent != null) {
             if (node == node.parent.right) {
                 res.add(true);

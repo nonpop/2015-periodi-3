@@ -13,15 +13,19 @@ import static utils.Math.twoTo;
  * An implementation of LZW-(de)compression.
  */
 public class LZW {
-
     public final int maxCodeSize;
     public final int lastCode;
     public final int resetDict;
 
-    public LZW(int codeSize, int resetDict) {
-        assert(codeSize >= 9 && codeSize <= 31);
-        this.maxCodeSize = codeSize;
-        lastCode = twoTo(codeSize) - 3;
+    /**
+     * 
+     * @param maxCodeSize The maximum code size allowed.
+     * @param resetDict The dictionary reset treshold (0..100).
+     */
+    public LZW(int maxCodeSize, int resetDict) {
+        assert(maxCodeSize >= 9 && maxCodeSize <= 31);
+        this.maxCodeSize = maxCodeSize;
+        lastCode = twoTo(maxCodeSize) - 3;
         this.resetDict = resetDict;
     }
 
@@ -106,7 +110,7 @@ public class LZW {
     private int hashTableSize() {
         // some prime close to 2^n+2^(n+1) should be best
 //        return 769;
-//        return 1531;    // TODO: This should bepend on codeSize
+//        return 1531;    // TODO: This should depend on codeSize
 //        return 3067;
 //        return 6143;
         return 12289;
@@ -120,8 +124,7 @@ public class LZW {
      * @throws IOException
      */
     public void decompress(BitInputStream ins, OutputStream outs) throws IOException {
-        List<List<Integer>> dict = new List<>(lastCode + 1);
-        dict.setSize(lastCode + 1);
+        List<List<Integer>> dict = new List<>(lastCode + 1, true);
         Set<List<Integer>> values = new Set<>(hashTableSize());
         int nextCode = 256;
         int curCodeSize = 9;
@@ -137,8 +140,7 @@ public class LZW {
                 continue;
             }
             if (code == twoTo(curCodeSize) - 1) {
-                dict.clear();
-                dict.setSize(lastCode + 1);
+                dict = new List<>(lastCode + 1, true);
                 values.clear();
                 lastOutput.clear();
                 nextCode = 256;

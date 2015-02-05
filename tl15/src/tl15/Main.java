@@ -15,6 +15,11 @@ import lzw.LZW;
  * The user interface.
  */
 public class Main {
+    /**
+     * Initialize the option structure.
+     * @param args
+     * @return 
+     */
     private static Options initOptions(String[] args) {
         Options opts = new Options("java -jar tl15");
         opts.addOption("algorithm", "a", "algorithm_name", "lzw", "Choose the algorithm to use. Available algorithms: huffman, lzw");
@@ -34,6 +39,7 @@ public class Main {
         opts.dump();
         System.out.println();
 
+        // TODO: fix that --v
         String alg = opts.getOptionString("algorithm");
         if (!alg.equals("huffman") && !alg.equals("lzw")) {
             System.out.println("Unknown algorithm: " + alg);
@@ -62,7 +68,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "12", "-lr", "25"};
+//        args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "12", "-lr", "25"};
 //        args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
 //        args = new String[]{"-i", "test.orig", "-o", "test.hc", "-a", "huffman"};
 //        args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
