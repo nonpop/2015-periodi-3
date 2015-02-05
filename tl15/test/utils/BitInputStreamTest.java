@@ -1,4 +1,4 @@
-package bitstream;
+package utils;
 
 import utils.BitInputStream;
 import java.io.ByteArrayInputStream;
