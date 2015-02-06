@@ -42,8 +42,6 @@ public class LZW {
         while ((b = ins.read()) != -1) {
             inputSize += 8;
             if (!dict.hasNextChar(b)) {
-                List<Integer> str = dict.getString();
-                str.add(b);
                 int code = dict.getCurrentCode();
                 while (code >= nextGrow) {
                     outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 2);
