@@ -46,7 +46,7 @@ public class LZW {
                 while (code >= nextGrow) {
                     outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 2);
                     ++currentCodeSize;
-                    nextGrow = twoTo(currentCodeSize) - 2;
+                    nextGrow *= 2;
                 }
                 outs.writeBits(currentCodeSize, code);
                 if (dict.getNextCode() <= lastCode) {
