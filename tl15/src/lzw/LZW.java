@@ -34,9 +34,6 @@ public class LZW {
      */
     public void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary();
-        Set<List<Integer>> overflow = new Set<>(101);
-        int hits = 0;
-        int misses = 0;
         int resetCount = 0;
         int inputSize = 0;
         int currentCodeSize = 9;
@@ -47,14 +44,6 @@ public class LZW {
             if (!dict.hasNextChar(b)) {
                 List<Integer> str = dict.getString();
                 str.add(b);
-                if (dict.getNextCode() > lastCode) {
-                    ++hits;
-                    if (!overflow.contains(str)) {
-                        overflow.put(str);
-                    } else {
-                        ++misses;
-                    }
-                }
                 int code = dict.getCurrentCode();
                 while (code >= nextGrow) {
                     outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 2);
@@ -69,13 +58,10 @@ public class LZW {
                 dict.advance(b);
                 if (dict.getNextCode() > lastCode) {
                     outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 1);
-                    overflow.clear();
                     dict.reset();
                     currentCodeSize = 9;
                     nextGrow = twoTo(currentCodeSize) - 2;
                     dict.advance(b);
-                    hits = 0;
-                    misses = 0;
                     ++resetCount;
                 }
             } else {
