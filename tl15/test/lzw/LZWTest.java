@@ -35,7 +35,7 @@ public class LZWTest {
     }
     
     public LZWTest(int codeSize) {
-        this.lzw = new LZW(codeSize, 30);
+        this.lzw = new LZW(codeSize);
     }
 
     private void testCompress(int[] expected, byte[] data) throws IOException {
@@ -86,7 +86,7 @@ public class LZWTest {
     public void testDecompressFile(byte[] data) throws IOException {
         ByteArrayInputStream ins = new ByteArrayInputStream(data);
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
-        LZW.compressFile(ins, outs, lzw.maxCodeSize, 30);
+        LZW.compressFile(ins, outs, lzw.maxCodeSize);
         ins = new ByteArrayInputStream(outs.toByteArray());
         outs = new ByteArrayOutputStream();
         LZW.decompressFile(ins, outs);

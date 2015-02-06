@@ -26,8 +26,7 @@ public class Main {
         opts.addOption("inputFile", "i", "input_file", null, "The file to compress/decompress");   // TODO: allow -/empty for stdin
         opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
         opts.addFlag("decompress", "d", "Decompress (default is to compress)");
-        opts.addOption("lzw.codeSize", "ls", "code_size", 12, "The code size for LZW compression. Must be between 9..31");
-        opts.addOption("lzw.resetDict", "lr", "treshold", 25, "Reset the LZW compression dictionary when its poorness is > treshold %. Set to 100 to disable.");
+        opts.addOption("lzw.codeSize", "ls", "code_size", 12, "The maximum code size for LZW compression. Must be between 9..31");
         // TODO: -h and -v
 
         if (!opts.parse(args)) {
@@ -58,17 +57,12 @@ public class Main {
             System.out.println("lzw.codeSize out of range: " + cs);
             return null;
         }
-        int poorness = opts.getOptionInteger("lzw.resetDict");
-        if (poorness < 0 || poorness > 100) {
-            System.out.println("lzw.resetDict out of range: " + poorness);
-            return null;
-        }
 
         return opts;
     }
 
     public static void main(String[] args) throws IOException {
-//        args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "12", "-lr", "25"};
+//        args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "16"};
 //        args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
 //        args = new String[]{"-i", "test.orig", "-o", "test.hc", "-a", "huffman"};
 //        args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
@@ -85,9 +79,7 @@ public class Main {
             long start = System.nanoTime();
             if (opts.getOptionString("algorithm").equals("lzw")) {
                 if (!opts.getFlagState("decompress")) {
-                    LZW.compressFile(ins, outs, 
-                            opts.getOptionInteger("lzw.codeSize"),
-                            opts.getOptionInteger("lzw.resetDict"));
+                    LZW.compressFile(ins, outs, opts.getOptionInteger("lzw.codeSize"));
                 } else {
                     LZW.decompressFile(ins, outs);
                 }

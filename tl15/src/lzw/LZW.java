@@ -15,18 +15,15 @@ import static utils.Math.twoTo;
 public class LZW {
     public final int maxCodeSize;
     public final int lastCode;
-    public final int resetDict;
 
     /**
      * 
      * @param maxCodeSize The maximum code size allowed.
-     * @param resetDict The dictionary reset treshold (0..100).
      */
-    public LZW(int maxCodeSize, int resetDict) {
+    public LZW(int maxCodeSize) {
         assert(maxCodeSize >= 9 && maxCodeSize <= 31);
         this.maxCodeSize = maxCodeSize;
         lastCode = twoTo(maxCodeSize) - 3;
-        this.resetDict = resetDict;
     }
 
     /**
@@ -71,20 +68,15 @@ public class LZW {
                 dict.restartTraverse();
                 dict.advance(b);
                 if (dict.getNextCode() > lastCode) {
-                    if (hits > 100) {
-                        double total = hits + misses;
-                        if (100 * misses / total > resetDict) {
-                            outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 1);
-                            overflow.clear();
-                            dict.reset();
-                            currentCodeSize = 9;
-                            nextGrow = twoTo(currentCodeSize) - 2;
-                            dict.advance(b);
-                            hits = 0;
-                            misses = 0;
-                            ++resetCount;
-                        }
-                    }
+                    outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 1);
+                    overflow.clear();
+                    dict.reset();
+                    currentCodeSize = 9;
+                    nextGrow = twoTo(currentCodeSize) - 2;
+                    dict.advance(b);
+                    hits = 0;
+                    misses = 0;
+                    ++resetCount;
                 }
             } else {
                 dict.advance(b);
@@ -95,9 +87,7 @@ public class LZW {
         }
 
         System.out.println("Compressed/original (no headers): " + (100.0 * outs.getBitCount() / inputSize) + " %");
-        if (resetDict < 100) {
-            System.out.println("Dictionary was reset " + resetCount + " times");
-        }
+        System.out.println("Dictionary was reset " + resetCount + " times");
     }
 
     /**
@@ -189,11 +179,10 @@ public class LZW {
      * @param ins
      * @param outs
      * @param codeSize
-     * @param resetDict
      * @throws IOException
      */
-    public static void compressFile(InputStream ins, OutputStream outs, int codeSize, int resetDict) throws IOException {
-        LZW lzw = new LZW(codeSize, resetDict);
+    public static void compressFile(InputStream ins, OutputStream outs, int codeSize) throws IOException {
+        LZW lzw = new LZW(codeSize);
         BitOutputStream bouts = new BitOutputStream(outs);
 
         // the header
@@ -218,7 +207,7 @@ public class LZW {
         }
         int fileCodeSize = bins.readBits(5);
         System.out.println("Using max code size " + fileCodeSize);
-        LZW lzw = new LZW(fileCodeSize, 30);
+        LZW lzw = new LZW(fileCodeSize);
         lzw.decompress(bins, outs);
     }
 }
