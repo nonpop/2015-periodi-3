@@ -26,6 +26,14 @@ public class LZW {
         lastCode = twoTo(maxCodeSize) - 3;
     }
 
+    private int growCode(int codeSize) {
+        return twoTo(codeSize) - 2;
+    }
+
+    private int resetCode(int codeSize) {
+        return twoTo(codeSize) - 1;
+    }
+    
     /**
      * Compress ins stream into outs. The output stream is not flushed.
      * @param ins
@@ -37,16 +45,14 @@ public class LZW {
         int resetCount = 0;
         int inputSize = 0;
         int currentCodeSize = 9;
-        int nextGrow = twoTo(currentCodeSize) - 2;
         int b;
         while ((b = ins.read()) != -1) {
             inputSize += 8;
             if (!dict.hasNextChar(b)) {
                 int code = dict.getCurrentCode();
-                while (code >= nextGrow) {
-                    outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 2);
+                while (code >= growCode(currentCodeSize)) {
+                    outs.writeBits(currentCodeSize, growCode(currentCodeSize));
                     ++currentCodeSize;
-                    nextGrow *= 2;
                 }
                 outs.writeBits(currentCodeSize, code);
                 if (dict.getNextCode() <= lastCode) {
@@ -55,10 +61,9 @@ public class LZW {
                 dict.restartTraverse();
                 dict.advance(b);
                 if (dict.getNextCode() > lastCode) {
-                    outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 1);
+                    outs.writeBits(currentCodeSize, resetCode(currentCodeSize));
                     dict.reset();
                     currentCodeSize = 9;
-                    nextGrow = twoTo(currentCodeSize) - 2;
                     dict.advance(b);
                     ++resetCount;
                 }
