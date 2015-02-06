@@ -23,7 +23,7 @@ public class LZW {
     public LZW(int maxCodeSize) {
         assert(maxCodeSize >= 9 && maxCodeSize <= 31);
         this.maxCodeSize = maxCodeSize;
-        lastCode = twoTo(maxCodeSize) - 3;
+        lastCode = twoTo(maxCodeSize) - 1;
     }
 
     /**
@@ -37,31 +37,27 @@ public class LZW {
         int resetCount = 0;
         int inputSize = 0;
         int currentCodeSize = 9;
-        int nextGrow = twoTo(currentCodeSize) - 2;
+        int nextGrow = twoTo(currentCodeSize);
         int b;
         while ((b = ins.read()) != -1) {
             inputSize += 8;
             if (!dict.hasNextChar(b)) {
-                int code = dict.getCurrentCode();
-                while (code >= nextGrow) {
-                    outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 2);
-                    ++currentCodeSize;
-                    nextGrow = twoTo(currentCodeSize) - 2;
-                }
-                outs.writeBits(currentCodeSize, code);
+                outs.writeBits(currentCodeSize, dict.getCurrentCode());
                 if (dict.getNextCode() <= lastCode) {
                     dict.add(b);
-                }
-                dict.restartTraverse();
-                dict.advance(b);
-                if (dict.getNextCode() > lastCode) {
-                    outs.writeBits(currentCodeSize, twoTo(currentCodeSize) - 1);
+                } else {
                     dict.reset();
                     currentCodeSize = 9;
-                    nextGrow = twoTo(currentCodeSize) - 2;
+                    nextGrow = twoTo(currentCodeSize);
                     dict.advance(b);
                     ++resetCount;
                 }
+                if (dict.getNextCode() == nextGrow) {
+                    ++currentCodeSize;
+                    nextGrow *= 2;
+                }
+                dict.restartTraverse();
+                dict.advance(b);
             } else {
                 dict.advance(b);
             }
