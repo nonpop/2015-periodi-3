@@ -7,12 +7,14 @@ import java.util.Iterator;
 public class List<T> implements Iterable<T> {
     private Object[] array;
     private int size = 0;
+    private final int initialCapacity;
 
     /**
      * Construct an empty list.
      */
     public List() {
         array = new Object[2];      // don't put 0 here; otherwise grow() won't work
+        initialCapacity = 2;
     }
 
     /**
@@ -25,6 +27,7 @@ public class List<T> implements Iterable<T> {
         if (initialCapacity <= 0) {
             throw new IllegalArgumentException("initialCapacity must be > 0");
         }
+        this.initialCapacity = initialCapacity;
         array = new Object[initialCapacity];
         if (fill) {
             size = initialCapacity;
@@ -36,7 +39,7 @@ public class List<T> implements Iterable<T> {
      * @param source The object.
      */
     public List(Iterable<T> source) {
-        array = new Object[1];
+        this();
         for (T element : source) {
             add(element);
         }
@@ -136,11 +139,11 @@ public class List<T> implements Iterable<T> {
      * Clears the list.
      */
     public void clear() {
-        //array = new Object[array.length];
-        for (int i = 0; i < array.length; ++i) {
-            array[i] = null;
-        }
+        array = new Object[initialCapacity];
         size = 0;
+//        for (int i = 0; i < array.length; ++i) {
+//            array[i] = null;
+//        }
     }
 
     /**
