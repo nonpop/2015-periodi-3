@@ -70,4 +70,28 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <path id="pitest.path">
+        <pathelement location="lib/pitest-1.1.4.jar"/>
+        <pathelement location="lib/pitest-ant-1.1.4.jar"/>
+        <pathelement location="lib/junit-4.10.jar"/>
+    </path>
+    <path id="test.path">
+        <pathelement location="build/classes"/>
+        <pathelement location="build/test/classes"/>
+        <pathelement location="lib/junit-4.10.jar"/>
+    </path>
+    <taskdef name="pitest" classname="org.pitest.ant.PitestTask" classpathref="pitest.path" />
+    <target name="mutationCoverage" depends="test">
+        <path id="mutation.path">
+            <path refid="pitest.path"/>
+            <path refid="test.path"/>
+        </path>
+        <pitest
+            pitClasspath="pitest.path"
+            classPath="mutation.path"
+            targetClasses="tl15.*"
+            targetTests="tl15.*"
+            reportDir="build/test/results"
+            sourceDir="src"/>
+    </target>
 </project>
