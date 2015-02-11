@@ -19,7 +19,7 @@ public class Huffman {
      *         frequency of the character <code>i</code> in the data.
      * @throws java.io.IOException
      */
-    public static int[] calculateFrequencies(InputStream ins) throws IOException {
+    private static int[] calculateFrequencies(InputStream ins) throws IOException {
         int[] freqs = new int[256];
         int b;
         while ((b = ins.read()) != -1) {
@@ -33,7 +33,7 @@ public class Huffman {
      * @param freqs The frequencies. Must be a size 256 array of (non-negative) integers.
      * @return A corresponding Huffman tree.
      */
-    public static HuffmanTree buildTree(int[] freqs) {
+    private static HuffmanTree buildTree(int[] freqs) {
         HuffmanTreeNode[] leaves = new HuffmanTreeNode[256];
         HuffmanHeap q = new HuffmanHeap(256);
 
@@ -65,7 +65,7 @@ public class Huffman {
      * @param node A leaf node representing the character.
      * @return The code for the character.
      */
-    public static List<Boolean> findCode(HuffmanTreeNode node) {
+    private static List<Boolean> findCode(HuffmanTreeNode node) {
         List<Boolean> res = new List<>(8, false);
         while (node.parent != null) {
             if (node == node.parent.right) {
@@ -165,10 +165,9 @@ public class Huffman {
      *    expressing the frequency of byte b
      * @param outs The stream.
      * @param freqs The frequencies.
-     * @param actualBitCount The bit count.
      * @throws IOException 
      */
-    public static void writeHeader(BitOutputStream outs, int[] freqs, int actualBitCount) throws IOException {
+    private static void writeHeader(BitOutputStream outs, int[] freqs) throws IOException {
         outs.writeBits(32, headerMagik);
         int nonZeros = 0;
         for (int f : freqs) {
@@ -195,7 +194,7 @@ public class Huffman {
      * @return The frequencies.
      * @throws IOException 
      */
-    public static int[] readHeader(BitInputStream ins) throws IOException {
+    private static int[] readHeader(BitInputStream ins) throws IOException {
         if (ins.readBits(32) != headerMagik) {
             throw new IllegalArgumentException("Bad file.");
         }
@@ -245,7 +244,7 @@ public class Huffman {
         compressedBits.flush();
 
         BitOutputStream bouts = new BitOutputStream(outs);
-        writeHeader(bouts, freqs, compressedBits.getBitCount());
+        writeHeader(bouts, freqs);
         bouts.write(compressedBytes.toByteArray());
         bouts.flush();
 

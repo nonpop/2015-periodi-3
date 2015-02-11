@@ -5,6 +5,7 @@ import tl15.utils.BitOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import tl15.main.Main;
 import tl15.utils.List;
 import tl15.utils.Set;
 import static tl15.utils.Math.twoTo;
@@ -13,24 +14,19 @@ import static tl15.utils.Math.twoTo;
  * An implementation of LZW-(de)compression.
  */
 public class LZW {
-    public final int maxCodeSize;
-    public final int lastCode;
-
-    /**
-     * 
-     * @param maxCodeSize The maximum code size allowed.
-     */
-    public LZW(int maxCodeSize) {
-        assert(maxCodeSize >= 9 && maxCodeSize <= 31);
-        this.maxCodeSize = maxCodeSize;
-        lastCode = twoTo(maxCodeSize) - 3;
+    private static int maxCodeSize() {
+        return Main.opts.getOptionInteger("lzw.codeSize");
     }
 
-    private int growCode(int codeSize) {
+    private static int lastCode() {
+        return twoTo(maxCodeSize()) - 3;
+    }
+
+    private static int growCode(int codeSize) {
         return twoTo(codeSize) - 2;
     }
 
-    private int resetCode(int codeSize) {
+    private static int resetCode(int codeSize) {
         return twoTo(codeSize) - 1;
     }
     
@@ -40,7 +36,7 @@ public class LZW {
      * @param outs
      * @throws IOException
      */
-    public void compress(InputStream ins, BitOutputStream outs) throws IOException {
+    public static void compress(InputStream ins, BitOutputStream outs) throws IOException {
         LZWDictionary dict = new LZWDictionary();
         int resetCount = 0;
         int inputSize = 0;
@@ -55,12 +51,12 @@ public class LZW {
                     ++currentCodeSize;
                 }
                 outs.writeBits(currentCodeSize, code);
-                if (dict.getNextCode() <= lastCode) {
+                if (dict.getNextCode() <= lastCode()) {
                     dict.add(b);
                 }
                 dict.restartTraverse();
                 dict.advance(b);
-                if (dict.getNextCode() > lastCode) {
+                if (dict.getNextCode() > lastCode()) {
                     outs.writeBits(currentCodeSize, resetCode(currentCodeSize));
                     dict.reset();
                     currentCodeSize = 9;
@@ -84,7 +80,7 @@ public class LZW {
      *
      * @return A very good number.
      */
-    private int hashTableSize() {
+    private static int hashTableSize() {
         // some prime close to 2^n+2^(n+1) should be best
 //        return 769;
 //        return 1531;    // TODO: This should depend on codeSize
@@ -100,8 +96,8 @@ public class LZW {
      * @param outs
      * @throws IOException
      */
-    public void decompress(BitInputStream ins, OutputStream outs) throws IOException {
-        List<List<Integer>> dict = new List<>(lastCode + 1, true);
+    public static void decompress(BitInputStream ins, OutputStream outs) throws IOException {
+        List<List<Integer>> dict = new List<>(lastCode() + 1, true);
         Set<List<Integer>> values = new Set<>(hashTableSize());
         int nextCode = 256;
         int curCodeSize = 9;
@@ -112,12 +108,12 @@ public class LZW {
             if (code == null) {
                 break;
             }
-            if (code == twoTo(curCodeSize) - 2) {
+            if (code == growCode(curCodeSize)) {
                 ++curCodeSize;
                 continue;
             }
-            if (code == twoTo(curCodeSize) - 1) {
-                dict = new List<>(lastCode + 1, true);
+            if (code == resetCode(curCodeSize)) {
+                dict = new List<>(lastCode() + 1, true);
                 values.clear();
                 lastOutput.clear();
                 nextCode = 256;
@@ -150,7 +146,7 @@ public class LZW {
                 }
             }
             if (toDict.size() > 1 && !values.contains(toDict)) {
-                if (nextCode <= lastCode) {
+                if (nextCode <= lastCode()) {
                     dict.set(nextCode++, toDict);
                     values.put(toDict);
                 }
@@ -167,18 +163,16 @@ public class LZW {
      *
      * @param ins
      * @param outs
-     * @param codeSize
      * @throws IOException
      */
-    public static void compressFile(InputStream ins, OutputStream outs, int codeSize) throws IOException {
-        LZW lzw = new LZW(codeSize);
+    public static void compressFile(InputStream ins, OutputStream outs) throws IOException {
         BitOutputStream bouts = new BitOutputStream(outs);
 
         // the header
         bouts.writeBits(32, headerMagik);
-        bouts.writeBits(5, codeSize);
+        bouts.writeBits(5, Main.opts.getOptionInteger("lzw.codeSize"));
 
-        lzw.compress(ins, bouts);
+        LZW.compress(ins, bouts);
         bouts.flush();
     }
 
@@ -196,7 +190,6 @@ public class LZW {
         }
         int fileCodeSize = bins.readBits(5);
         System.out.println("Using max code size " + fileCodeSize);
-        LZW lzw = new LZW(fileCodeSize);
-        lzw.decompress(bins, outs);
+        LZW.decompress(bins, outs);
     }
 }

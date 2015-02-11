@@ -15,13 +15,15 @@ import tl15.lzw.LZW;
  * The user interface.
  */
 public class Main {
+    public static Options opts;
+
     /**
      * Initialize the option structure.
      * @param args
      * @return 
      */
-    private static Options initOptions(String[] args) {
-        Options opts = new Options("java -jar tl15");
+    public static Options initOptions(String[] args) {
+        opts = new Options("java -jar tl15");
         opts.addOption("algorithm", "a", "algorithm_name", "lzw", "Choose the algorithm to use. Available algorithms: huffman, lzw");
         opts.addOption("inputFile", "i", "input_file", null, "The file to compress/decompress");   // TODO: allow -/empty for stdin
         opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
@@ -66,7 +68,7 @@ public class Main {
 //        args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
 //        args = new String[]{"-i", "test.orig", "-o", "test.hc", "-a", "huffman"};
 //        args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
-        Options opts = initOptions(args);
+        initOptions(args);
         if (opts == null) {
             return;
         }
@@ -79,7 +81,7 @@ public class Main {
             long start = System.nanoTime();
             if (opts.getOptionString("algorithm").equals("lzw")) {
                 if (!opts.getFlagState("decompress")) {
-                    LZW.compressFile(ins, outs, opts.getOptionInteger("lzw.codeSize"));
+                    LZW.compressFile(ins, outs);
                 } else {
                     LZW.decompressFile(ins, outs);
                 }

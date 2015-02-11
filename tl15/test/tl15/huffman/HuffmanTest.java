@@ -1,8 +1,5 @@
 package tl15.huffman;
 
-import tl15.huffman.HuffmanTreeNode;
-import tl15.huffman.Huffman;
-import tl15.huffman.HuffmanTree;
 import tl15.utils.BitInputStream;
 import tl15.utils.BitOutputStream;
 import tl15.utils.List;
@@ -10,6 +7,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import static tl15.utils.DataSources.randomData;
@@ -42,18 +41,18 @@ public class HuffmanTest {
 //        return result;
 //    }
     
-    @Test
-    public void testCalculateFrequencies() throws IOException {
-        byte[] data = new byte[]{};
-        int[] expResult = new int[256];
-        int[] result = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
-        assertArrayEquals(expResult, result);
-
-        data = helloData;
-        expResult = helloFreqs();
-        result = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
-        assertArrayEquals(expResult, result);
-    }
+//    @Test
+//    public void testCalculateFrequencies() throws IOException {
+//        byte[] data = new byte[]{};
+//        int[] expResult = new int[256];
+//        int[] result = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
+//        assertArrayEquals(expResult, result);
+//
+//        data = helloData;
+//        expResult = helloFreqs();
+//        result = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
+//        assertArrayEquals(expResult, result);
+//    }
 
     private static void checkHuffmanNode(HuffmanTreeNode node, int[] freqs) {
         if (node == null) {
@@ -105,12 +104,14 @@ public class HuffmanTest {
     }
 
     @Test
-    public void testBuildTree() {
+    public void testBuildTree() throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         int[] freqs = new int[256];
-        checkHuffmanTree(Huffman.buildTree(freqs), freqs);
+        Method buildTree = Huffman.class.getDeclaredMethod("buildTree", int[].class);
+        buildTree.setAccessible(true);
+        checkHuffmanTree((HuffmanTree)buildTree.invoke(null, (Object)freqs), freqs);
 
         freqs = helloFreqs();
-        checkHuffmanTree(Huffman.buildTree(freqs), freqs);
+        checkHuffmanTree((HuffmanTree)buildTree.invoke(null, (Object)freqs), freqs);
     }
 
     private static void checkCode(List<Boolean> code, HuffmanTreeNode root, int expected) {
@@ -130,22 +131,26 @@ public class HuffmanTest {
         }
     }
 
-    private static void checkCodes(int[] freqs, HuffmanTree tree) {
+    private static void checkCodes(int[] freqs, HuffmanTree tree) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Method findCode = Huffman.class.getDeclaredMethod("findCode", HuffmanTreeNode.class);
+        findCode.setAccessible(true);
         for (int i = 0; i < 256; ++i) {
             if (freqs[i] > 0) {
-                checkCode(Huffman.findCode(tree.leaves[i]), tree.root, i);
+                checkCode((List<Boolean>)findCode.invoke(null, tree.leaves[i]), tree.root, i);
             }
         }
     }
 
     @Test
-    public void testFindCode() {
+    public void testFindCode() throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         int[] freqs = new int[256];
-        HuffmanTree tree = Huffman.buildTree(freqs);
+        Method buildTree = Huffman.class.getDeclaredMethod("buildTree", int[].class);
+        buildTree.setAccessible(true);
+        HuffmanTree tree = (HuffmanTree)buildTree.invoke(null, (Object)freqs);
         checkCodes(freqs, tree);
 
         freqs = helloFreqs();
-        tree = Huffman.buildTree(freqs);
+        tree = (HuffmanTree)buildTree.invoke(null, (Object)freqs);
         checkCodes(freqs, tree);
     }
 
@@ -159,6 +164,16 @@ public class HuffmanTest {
         Huffman.decompress(new BitInputStream(ins), freqs, outs);
         assertArrayEquals(data, outs.toByteArray());
     }
+
+    private int[] calculateFrequencies(InputStream ins) throws IOException {
+        int[] freqs = new int[256];
+        int b;
+        while ((b = ins.read()) != -1) {
+            ++freqs[b];
+        }
+        return freqs;
+    }
+
     @Test
     public void testCompressAndDecompress() throws IOException {
         int[] freqs = new int[256];
@@ -171,17 +186,17 @@ public class HuffmanTest {
 
         System.out.print("Random: ");
         byte[] data = randomData(bigSize, false);
-        freqs = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
+        freqs = calculateFrequencies(new ByteArrayInputStream(data));
         testCompressDecompress(data, freqs);
 
         System.out.print("Random weighed linear: ");
         data = weighedLinearRandomData(bigSize);
-        freqs = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
+        freqs = calculateFrequencies(new ByteArrayInputStream(data));
         testCompressDecompress(data, freqs);
 
         System.out.print("Random weighed exponential: ");
         data = weighedExponentialRandomData(bigSize);
-        freqs = Huffman.calculateFrequencies(new ByteArrayInputStream(data));
+        freqs = calculateFrequencies(new ByteArrayInputStream(data));
         testCompressDecompress(data, freqs);
     }
 
