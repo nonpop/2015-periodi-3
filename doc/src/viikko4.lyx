@@ -179,6 +179,8 @@ Tällä viikolla en tehnyt kovin paljoa.
 tien kirjoittamista.
  Toteutusdokumenttiin tein vasta Huffman-pakkauksen, koska selvästikin teen
  sitä liian suurella tarkkuudella (koska siitä tulee pitkä!).
+ En ole varma, mitä suorituskykytestaukseen pitäisi tulla.
+ Testausta (hyvin) suurilla syötteillä?
 \end_layout
 
 \end_body
