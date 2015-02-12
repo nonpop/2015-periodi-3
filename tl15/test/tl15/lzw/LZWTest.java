@@ -151,7 +151,7 @@ public class LZWTest {
 
     @Test
     public void weirdBug3() throws UnsupportedEncodingException, IOException {
-        FileInputStream ins = new FileInputStream("testdata/pg48138.txt");
+        FileInputStream ins = new FileInputStream("test/pg48138.txt");
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         int b;
         while ((b = ins.read()) != -1) {
