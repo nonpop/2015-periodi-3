@@ -1,0 +1,42 @@
+#!/bin/bash
+ls -l --block-size=K test.orig
+
+echo
+echo bzip2
+echo =====
+time bzip2 test.orig
+ls -l --block-size=K test.orig.bz2
+time bunzip2 test.orig.bz2
+
+echo
+echo Huffman
+echo =======
+time java -jar dist/tl15.jar -a huffman -i test.orig -o test.hc
+time java -jar dist/tl15.jar -a huffman -i test.hc -o test.hd -d
+diff test.{orig,hd}
+ls -l --block-size=K test.hc
+
+echo
+echo LZW-9
+echo =====
+time java -jar dist/tl15.jar -a lzw -ls 9 -i test.orig -o test.lc
+time java -jar dist/tl15.jar -a lzw -i test.lc -o test.ld -d
+diff test.{orig,ld}
+ls -l --block-size=K test.lc
+
+echo
+echo LZW-12
+echo ======
+time java -jar dist/tl15.jar -a lzw -ls 12 -i test.orig -o test.lc
+time java -jar dist/tl15.jar -a lzw -i test.lc -o test.ld -d
+diff test.{orig,ld}
+ls -l --block-size=K test.lc
+
+echo
+echo LZW-16
+echo ======
+time java -jar dist/tl15.jar -a lzw -ls 16 -i test.orig -o test.lc
+time java -jar dist/tl15.jar -a lzw -i test.lc -o test.ld -d
+diff test.{orig,ld}
+ls -l --block-size=K test.lc
+
