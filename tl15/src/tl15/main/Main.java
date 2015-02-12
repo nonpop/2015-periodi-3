@@ -15,7 +15,7 @@ import tl15.lzw.LZW;
  * The user interface.
  */
 public class Main {
-    public static Options opts;
+    private static Options opts;
 
     /**
      * Initialize the option structure.
@@ -81,6 +81,7 @@ public class Main {
             long start = System.nanoTime();
             if (opts.getOptionString("algorithm").equals("lzw")) {
                 if (!opts.getFlagState("decompress")) {
+                    LZW.init(opts.getOptionInteger("lzw.codeSize"));
                     LZW.compressFile(ins, outs);
                 } else {
                     LZW.decompressFile(ins, outs);

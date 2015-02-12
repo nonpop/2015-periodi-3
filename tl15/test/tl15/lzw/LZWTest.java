@@ -36,7 +36,7 @@ public class LZWTest {
     }
     
     public LZWTest(int codeSize) {
-        Main.initOptions(new String[]{"-ls", "" + codeSize});
+        LZW.init(codeSize);
     }
 
     private void testCompress(int[] expected, byte[] data) throws IOException {

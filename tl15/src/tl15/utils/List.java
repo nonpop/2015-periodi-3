@@ -60,7 +60,7 @@ public class List<T> implements Iterable<T> {
      */
     public T get(int i) {
         if (i < 0 || i >= size) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("" + i + ", size = "+ size);
         }
         return (T)array[i];
     }

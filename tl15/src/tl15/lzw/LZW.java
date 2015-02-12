@@ -5,7 +5,6 @@ import tl15.utils.BitOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import tl15.main.Main;
 import tl15.utils.List;
 import tl15.utils.Set;
 import static tl15.utils.Math.twoTo;
@@ -14,12 +13,14 @@ import static tl15.utils.Math.twoTo;
  * An implementation of LZW-(de)compression.
  */
 public class LZW {
-    private static int maxCodeSize() {
-        return Main.opts.getOptionInteger("lzw.codeSize");
+    private static int maxCodeSize = -1;
+
+    public static void init(int maxCodeSize) {
+        LZW.maxCodeSize = maxCodeSize;
     }
 
     private static int lastCode() {
-        return twoTo(maxCodeSize()) - 3;
+        return twoTo(maxCodeSize) - 3;
     }
 
     private static int growCode(int codeSize) {
@@ -170,7 +171,7 @@ public class LZW {
 
         // the header
         bouts.writeBits(32, headerMagik);
-        bouts.writeBits(5, Main.opts.getOptionInteger("lzw.codeSize"));
+        bouts.writeBits(5, maxCodeSize);
 
         LZW.compress(ins, bouts);
         bouts.flush();
@@ -190,6 +191,7 @@ public class LZW {
         }
         int fileCodeSize = bins.readBits(5);
         System.out.println("Using max code size " + fileCodeSize);
+        LZW.init(fileCodeSize);
         LZW.decompress(bins, outs);
     }
 }
