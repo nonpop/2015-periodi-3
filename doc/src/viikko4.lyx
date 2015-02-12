@@ -179,8 +179,11 @@ Tällä viikolla en tehnyt kovin paljoa.
 tien kirjoittamista.
  Toteutusdokumenttiin tein vasta Huffman-pakkauksen, koska selvästikin teen
  sitä liian suurella tarkkuudella (koska siitä tulee pitkä!).
- En ole varma, mitä suorituskykytestaukseen pitäisi tulla.
- Testausta (hyvin) suurilla syötteillä?
+ Ohjelmasta löytyi myös omituinen bugi, missä automaattitestauksessa tiedoston
+ pakkaus/purku onnistuu, mutta käsin ajettaessa ei (samalla tiedostolla).
+ Ongelma ilmenee molemmilla algoritmeilla, joten kyseessä lienee taas jokin
+ javan omituisuus.
+ Kohta kirjoitan koko homman uusiksi C:llä.
 \end_layout
 
 \end_body
