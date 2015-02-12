@@ -172,10 +172,6 @@ enumitem
 Testausdokumentti
 \end_layout
 
-\begin_layout Section
-Mitä on testattu, miten tämä tehtiin
-\end_layout
-
 \begin_layout Standard
 Pakkaus- ja purkualgoritmeja on testattu antamalla niille syötteeksi (a)
  käsin muodostettuja pieniä testisyötteitä, (b) ohjelmallisesti generoituja
