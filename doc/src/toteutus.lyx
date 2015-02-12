@@ -203,27 +203,6 @@ Main
 \end_inset
 
 .
- Ohjelman muut osat pääsevät komentoriviparametreihin käsiksi 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-Main
-\end_layout
-
-\end_inset
-
--luokan staattisen 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-opts
-\end_layout
-
-\end_inset
-
--kentän kautta.
 \end_layout
 
 \begin_layout Enumerate
