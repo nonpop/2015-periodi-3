@@ -22,7 +22,7 @@ public class Main {
      * @param args
      * @return 
      */
-    public static Options initOptions(String[] args) {
+    public static void initOptions(String[] args) {
         opts = new Options("java -jar tl15");
         opts.addOption("algorithm", "a", "algorithm_name", "lzw", "Choose the algorithm to use. Available algorithms: huffman, lzw");
         opts.addOption("inputFile", "i", "input_file", null, "The file to compress/decompress");   // TODO: allow -/empty for stdin
@@ -33,7 +33,8 @@ public class Main {
 
         if (!opts.parse(args)) {
             opts.usage();
-            return null;
+            opts = null;
+            return;
         }
 
         System.out.println("\nOptions:");
@@ -44,30 +45,32 @@ public class Main {
         String alg = opts.getOptionString("algorithm");
         if (!alg.equals("huffman") && !alg.equals("lzw")) {
             System.out.println("Unknown algorithm: " + alg);
-            return null;
+            opts = null;
+            return;
         }
         if (opts.getOptionString("inputFile") == null) {
             System.out.println("no input file given");
-            return null;
+            opts = null;
+            return;
         }
         if (opts.getOptionString("outputFile") == null) {
             System.out.println("no output file given");
-            return null;
+            opts = null;
+            return;
         }
         int cs = opts.getOptionInteger("lzw.codeSize");
         if (cs < 9 || cs > 31) {
             System.out.println("lzw.codeSize out of range: " + cs);
-            return null;
+            opts = null;
+            return;
         }
-
-        return opts;
     }
 
     public static void main(String[] args) throws IOException {
 //        args = new String[]{"-i", "test.orig", "-o", "test.lc", "-ls", "16"};
 //        args = new String[]{"-i", "test.lc", "-o", "test.ld", "-d"};
 //        args = new String[]{"-i", "test.orig", "-o", "test.hc", "-a", "huffman"};
-        args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
+//        args = new String[]{"-i", "test.hc", "-o", "test.hd", "-d", "-a", "huffman"};
         initOptions(args);
         if (opts == null) {
             return;
