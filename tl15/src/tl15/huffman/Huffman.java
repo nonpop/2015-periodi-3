@@ -169,21 +169,8 @@ public class Huffman {
      */
     private static void writeHeader(BitOutputStream outs, int[] freqs) throws IOException {
         outs.writeBits(32, headerMagik);
-        int nonZeros = 0;
-        for (int f : freqs) {
-            if (f > 0) {
-                ++nonZeros;
-            }
-        }
-        outs.writeBits(8, nonZeros);
-        for (int i = 0; i < 256; ++i) {
-            if (freqs[i] > 0) {
-                outs.writeBits(8, i);
-                outs.writeBits(32, freqs[i]);
-            }
-        }
-        for (int f : freqs) {
-            outs.writeBits(32, f);
+        for (int freq : freqs) {
+            outs.writeBits(32, freq);
         }
     }
 
@@ -199,11 +186,6 @@ public class Huffman {
             throw new IllegalArgumentException("Bad file.");
         }
         int[] freqs = new int[256];
-        int nonZeros = ins.readBits(8);
-        for (int i = 0; i < nonZeros; ++i) {
-            int b = ins.readBits(8);
-            freqs[b] = ins.readBits(32);
-        }
         for (int i = 0; i < 256; ++i) {
             freqs[i] = ins.readBits(32);
         }
