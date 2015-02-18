@@ -483,30 +483,56 @@ Pakkaus
 \end_layout
 
 \begin_layout Standard
-Pakkausalgoritmi:
+Seuraava olettaa, että syöte on luettavissa tavu kerrallaan 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+read()
+\end_layout
+
+\end_inset
+
+-funktiolla ja funktio 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+write()
+\end_layout
+
+\end_inset
+
+ kirjoittaa tulosteeseen listan bittejä.
 \end_layout
 
 \begin_layout Verbatim
+
 compress():
 \end_layout
 
 \begin_layout Verbatim
+
   frequencies = calculateFrequencies()
 \end_layout
 
 \begin_layout Verbatim
+
   tree = buildTree(frequencies)
 \end_layout
 
 \begin_layout Verbatim
+
   while !EOF:
 \end_layout
 
 \begin_layout Verbatim
+
     b = read()
 \end_layout
 
 \begin_layout Verbatim
+
     write(findCode(tree, b))
 \end_layout
 
@@ -525,26 +551,32 @@ calculateFrequencies()
 \end_layout
 
 \begin_layout Verbatim
+
 calculateFrequencies():
 \end_layout
 
 \begin_layout Verbatim
+
   result = int[256]
 \end_layout
 
 \begin_layout Verbatim
+
   while !EOF:
 \end_layout
 
 \begin_layout Verbatim
+
     b = read()
 \end_layout
 
 \begin_layout Verbatim
+
     result[b]++
 \end_layout
 
 \begin_layout Verbatim
+
   return result
 \end_layout
 
@@ -575,47 +607,58 @@ buildTree()
 \end_layout
 
 \begin_layout Verbatim
+
 buildTree(frequencies):
 \end_layout
 
 \begin_layout Verbatim
+
   queue = new MinHeap()
 \end_layout
 
 \begin_layout Verbatim
+
   for b = 0 ...
  255:
 \end_layout
 
 \begin_layout Verbatim
+
     queue.push(TreeNode(frequencies[b]))
 \end_layout
 
 \begin_layout Verbatim
+
   
 \end_layout
 
 \begin_layout Verbatim
+
   while queue.size >= 2:
 \end_layout
 
 \begin_layout Verbatim
+
     a = queue.pop()
 \end_layout
 
 \begin_layout Verbatim
+
     b = queue.pop()
 \end_layout
 
 \begin_layout Verbatim
+
     queue.push(new Node(a.frequency + b.frequency))
 \end_layout
 
 \begin_layout Verbatim
+
   
 \end_layout
 
 \begin_layout Verbatim
+
   return queue.pop()
 \end_layout
 
@@ -651,43 +694,52 @@ findCode()
 \end_layout
 
 \begin_layout Verbatim
+
 findCode(node):
 \end_layout
 
 \begin_layout Verbatim
+
   result = new List()
 \end_layout
 
 \begin_layout Verbatim
+
   while node.parent:
 \end_layout
 
 \begin_layout Verbatim
+
     if node == node.parent.right:
 \end_layout
 
 \begin_layout Verbatim
+
       res.add(true)
 \end_layout
 
 \begin_layout Verbatim
+
     else:
 \end_layout
 
 \begin_layout Verbatim
+
       res.add(false)
 \end_layout
 
 \begin_layout Verbatim
+
     node = node.parent
 \end_layout
 
 \begin_layout Verbatim
+
   return res.reverse()
 \end_layout
 
 \begin_layout Standard
-Kuten 
+Kuten metodista 
 \begin_inset Flex Code
 status open
 
@@ -697,19 +749,19 @@ buildTree()
 
 \end_inset
 
-, Huffman-puun korkeus on korkeintaan 256.
- Tästä seuraa, 
+ nähdään, Huffman-puun korkeus on korkeintaan 256.
+ Tästä seuraa, että 
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-että findCode()
+findCode()
 \end_layout
 
 \end_inset
 
-:n silmukka ajetaan korkeintaan 256 kertaa ja palautettava lista on korkeintaan
- näin pitkä.
+:n silmukka ajetaan kettä orkeintaan 256 kertaa ja palautettava lista on
+ korkeintaan näin pitkä.
  Siis kyseessä on vakioaikainen- ja tilainen funktio.
  Lopputuloksena 
 \begin_inset Flex Code
@@ -732,12 +784,400 @@ compress()
 -tilainen.
 \end_layout
 
+\begin_layout Subsubsection
+Purku
+\end_layout
+
+\begin_layout Standard
+Seuraava olettaa, että taulukko 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+freqs
+\end_layout
+
+\end_inset
+
+ sisältää alkuperäisen (pakkaamattoman) syötteen merkkitaajuudet.
+ Se voidaan tallentaa esimerkiksi pakatun tiedoston alkuun ja lukea siitä
+ vakioajassa.
+ Funktio 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+read()
+\end_layout
+
+\end_inset
+
+ lukee syötettä bitti kerrallaan ja 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+write()
+\end_layout
+
+\end_inset
+
+ kirjoittaa tulosteeseen annetun tavun.
+\end_layout
+
+\begin_layout Verbatim
+
+decompress():
+\end_layout
+
+\begin_layout Verbatim
+
+  tree = buildTree(freqs)
+\end_layout
+
+\begin_layout Verbatim
+
+  node = tree.root
+\end_layout
+
+\begin_layout Verbatim
+
+  while !EOF:
+\end_layout
+
+\begin_layout Verbatim
+
+    if read() == 0:
+\end_layout
+
+\begin_layout Verbatim
+
+      node = node.left
+\end_layout
+
+\begin_layout Verbatim
+
+    else:
+\end_layout
+
+\begin_layout Verbatim
+
+      node = node.right
+\end_layout
+
+\begin_layout Verbatim
+
+    if node.left == null:
+\end_layout
+
+\begin_layout Verbatim
+
+      write(node.character)
+\end_layout
+
+\begin_layout Verbatim
+
+      node = tree.root
+\end_layout
+
+\begin_layout Standard
+Aiemmin jo nähtiin, että 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+buildTree()
+\end_layout
+
+\end_inset
+
+ on vakioaikainen ja -tilainen.
+ Loppu purkufunktiosta tekee syötteen joka bitin kohdalla kerran jotain
+ vakioaikaista, joten koko funktio on ajaltaan 
+\begin_inset Formula $O(n)$
+\end_inset
+
+.
+ Tilavaativuus on 
+\begin_inset Formula $O(1)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+LZW
+\end_layout
+
+\begin_layout Subsubsection
+Pakkaus
+\end_layout
+
+\begin_layout Standard
+Perusversio LZW-pakkausalgoritmista on seuraava:
+\end_layout
+
+\begin_layout Verbatim
+
+compress():
+\end_layout
+
+\begin_layout Verbatim
+
+  dict = LZWDictionary()
+\end_layout
+
+\begin_layout Verbatim
+
+  currentString = []
+\end_layout
+
+\begin_layout Verbatim
+
+  while !EOF:
+\end_layout
+
+\begin_layout Verbatim
+
+    b = read()
+\end_layout
+
+\begin_layout Verbatim
+
+    if not dict.hasCodeFor(currentString + b)
+\end_layout
+
+\begin_layout Verbatim
+
+      write(dict.getCodeFor(currentString))
+\end_layout
+
+\begin_layout Verbatim
+
+      dict.addCodeFor(currentString + b)
+\end_layout
+
+\begin_layout Verbatim
+
+      currentString = [b]
+\end_layout
+
+\begin_layout Verbatim
+
+    else:
+\end_layout
+
+\begin_layout Verbatim
+
+      currentString += b
+\end_layout
+
+\begin_layout Verbatim
+
+  if currentString.notEmpty():
+\end_layout
+
+\begin_layout Verbatim
+
+    write(dict.getCode(currentString))
+\end_layout
+
+\begin_layout Standard
+Algoritmi on työssä toteutettu hieman toisella tavalla, nimittäin siinä
+ lista 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+currentString
+\end_layout
+
+\end_inset
+
+ on 
+\begin_inset Quotes sld
+\end_inset
+
+sisäänrakennettuna
+\begin_inset Quotes srd
+\end_inset
+
+ luokkaan 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+LZWDictionary
+\end_layout
+
+\end_inset
+
+.
+ Tällöin funktioiden 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+xxxCodeFor()
+\end_layout
+
+\end_inset
+
+ vaativuudet ovat vakioita; muuten ne riippuisivat listan 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+currentString
+\end_layout
+
+\end_inset
+
+ pituudesta.
+ Listan käyttäminen kuitenkin helpottaa funktion ymmärtämistä.
+ Pakkausfunktio käy syötteen jokaisen merkin kerran läpi ja tekee joka merkin
+ kohdalla jotain vakioaikaista, joten funktion aikavaativuus on 
+\begin_inset Formula $O(n)$
+\end_inset
+
+.
+ Sanastoon 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+dict
+\end_layout
+
+\end_inset
+
+ voi tallettaa jonkin kiinteän määrän sanoja, joiden pituus voi vaihdella.
+ Pahimmillaan voi käydä niin, että syötteen lähes jokainen merkki on sanastossa
+ kaksi kertaa.
+ Näin ollen tilavaativuus on myös 
+\begin_inset Formula $O(n)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Purku
+\end_layout
+
+\begin_layout Standard
+LZW-purkualgoritmin perusversio:
+\end_layout
+
+\begin_layout Verbatim
+
+decompress():
+\end_layout
+
+\begin_layout Verbatim
+
+  dict = List<List<Integer>>()
+\end_layout
+
+\begin_layout Verbatim
+
+  inDict = HashSet<Integer>()
+\end_layout
+
+\begin_layout Verbatim
+
+  lastOutput = []
+\end_layout
+
+\begin_layout Verbatim
+
+  while !EOF:
+\end_layout
+
+\begin_layout Verbatim
+
+    code = read()
+\end_layout
+
+\begin_layout Verbatim
+
+    decoded = dict[code]
+\end_layout
+
+\begin_layout Verbatim
+
+    toDict = lastOutput + decoded[0]
+\end_layout
+
+\begin_layout Verbatim
+
+    if not inDict(toDict):
+\end_layout
+
+\begin_layout Verbatim
+
+      dict.set(nextCode++, toDict)
+\end_layout
+
+\begin_layout Verbatim
+
+      inDict.add(toDict)
+\end_layout
+
+\begin_layout Verbatim
+
+    for i in decoded:
+\end_layout
+
+\begin_layout Verbatim
+
+      write(i)
+\end_layout
+
+\begin_layout Standard
+Pseudokoodista on jätetty pois LZW-purkualgoritmin poikkeustapaus (koodia
+ ei ole sanastossa), mutta se ei muuta vaativuuksia.
+ Koshttp://en.wikipedia.org/wiki/Lossless_compressionka algoritmi toimii oikein
+ (todistus sivuutetaan), niin aika- ja tilavaativuudet ovat 
+\begin_inset Formula $O(n)$
+\end_inset
+
+, missä 
+\begin_inset Formula $n$
+\end_inset
+
+ on 
+\emph on
+alkuperäisen
+\emph default
+ (pakkaamattoman) syötteen koko.
+\end_layout
+
+\begin_layout Subsubsection
+Viritetyt versiot
+\end_layout
+
+\begin_layout Standard
+LZW-algoritmin perusversioon on työssä tehty kaksi parannusta: muuntuvat
+ koodisanojen koot (koolla on ennalta annettu yläraja) ja täyttyneen sanaston
+ tyhjennys.
+ Kumpikaan muutos ei vaikuta vaativuusluokkiin.
+\end_layout
+
 \begin_layout Section
 Työn mahdolliset puutteet ja parannusehdotukset
 \end_layout
 
+\begin_layout Standard
+Työ on täydellinen.
+\end_layout
+
 \begin_layout Section
 Lähteet
+\end_layout
+
+\begin_layout Standard
+Wikipedia ym.
 \end_layout
 
 \end_body
