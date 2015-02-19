@@ -341,9 +341,9 @@ Jos
 \end_inset
 
 .
- Jokainen merkki vie 4 tavua, joten sanojen viemä tila on n.
+ Jokainen merkki voi viedä 2 tavua, joten sanojen viemä tila on n.
  
-\begin_inset Formula $2^{n+1}(2^{n}+1)$
+\begin_inset Formula $2^{n}(2^{n}+1)$
 \end_inset
 
  tavua.
@@ -352,7 +352,7 @@ Jos
 \end_inset
 
  (oletus), niin sanasto vie pahimmassa tapauksessa n.
- 32MB ja jokainen lisäbitti suunnilleen nelinkertaistaa maksimikoon.
+ 16MB ja jokainen lisäbitti suunnilleen nelinkertaistaa maksimikoon.
 \end_layout
 
 \end_inset
@@ -396,12 +396,10 @@ teksti.txt.hc
 \begin_deeper
 \begin_layout Standard
 \align center
-
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-
 java -jar tl15.jar -i teksti.txt -o teksti.txt.hc -a huffman
 \end_layout
 
@@ -412,13 +410,11 @@ java -jar tl15.jar -i teksti.txt -o teksti.txt.hc -a huffman
 
 \end_deeper
 \begin_layout Itemize
-
 Pura tiedosto 
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-
 teksti.txt.hc
 \end_layout
 
@@ -429,7 +425,6 @@ teksti.txt.hc
 status open
 
 \begin_layout Plain Layout
-
 teksti.txt
 \end_layout
 
@@ -441,12 +436,10 @@ teksti.txt
 \begin_deeper
 \begin_layout Standard
 \align center
-
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-
 java -jar tl15.jar -i teksti.txt.hc -o teksti.txt -a huffman -d
 \end_layout
 
@@ -457,7 +450,6 @@ java -jar tl15.jar -i teksti.txt.hc -o teksti.txt -a huffman -d
 
 \end_deeper
 \begin_layout Itemize
-
 Kuten äskeiset, mutta käytetään LZW-pakkausta (oletus) ja koodisanan maksimikoko
 a 12 (oletus):
 \end_layout
@@ -465,12 +457,10 @@ a 12 (oletus):
 \begin_deeper
 \begin_layout Standard
 \align center
-
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-
 java -jar tl15.jar -i teksti.txt -o teksti.txt.lc
 \end_layout
 
@@ -481,12 +471,10 @@ java -jar tl15.jar -i teksti.txt -o teksti.txt.lc
 
 \begin_layout Standard
 \align center
-
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-
 java -jar tl15.jar -i teksti.txt.lc -o teksti.txt -d
 \end_layout
 
@@ -497,7 +485,6 @@ java -jar tl15.jar -i teksti.txt.lc -o teksti.txt -d
 
 \end_deeper
 \begin_layout Itemize
-
 Kuten äskeiset, mutta käytetään LZW-pakkausta ja koodisanan maksimikokoa
  16:
 \end_layout
@@ -505,12 +492,10 @@ Kuten äskeiset, mutta käytetään LZW-pakkausta ja koodisanan maksimikokoa
 \begin_deeper
 \begin_layout Standard
 \align center
-
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-
 java -jar tl15.jar -i teksti.txt -o teksti.txt.lc -ls 16
 \end_layout
 
@@ -521,12 +506,10 @@ java -jar tl15.jar -i teksti.txt -o teksti.txt.lc -ls 16
 
 \begin_layout Standard
 \align center
-
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-
 java -jar tl15.jar -i teksti.txt.lc -o teksti.txt -d
 \end_layout
 
@@ -537,7 +520,6 @@ java -jar tl15.jar -i teksti.txt.lc -o teksti.txt -d
 
 \end_deeper
 \begin_layout Section
-
 Testien ajaminen
 \end_layout
 
