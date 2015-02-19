@@ -1320,7 +1320,7 @@ Tekstitiedostoissa on myös paljon toistoa, joita LZW pystyy hyödyntämään.
  tämä merkkijono (joka voi olla 12 bitin koodisanoilla parhaimmillaan n.
  4000 merkkiä pitkä) voidaan korvata yhdellä (tässä esimerkissä 12 bitin)
  koodisanalla.
- Kyseinen merkkijono pakkautuu silloin n.
+ Kyseinen merkkijono pakkautuu silloin parhaimmillaan n.
  
 \begin_inset Formula $12/(4000\cdot8)\approx2\%$
 \end_inset
