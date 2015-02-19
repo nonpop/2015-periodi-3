@@ -20,7 +20,6 @@ public class Main {
     /**
      * Initialize the option structure.
      * @param args
-     * @return 
      */
     public static void initOptions(String[] args) {
         opts = new Options("java -jar tl15");
@@ -29,9 +28,9 @@ public class Main {
         opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
         opts.addFlag("decompress", "d", "Decompress (default is to compress)");
         opts.addOption("lzw.codeSize", "ls", "code_size", 12, "The maximum code size for LZW compression. Must be between 9..31");
-        // TODO: -h and -v
+        opts.addFlag("help", "h", "Show this usage information");
 
-        if (!opts.parse(args)) {
+        if (!opts.parse(args) || opts.getFlagState("help")) {
             opts.usage();
             opts = null;
             return;
