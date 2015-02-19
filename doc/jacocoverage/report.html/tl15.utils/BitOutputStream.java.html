@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BitOutputStream.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;tl15&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">tl15.utils</a> &gt; <span class="el_source">BitOutputStream.java</span></div><h1>BitOutputStream.java</h1><pre class="source lang-java linenums">package tl15.utils;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
+/**
+ * A bit output stream.
+ */
+public class BitOutputStream extends OutputStream {
+    private final OutputStream outs;
+
+<span class="fc" id="L12">    private byte curByte = 0;</span>
+<span class="fc" id="L13">    private int bytePos = 0;</span>
+
+    /**
+     * Keeps track of how many bits have been written to the stream (or buffer).
+     */
+<span class="fc" id="L18">    private int bitCount = 0;</span>
+
+    /**
+     * 
+     * @param outs The stream to convert into a bit stream.
+     */
+<span class="fc" id="L24">    public BitOutputStream(OutputStream outs) {</span>
+<span class="fc" id="L25">        this.outs = outs;</span>
+<span class="fc" id="L26">    }</span>
+
+    /**
+     * Write bits to the stream.
+     * @param bitsToWrite How many bits to write. Can be between 0..32.
+     * @param theBits The bits to write are the last 'bitsToWrite' bits of &lt;code&gt;theBits&lt;/code&gt;.
+     * @throws java.io.IOException
+     */
+    public void writeBits(int bitsToWrite, int theBits) throws IOException {
+<span class="fc" id="L35">        bitCount += bitsToWrite;</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        while (bitsToWrite &gt; 0) {</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">            if (bytePos == 8) {</span>
+<span class="fc" id="L38">                outs.write(curByte);</span>
+<span class="fc" id="L39">                curByte = 0;</span>
+<span class="fc" id="L40">                bytePos = 0;</span>
+            }
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            if ((theBits &amp; (1 &lt;&lt; (bitsToWrite - 1))) != 0) {</span>
+<span class="fc" id="L43">                curByte |= (0x80 &gt;&gt; bytePos);</span>
+            }
+<span class="fc" id="L45">            ++bytePos;</span>
+<span class="fc" id="L46">            --bitsToWrite;</span>
+        }
+<span class="fc" id="L48">    }</span>
+
+    /**
+     * Write bits to the stream.
+     * @param bits The bits to write.
+     * @throws java.io.IOException
+     */
+    public void writeBits(List&lt;Boolean&gt; bits) throws IOException {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (int i = 0; i &lt; bits.size(); ++i) {</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">            writeBits(1, bits.get(i)? 1 : 0);</span>
+        }
+<span class="fc" id="L59">    }</span>
+
+    /**
+     * Write the remaining buffer to the stream. If there are 8p+n, where n=1..7,
+     * bits remaining, then the last 8-n bits written are zeroes. Also flushes
+     * the underlying stream.
+     * @throws java.io.IOException
+     */
+    @Override
+    public void flush() throws IOException {
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (bytePos &gt; 0) {</span>
+<span class="fc" id="L70">            outs.write(curByte);</span>
+        }
+<span class="fc" id="L72">        bytePos = 0;</span>
+<span class="fc" id="L73">        curByte = 0;</span>
+<span class="fc" id="L74">        outs.flush();</span>
+<span class="fc" id="L75">    }</span>
+
+    /**
+     * 
+     * @return The number of bits written to the stream. Might not be a multiple of 8.
+     */
+    public int getBitCount() {
+<span class="fc" id="L82">        return bitCount;</span>
+    }
+
+    @Override
+    public void write(int i) throws IOException {
+<span class="fc" id="L87">        writeBits(8, i);</span>
+<span class="fc" id="L88">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

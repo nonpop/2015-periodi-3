@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>List.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;tl15&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">tl15.utils</a> &gt; <span class="el_source">List.java</span></div><h1>List.java</h1><pre class="source lang-java linenums">package tl15.utils;
+
+import java.util.Iterator;
+
+/** A stripped-down ArrayList.
+ * @param &lt;T&gt; The type of the elements. */
+public class List&lt;T&gt; implements Iterable&lt;T&gt; {
+    private Object[] array;
+<span class="fc" id="L9">    private int size = 0;</span>
+    private final int initialCapacity;
+
+    /**
+     * Construct an empty list.
+     */
+<span class="fc" id="L15">    public List() {</span>
+<span class="fc" id="L16">        array = new Object[2];      // don't put 0 here; otherwise grow() won't work</span>
+<span class="fc" id="L17">        initialCapacity = 2;</span>
+<span class="fc" id="L18">    }</span>
+
+    /**
+     * Construct an empty list with a given capacity.
+     * @param initialCapacity The initial capacity of the list. Must be &gt; 0!
+     * @param fill If true the list will be filled with nulls, thus making the list
+     * have initialCapacity many elements.
+     */
+<span class="fc" id="L26">    public List(int initialCapacity, boolean fill) {</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        if (initialCapacity &lt;= 0) {</span>
+<span class="nc" id="L28">            throw new IllegalArgumentException(&quot;initialCapacity must be &gt; 0&quot;);</span>
+        }
+<span class="fc" id="L30">        this.initialCapacity = initialCapacity;</span>
+<span class="fc" id="L31">        array = new Object[initialCapacity];</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (fill) {</span>
+<span class="fc" id="L33">            size = initialCapacity;</span>
+        }
+<span class="fc" id="L35">    }</span>
+
+    /**
+     * Construct a list from an iterable object.
+     * @param source The object.
+     */
+    public List(Iterable&lt;T&gt; source) {
+<span class="fc" id="L42">        this();</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        for (T element : source) {</span>
+<span class="fc" id="L44">            add(element);</span>
+<span class="fc" id="L45">        }</span>
+<span class="fc" id="L46">    }</span>
+
+    /**
+     * 
+     * @return The number of elements in the list.
+     */
+    public int size() {
+<span class="fc" id="L53">        return size;</span>
+    }
+
+    /**
+     * Get an element from the list.
+     * @param i The index of the element to get.
+     * @return The element.
+     */
+    public T get(int i) {
+<span class="fc bfc" id="L62" title="All 4 branches covered.">        if (i &lt; 0 || i &gt;= size) {</span>
+<span class="fc" id="L63">            throw new IndexOutOfBoundsException(&quot;&quot; + i + &quot;, size = &quot;+ size);</span>
+        }
+<span class="fc" id="L65">        return (T)array[i];</span>
+    }
+
+    /**
+     * Add an element to the end of the list.
+     * @param element The element to add.
+     */
+    public void add(T element) {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (size &lt; array.length) {</span>
+<span class="fc" id="L74">            array[size++] = element;</span>
+        } else {
+<span class="fc" id="L76">            grow();</span>
+<span class="fc" id="L77">            add(element);</span>
+        }
+<span class="fc" id="L79">    }</span>
+
+    /**
+     * Replace an element in the list.
+     * @param i
+     * @param element
+     */
+    public void set(int i, T element) {
+<span class="fc bfc" id="L87" title="All 4 branches covered.">        if (i &lt; 0 || i &gt;= size) {</span>
+<span class="fc" id="L88">            throw new IndexOutOfBoundsException();</span>
+        }
+<span class="fc" id="L90">        array[i] = element;</span>
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * Double the capacity of the list.
+     */
+    private void grow() {
+<span class="fc" id="L97">        Object[] newArray = new Object[array.length * 2];</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (int i = 0; i &lt; array.length; ++i) {</span>
+<span class="fc" id="L99">            newArray[i] = array[i];</span>
+        }
+<span class="fc" id="L101">        array = newArray;</span>
+<span class="fc" id="L102">    }</span>
+
+    /**
+     * Reverse the order of the elements in the list.
+     */
+    public void reverse() {
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        for (int i = 0; i &lt; size / 2; ++i) {</span>
+<span class="fc" id="L109">            Object tmp = array[i];</span>
+<span class="fc" id="L110">            array[i] = array[(size - 1) - i];</span>
+<span class="fc" id="L111">            array[(size - 1) - i] = tmp;</span>
+        }
+<span class="fc" id="L113">    }</span>
+
+    /** 
+     * Remove the first element of the list.
+     */
+    public void removeFirst() {
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (size == 0) {</span>
+<span class="fc" id="L120">            throw new IllegalStateException();</span>
+        }
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        for (int i = 1; i &lt; size; ++i) {</span>
+<span class="fc" id="L123">            array[i - 1] = array[i];</span>
+        }
+<span class="fc" id="L125">        --size;</span>
+<span class="fc" id="L126">    }</span>
+
+    /**
+     * Remove the last element of the list.
+     */
+    public void removeLast() {
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (size == 0) {</span>
+<span class="fc" id="L133">            throw new IllegalStateException();</span>
+        }
+<span class="fc" id="L135">        --size;</span>
+<span class="fc" id="L136">    }</span>
+
+    /**
+     * Clears the list.
+     */
+    public void clear() {
+<span class="fc" id="L142">        array = new Object[initialCapacity];</span>
+<span class="fc" id="L143">        size = 0;</span>
+//        for (int i = 0; i &lt; array.length; ++i) {
+//            array[i] = null;
+//        }
+<span class="fc" id="L147">    }</span>
+
+    /**
+     * Check if the list has no elements.
+     * @return True if the list has no elements; otherwise false.
+     */
+    public boolean isEmpty() {
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        return size == 0;</span>
+    }
+
+    @Override
+    public Iterator&lt;T&gt; iterator() {
+<span class="fc" id="L159">        return new Iterator&lt;T&gt;() {</span>
+<span class="fc" id="L160">            private int curIdx = 0;</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">                return curIdx &lt; size;</span>
+            }
+
+            @Override
+            public T next() {
+<span class="fc" id="L169">                return (T)array[curIdx++];</span>
+            }
+
+            @Override
+            public void remove() {
+<span class="nc" id="L174">                throw new UnsupportedOperationException(&quot;Not supported yet.&quot;);</span>
+            }
+        };
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L181">        int hash = 7;</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        for (int i = 0; i &lt; size; ++i) {</span>
+<span class="fc" id="L183">            hash = 11 * hash + array[i].hashCode();</span>
+        }
+<span class="fc" id="L185">        return hash;</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">        if (obj == null) {</span>
+<span class="nc" id="L191">            return false;</span>
+        }
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">        if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L194">            return false;</span>
+        }
+<span class="fc" id="L196">        final List&lt;T&gt; other = (List&lt;T&gt;) obj;</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        if (this.size != other.size) {</span>
+<span class="fc" id="L198">            return false;</span>
+        }
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        for (int i = 0; i &lt; size; ++i) {</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">            if (!this.array[i].equals(other.array[i])) {</span>
+<span class="fc" id="L202">                return false;</span>
+            }
+        }
+<span class="nc" id="L205">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

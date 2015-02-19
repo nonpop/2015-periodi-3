@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;tl15&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">tl15.main</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package tl15.main;
+
+import tl15.utils.Options;
+import tl15.huffman.Huffman;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import tl15.lzw.LZW;
+
+/**
+ * The user interface.
+ */
+<span class="nc" id="L17">public class Main {</span>
+    private static Options opts;
+
+    /**
+     * Initialize the option structure.
+     * @param args The command line arguments.
+     */
+    public static void initOptions(String[] args) {
+<span class="nc" id="L25">        opts = new Options(&quot;java -jar tl15&quot;);</span>
+<span class="nc" id="L26">        opts.addOption(&quot;algorithm&quot;, &quot;a&quot;, &quot;algorithm_name&quot;, &quot;lzw&quot;, &quot;Choose the algorithm to use. Available algorithms: huffman, lzw&quot;);</span>
+<span class="nc" id="L27">        opts.addOption(&quot;inputFile&quot;, &quot;i&quot;, &quot;input_file&quot;, null, &quot;The file to compress/decompress&quot;);   // TODO: allow -/empty for stdin</span>
+<span class="nc" id="L28">        opts.addOption(&quot;outputFile&quot;, &quot;o&quot;, &quot;output_file&quot;, null, &quot;The file to write the compressed/decompressed data to&quot;);   // TODO: allow -/empty for stdout</span>
+<span class="nc" id="L29">        opts.addFlag(&quot;decompress&quot;, &quot;d&quot;, &quot;Decompress (default is to compress)&quot;);</span>
+<span class="nc" id="L30">        opts.addOption(&quot;lzw.codeSize&quot;, &quot;ls&quot;, &quot;code_size&quot;, 12, &quot;The maximum code size for LZW compression. Must be between 9..31&quot;);</span>
+<span class="nc" id="L31">        opts.addFlag(&quot;help&quot;, &quot;h&quot;, &quot;Show this usage information&quot;);</span>
+
+<span class="nc bnc" id="L33" title="All 4 branches missed.">        if (!opts.parse(args) || opts.getFlagState(&quot;help&quot;)) {</span>
+<span class="nc" id="L34">            opts.usage();</span>
+<span class="nc" id="L35">            opts = null;</span>
+<span class="nc" id="L36">            return;</span>
+        }
+
+<span class="nc" id="L39">        System.out.println(&quot;\nOptions:&quot;);</span>
+<span class="nc" id="L40">        opts.dump();</span>
+<span class="nc" id="L41">        System.out.println();</span>
+
+        // check that the arguments are sane
+<span class="nc" id="L44">        boolean fail = false;</span>
+<span class="nc" id="L45">        String alg = opts.getOptionString(&quot;algorithm&quot;);</span>
+<span class="nc bnc" id="L46" title="All 4 branches missed.">        if (!alg.equals(&quot;huffman&quot;) &amp;&amp; !alg.equals(&quot;lzw&quot;)) {</span>
+<span class="nc" id="L47">            System.out.println(&quot;Unknown algorithm: &quot; + alg);</span>
+<span class="nc" id="L48">            fail = true;</span>
+        }
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (opts.getOptionString(&quot;inputFile&quot;) == null) {</span>
+<span class="nc" id="L51">            System.out.println(&quot;no input file given&quot;);</span>
+<span class="nc" id="L52">            fail = true;</span>
+        }
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (opts.getOptionString(&quot;outputFile&quot;) == null) {</span>
+<span class="nc" id="L55">            System.out.println(&quot;no output file given&quot;);</span>
+<span class="nc" id="L56">            fail = true;</span>
+        }
+<span class="nc" id="L58">        int cs = opts.getOptionInteger(&quot;lzw.codeSize&quot;);</span>
+<span class="nc bnc" id="L59" title="All 4 branches missed.">        if (cs &lt; 9 || cs &gt; 31) {</span>
+<span class="nc" id="L60">            return;</span>
+        }
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (fail) {</span>
+<span class="nc" id="L63">            opts = null;</span>
+        }
+<span class="nc" id="L65">    }</span>
+
+    public static void main(String[] args) throws IOException {
+//        args = new String[]{&quot;-i&quot;, &quot;test.orig&quot;, &quot;-o&quot;, &quot;test.lc&quot;, &quot;-ls&quot;, &quot;16&quot;};
+//        args = new String[]{&quot;-i&quot;, &quot;test.lc&quot;, &quot;-o&quot;, &quot;test.ld&quot;, &quot;-d&quot;};
+//        args = new String[]{&quot;-i&quot;, &quot;test.orig&quot;, &quot;-o&quot;, &quot;test.hc&quot;, &quot;-a&quot;, &quot;huffman&quot;};
+//        args = new String[]{&quot;-i&quot;, &quot;test.hc&quot;, &quot;-o&quot;, &quot;test.hd&quot;, &quot;-d&quot;, &quot;-a&quot;, &quot;huffman&quot;};
+<span class="nc" id="L72">        initOptions(args);</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (opts == null) {</span>
+<span class="nc" id="L74">            return;</span>
+        }
+<span class="nc" id="L76">        String inp = opts.getOptionString(&quot;inputFile&quot;);</span>
+<span class="nc" id="L77">        String outp = opts.getOptionString(&quot;outputFile&quot;);</span>
+
+<span class="nc" id="L79">        try (InputStream ins = new BufferedInputStream(new FileInputStream(inp));</span>
+<span class="nc" id="L80">             OutputStream outs = new BufferedOutputStream(new FileOutputStream(outp)))</span>
+        {
+<span class="nc" id="L82">            long start = System.nanoTime();</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            if (opts.getOptionString(&quot;algorithm&quot;).equals(&quot;lzw&quot;)) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                if (!opts.getFlagState(&quot;decompress&quot;)) {</span>
+<span class="nc" id="L85">                    LZW.init(opts.getOptionInteger(&quot;lzw.codeSize&quot;));</span>
+<span class="nc" id="L86">                    LZW.compressFile(ins, outs);</span>
+                } else {
+<span class="nc" id="L88">                    LZW.decompressFile(ins, outs);</span>
+                }
+            } else {
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                if (!opts.getFlagState(&quot;decompress&quot;)) {</span>
+<span class="nc" id="L92">                    Huffman.compressFile(ins, outs);</span>
+                } else {
+<span class="nc" id="L94">                    Huffman.decompressFile(ins, outs);</span>
+                }
+            }
+<span class="nc" id="L97">            long end = System.nanoTime();</span>
+<span class="nc" id="L98">            System.out.println(&quot;Took &quot; + (end - start) / 1000000 + &quot;ms&quot;);</span>
+<span class="nc bnc" id="L99" title="All 16 branches missed.">        }</span>
+<span class="nc" id="L100">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

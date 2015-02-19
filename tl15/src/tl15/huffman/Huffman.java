@@ -112,12 +112,15 @@ public class Huffman {
         HuffmanTree tree = buildTree(freqs);
         int inputChars = 0;
         int chr = 0, count = 0;
+        
+        // First check if the original input had more than one different characters
         for (int i = 0; i < freqs.length; ++i) {
             if (freqs[i] > 0) {
                 chr = i;
                 count = freqs[i];
                 ++inputChars;
                 if (inputChars >= 2) {
+                    // yes it did
                     break;
                 }
             }

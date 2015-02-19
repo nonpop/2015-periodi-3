@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Options.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;tl15&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">tl15.utils</a> &gt; <span class="el_source">Options.java</span></div><h1>Options.java</h1><pre class="source lang-java linenums">package tl15.utils;
+
+import static tl15.utils.Math.max;
+
+/**
+ * A class to handle command line arguments.
+ */
+<span class="nc bnc" id="L8" title="All 2 branches missed.">public class Options {</span>
+    private final String runCommand;
+<span class="nc" id="L10">    List&lt;Pair&lt;String, Option&gt;&gt; options = new List&lt;&gt;();</span>
+
+    /**
+     * 
+     * @param runCommand The name of the executable as seen in usage() output.
+     */
+<span class="nc" id="L16">    public Options(String runCommand) {</span>
+<span class="nc" id="L17">        this.runCommand = runCommand;</span>
+<span class="nc" id="L18">    }</span>
+    
+    /**
+     * Add an option which takes a string argument.
+     * @param defValue
+     * @see #addFlag(java.lang.String, java.lang.Character, java.lang.String) 
+     * @param name
+     * @param option
+     * @param argName
+     * @param description 
+     */
+    public void addOption(String name, String option, String argName, String defValue, String description) {
+<span class="nc bnc" id="L30" title="All 4 branches missed.">        assert(option != null);</span>
+<span class="nc bnc" id="L31" title="All 4 branches missed.">        assert(name != null);</span>
+<span class="nc bnc" id="L32" title="All 4 branches missed.">        assert(argName != null);</span>
+<span class="nc bnc" id="L33" title="All 4 branches missed.">        assert(description != null);</span>
+<span class="nc" id="L34">        options.add(new Pair&lt;&gt;(name, new Option(option, true, argName, false, defValue, description)));</span>
+<span class="nc" id="L35">    }</span>
+
+    /**
+     * Add an option which takes an integer argument.
+     * @param defValue
+     * @see #addFlag(java.lang.String, java.lang.Character, java.lang.String) 
+     * @param name
+     * @param option
+     * @param argName
+     * @param description 
+     */
+    public void addOption(String name, String option, String argName, int defValue, String description) {
+<span class="nc bnc" id="L47" title="All 4 branches missed.">        assert(option != null);</span>
+<span class="nc bnc" id="L48" title="All 4 branches missed.">        assert(name != null);</span>
+<span class="nc bnc" id="L49" title="All 4 branches missed.">        assert(argName != null);</span>
+<span class="nc bnc" id="L50" title="All 4 branches missed.">        assert(description != null);</span>
+<span class="nc" id="L51">        options.add(new Pair&lt;&gt;(name, new Option(option, true, argName, true, &quot;&quot; + defValue, description)));</span>
+<span class="nc" id="L52">    }</span>
+
+    /**
+     * Add an option which does not take an argument.
+     * @see #addOption(java.lang.String, java.lang.Character, java.lang.String) 
+     * @param name
+     * @param option
+     * @param description 
+     */
+    public void addFlag(String name, String option, String description) {
+<span class="nc bnc" id="L62" title="All 4 branches missed.">        assert(option != null);</span>
+<span class="nc bnc" id="L63" title="All 4 branches missed.">        assert(name != null);</span>
+<span class="nc bnc" id="L64" title="All 4 branches missed.">        assert(description != null);</span>
+<span class="nc" id="L65">        options.add(new Pair&lt;&gt;(name, new Option(option, false, null, false, null, description)));</span>
+<span class="nc" id="L66">    }</span>
+
+    /**
+     * Print usage information.
+     */
+    public void usage() {
+<span class="nc" id="L72">        System.out.println(&quot;Usage: &quot; + runCommand + &quot; *arguments*&quot;);</span>
+<span class="nc" id="L73">        System.out.println(&quot;Available arguments:&quot;);</span>
+<span class="nc" id="L74">        int longest = 0;</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        for (Pair&lt;String, Option&gt; kv : options) {</span>
+<span class="nc" id="L76">            Option opt = kv.second;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            if (opt.takesArgument) {</span>
+<span class="nc" id="L78">                longest = max(longest, (opt.option + &quot; &quot; + opt.argName).length());</span>
+            } else {
+<span class="nc" id="L80">                longest = max(longest, opt.option.length());</span>
+            }
+<span class="nc" id="L82">        }</span>
+<span class="nc" id="L83">        String fmt = &quot;  -%-&quot; + longest + &quot;s  :  %s&quot;;</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        for (Pair&lt;String, Option&gt; kv : options) {</span>
+<span class="nc" id="L85">            Option opt = kv.second;</span>
+<span class="nc" id="L86">            String name = opt.option;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            if (opt.takesArgument) {</span>
+<span class="nc" id="L88">                name += &quot; &quot; + opt.argName;</span>
+            }
+<span class="nc" id="L90">            System.out.printf(fmt, name, opt.description);</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            if (opt.defValue != null) {</span>
+<span class="nc" id="L92">                System.out.print(&quot; [default: &quot; + opt.defValue + &quot;]&quot;);</span>
+            }
+<span class="nc" id="L94">            System.out.println();</span>
+<span class="nc" id="L95">        }</span>
+<span class="nc" id="L96">    }</span>
+
+    private Option getOptionByOptionString(String arg) {
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        for (Pair&lt;String, Option&gt; kv : options) {</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            if (kv.second.option.equals(arg)) {</span>
+<span class="nc" id="L101">                return kv.second;</span>
+            }
+<span class="nc" id="L103">        }</span>
+<span class="nc" id="L104">        return null;</span>
+    }
+
+    private Option getOptionByName(String name) {
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        for (Pair&lt;String, Option&gt; kv : options) {</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            if (kv.first.equals(name)) {</span>
+<span class="nc" id="L110">                return kv.second;</span>
+            }
+<span class="nc" id="L112">        }</span>
+<span class="nc" id="L113">        return null;</span>
+    }
+    
+    /**
+     * Parse the command line and set options accordingly.
+     * @param args
+     * @return True if succeeded.
+     */
+    public boolean parse(String[] args) {
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        for (int i = 0; i &lt; args.length; ++i) {</span>
+<span class="nc" id="L123">            Option opt = getOptionByOptionString(args[i].substring(1));</span>
+<span class="nc bnc" id="L124" title="All 4 branches missed.">            if (opt == null || args[i].charAt(0) != '-') {</span>
+<span class="nc" id="L125">                System.out.println(&quot;Unknown option: &quot; + args[i]);</span>
+<span class="nc" id="L126">                return false;</span>
+            }
+
+<span class="nc bnc" id="L129" title="All 2 branches missed.">            if (!opt.takesArgument) {</span>
+<span class="nc" id="L130">                opt.value = &quot;non-null&quot;;</span>
+            } else {
+<span class="nc bnc" id="L132" title="All 2 branches missed.">                if (i + 1 &gt;= args.length) {</span>
+<span class="nc" id="L133">                    System.out.println(&quot;Option -&quot; + opt.option + &quot; needs an argument&quot;);</span>
+<span class="nc" id="L134">                    return false;</span>
+                }
+<span class="nc" id="L136">                opt.value = args[++i];</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                if (opt.integer) {</span>
+                    try {
+<span class="nc" id="L139">                        Integer.parseInt(opt.value);</span>
+                    }
+<span class="nc" id="L141">                    catch (NumberFormatException e) {</span>
+<span class="nc" id="L142">                        System.out.println(&quot;Option -&quot; + opt.option + &quot; needs an integer argument but was given \&quot;&quot; + opt.value + &quot;\&quot;&quot;);</span>
+<span class="nc" id="L143">                        return false;</span>
+<span class="nc" id="L144">                    }</span>
+                }
+            }
+        }
+<span class="nc" id="L148">        return true;</span>
+    }
+
+    /**
+     * Get the value of a string option.
+     * @param name
+     * @return 
+     */
+    public String getOptionString(String name) {
+<span class="nc" id="L157">        Option opt = getOptionByName(name);</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (opt == null) {</span>
+<span class="nc" id="L159">            throw new IllegalArgumentException(&quot;no such option: &quot; + name);</span>
+        }
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (!opt.takesArgument) {</span>
+<span class="nc" id="L162">            throw new IllegalArgumentException(&quot;option &quot; + name + &quot; does not take an argument&quot;);</span>
+        }
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        if (opt.value == null) {</span>
+<span class="nc" id="L165">            return opt.defValue;</span>
+        } else {
+<span class="nc" id="L167">            return opt.value;</span>
+        }
+    }
+    
+    /**
+     * Get the value of an integer option.
+     * @param name
+     * @return 
+     */
+    public int getOptionInteger(String name) {
+<span class="nc" id="L177">        Option opt = getOptionByName(name);</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">        if (opt == null) {</span>
+<span class="nc" id="L179">            throw new IllegalArgumentException(&quot;no such option: &quot; + name);</span>
+        }
+<span class="nc bnc" id="L181" title="All 2 branches missed.">        if (!opt.takesArgument) {</span>
+<span class="nc" id="L182">            throw new IllegalArgumentException(&quot;option &quot; + name + &quot; does not take an argument&quot;);</span>
+        }
+<span class="nc bnc" id="L184" title="All 2 branches missed.">        if (!opt.integer) {</span>
+<span class="nc" id="L185">            throw new IllegalArgumentException(&quot;option &quot; + name + &quot; is not an integer&quot;);</span>
+        }
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        if (opt.value == null) {</span>
+<span class="nc" id="L188">            return Integer.parseInt(opt.defValue);</span>
+        } else {
+<span class="nc" id="L190">            return Integer.parseInt(opt.value);</span>
+        }
+    }
+
+    /**
+     * Get the value of a flag.
+     * @param name
+     * @return 
+     */
+    public boolean getFlagState(String name) {
+        // TODO: remove copy-paste
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        for (Pair&lt;String, Option&gt; kv : options) {</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">            if (kv.first.equals(name)) {</span>
+<span class="nc" id="L203">                Option opt = kv.second;</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">                if (opt.takesArgument) {</span>
+<span class="nc" id="L205">                    throw new IllegalArgumentException(&quot;option &quot; + name + &quot; is not a flag&quot;);</span>
+                }
+<span class="nc bnc" id="L207" title="All 2 branches missed.">                return opt.value != null;</span>
+            }
+<span class="nc" id="L209">        }</span>
+<span class="nc" id="L210">        throw new IllegalArgumentException(&quot;no such option: &quot; + name);</span>
+    }
+
+    private String formatValue(Option opt, String s) {
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (s == null) {</span>
+<span class="nc" id="L215">            return &quot;(null)&quot;;</span>
+        }
+
+<span class="nc" id="L218">        String fmt = &quot;&quot;;</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        if (!opt.integer) {</span>
+<span class="nc" id="L220">            fmt += &quot;\&quot;&quot;;</span>
+        }
+<span class="nc" id="L222">        fmt += s;</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">        if (!opt.integer) {</span>
+<span class="nc" id="L224">            fmt += &quot;\&quot;&quot;;</span>
+        }
+<span class="nc" id="L226">        return fmt;</span>
+    }
+    
+    private String formatValue(Option opt) {
+<span class="nc bnc" id="L230" title="All 2 branches missed.">        if (!opt.takesArgument) {</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">            return (opt.value != null)? &quot;true&quot; : &quot;false&quot;;</span>
+        }
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        if (opt.value == null) {</span>
+<span class="nc" id="L234">            return formatValue(opt, opt.defValue);</span>
+        }
+<span class="nc" id="L236">        String fmt = formatValue(opt, opt.value);</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (opt.defValue != null) {</span>
+<span class="nc" id="L238">            fmt += &quot; [default: &quot; + formatValue(opt, opt.defValue) + &quot;]&quot;;</span>
+        }
+<span class="nc" id="L240">        return fmt;</span>
+    }
+
+    /**
+     * Print out all current options with their values and default values.
+     */
+    public void dump() {
+<span class="nc bnc" id="L247" title="All 2 branches missed.">        for (Pair&lt;String, Option&gt; kv : options) {</span>
+<span class="nc" id="L248">            System.out.println(kv.first + &quot; = &quot; + formatValue(kv.second));</span>
+<span class="nc" id="L249">        }</span>
+<span class="nc" id="L250">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

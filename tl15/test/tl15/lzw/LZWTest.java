@@ -15,7 +15,6 @@ import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import tl15.main.Main;
 import static tl15.utils.DataSources.alternatingData;
 import static tl15.utils.DataSources.consecutiveData;
 import static tl15.utils.DataSources.randomData;

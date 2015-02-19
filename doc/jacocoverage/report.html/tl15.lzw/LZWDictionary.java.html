@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LZWDictionary.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;tl15&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">tl15.lzw</a> &gt; <span class="el_source">LZWDictionary.java</span></div><h1>LZWDictionary.java</h1><pre class="source lang-java linenums">package tl15.lzw;
+
+import tl15.utils.List;
+
+
+/**
+ * Implements an LZW dictionary (prefix tree).
+ */
+public class LZWDictionary {
+<span class="fc" id="L10">    private final LZWDictionaryEntry root = new LZWDictionaryEntry(null, -1);</span>
+<span class="fc" id="L11">    private int nextCode = 256;</span>
+<span class="fc" id="L12">    private LZWDictionaryEntry currentEntry = root;</span>
+
+<span class="fc" id="L14">    public LZWDictionary() {</span>
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        for (int i = 0; i &lt; 256; ++i) {</span>
+<span class="fc" id="L16">            root.children[i] = new LZWDictionaryEntry(root, i);</span>
+        }
+<span class="fc" id="L18">    }</span>
+
+    /**
+     * 
+     * @return The code the next string added will get.
+     */
+    public int getNextCode() {
+<span class="fc" id="L25">        return nextCode;</span>
+    }
+
+    /**
+     * Reset the dictionary to its initial state.
+     */
+    public void reset() {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        for (int i = 0; i &lt; 256; ++i) {</span>
+//            root.children[i].invalidate();        // for some reason this is much slower than creating a new object
+<span class="fc" id="L34">            root.children[i] = new LZWDictionaryEntry(root, i);</span>
+        }
+<span class="fc" id="L36">        nextCode = 256;</span>
+<span class="fc" id="L37">        currentEntry = root;</span>
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * Can we advance to the given character?
+     * @param character Character we want to advance to.
+     * @return Yes or no.
+     */
+    public boolean hasNextChar(Integer character) {
+<span class="pc bpc" id="L46" title="1 of 4 branches missed.">        return currentEntry.children[character] != null &amp;&amp; currentEntry.children[character].getCode() &gt;= 0;</span>
+    }
+
+    /**
+     * Get the code for the current string.
+     * @return 
+     */
+    public Integer getCurrentCode() {
+<span class="fc" id="L54">        return currentEntry.getCode();</span>
+    }
+
+    /**
+     * Add the current string + given character to the dictionary and add a code for it.
+     * @param character 
+     */
+    public void add(Integer character) {
+<span class="fc" id="L62">        currentEntry.children[character] = new LZWDictionaryEntry(currentEntry, nextCode++);</span>
+<span class="fc" id="L63">    }</span>
+
+    /**
+     * Restart traversing from root.
+     */
+    public void restartTraverse() {
+<span class="fc" id="L69">        currentEntry = root;</span>
+<span class="fc" id="L70">    }</span>
+
+    /**
+     * Advance to a child node.
+     * @param character 
+     */
+    public void advance(Integer character) {
+<span class="fc" id="L77">        currentEntry = currentEntry.children[character];</span>
+<span class="fc" id="L78">    }</span>
+
+    /**
+     * @return True if the current string is not empty.
+     */
+    public boolean isTraversing() {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        return currentEntry != root;</span>
+    }
+
+    /**
+     * @return The current string.
+     */
+    public List&lt;Integer&gt; getString() {
+<span class="nc" id="L91">        List&lt;Integer&gt; res = new List&lt;&gt;();</span>
+<span class="nc" id="L92">        LZWDictionaryEntry node = currentEntry;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        while (node != null) {</span>
+<span class="nc" id="L94">            res.add(node.getCode());</span>
+<span class="nc" id="L95">            node = node.parent;</span>
+        }
+<span class="nc" id="L97">        res.reverse();</span>
+<span class="nc" id="L98">        return res;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

@@ -19,7 +19,7 @@ public class Main {
 
     /**
      * Initialize the option structure.
-     * @param args
+     * @param args The command line arguments.
      */
     public static void initOptions(String[] args) {
         opts = new Options("java -jar tl15");
@@ -40,28 +40,27 @@ public class Main {
         opts.dump();
         System.out.println();
 
-        // TODO: fix that --v
+        // check that the arguments are sane
+        boolean fail = false;
         String alg = opts.getOptionString("algorithm");
         if (!alg.equals("huffman") && !alg.equals("lzw")) {
             System.out.println("Unknown algorithm: " + alg);
-            opts = null;
-            return;
+            fail = true;
         }
         if (opts.getOptionString("inputFile") == null) {
             System.out.println("no input file given");
-            opts = null;
-            return;
+            fail = true;
         }
         if (opts.getOptionString("outputFile") == null) {
             System.out.println("no output file given");
-            opts = null;
-            return;
+            fail = true;
         }
         int cs = opts.getOptionInteger("lzw.codeSize");
         if (cs < 9 || cs > 31) {
-            System.out.println("lzw.codeSize out of range: " + cs);
-            opts = null;
             return;
+        }
+        if (fail) {
+            opts = null;
         }
     }
 

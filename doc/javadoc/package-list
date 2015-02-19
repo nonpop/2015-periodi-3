@@ -1,4 +1,4 @@
-huffman
-lzw
-tl15
-utils
+tl15.huffman
+tl15.lzw
+tl15.main
+tl15.utils

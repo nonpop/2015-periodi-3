@@ -4,7 +4,7 @@ import tl15.utils.List;
 
 
 /**
- * Implements an LZW dictionary with fixed-size code words.
+ * Implements an LZW dictionary (prefix tree).
  */
 public class LZWDictionary {
     private final LZWDictionaryEntry root = new LZWDictionaryEntry(null, -1);

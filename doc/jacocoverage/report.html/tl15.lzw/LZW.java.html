@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LZW.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;tl15&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">tl15.lzw</a> &gt; <span class="el_source">LZW.java</span></div><h1>LZW.java</h1><pre class="source lang-java linenums">package tl15.lzw;
+
+import tl15.utils.BitInputStream;
+import tl15.utils.BitOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import tl15.utils.List;
+import tl15.utils.Set;
+import static tl15.utils.Math.twoTo;
+
+/**
+ * An implementation of LZW-(de)compression.
+ */
+<span class="nc" id="L15">public class LZW {</span>
+<span class="fc" id="L16">    private static int maxCodeSize = -1;</span>
+
+    public static void init(int maxCodeSize) {
+<span class="fc" id="L19">        LZW.maxCodeSize = maxCodeSize;</span>
+<span class="fc" id="L20">    }</span>
+
+    private static int lastCode() {
+<span class="fc" id="L23">        return twoTo(maxCodeSize) - 3;</span>
+    }
+
+    private static int growCode(int codeSize) {
+<span class="fc" id="L27">        return twoTo(codeSize) - 2;</span>
+    }
+
+    private static int resetCode(int codeSize) {
+<span class="fc" id="L31">        return twoTo(codeSize) - 1;</span>
+    }
+    
+    /**
+     * Compress ins stream into outs. The output stream is not flushed.
+     * @param ins
+     * @param outs
+     * @throws IOException
+     */
+    public static void compress(InputStream ins, BitOutputStream outs) throws IOException {
+<span class="fc" id="L41">        LZWDictionary dict = new LZWDictionary();</span>
+<span class="fc" id="L42">        int resetCount = 0;</span>
+<span class="fc" id="L43">        int inputSize = 0;</span>
+<span class="fc" id="L44">        int currentCodeSize = 9;</span>
+        int b;
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        while ((b = ins.read()) != -1) {</span>
+<span class="fc" id="L47">            inputSize += 8;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">            if (!dict.hasNextChar(b)) {</span>
+<span class="fc" id="L49">                int code = dict.getCurrentCode();</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">                while (code &gt;= growCode(currentCodeSize)) {</span>
+<span class="fc" id="L51">                    outs.writeBits(currentCodeSize, growCode(currentCodeSize));</span>
+<span class="fc" id="L52">                    ++currentCodeSize;</span>
+                }
+<span class="fc" id="L54">                outs.writeBits(currentCodeSize, code);</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">                if (dict.getNextCode() &lt;= lastCode()) {</span>
+<span class="fc" id="L56">                    dict.add(b);</span>
+                }
+<span class="fc" id="L58">                dict.restartTraverse();</span>
+<span class="fc" id="L59">                dict.advance(b);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                if (dict.getNextCode() &gt; lastCode()) {</span>
+<span class="fc" id="L61">                    outs.writeBits(currentCodeSize, resetCode(currentCodeSize));</span>
+<span class="fc" id="L62">                    dict.reset();</span>
+<span class="fc" id="L63">                    currentCodeSize = 9;</span>
+<span class="fc" id="L64">                    dict.advance(b);</span>
+<span class="fc" id="L65">                    ++resetCount;</span>
+                }
+<span class="fc" id="L67">            } else {</span>
+<span class="fc" id="L68">                dict.advance(b);</span>
+            }
+        }
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (dict.isTraversing()) {</span>
+<span class="fc" id="L72">            outs.writeBits(currentCodeSize, dict.getCurrentCode());</span>
+        }
+
+<span class="fc" id="L75">        System.out.println(&quot;Compressed/original (no headers): &quot; + (100.0 * outs.getBitCount() / inputSize) + &quot; %&quot;);</span>
+<span class="fc" id="L76">        System.out.println(&quot;Dictionary was reset &quot; + resetCount + &quot; times&quot;);</span>
+<span class="fc" id="L77">    }</span>
+
+    /**
+     * Calculate a suitable size for the hash table in decompress();
+     *
+     * @return A very good number.
+     */
+    private static int hashTableSize() {
+//        return 769;
+//        return 1531;    // TODO: This should depend on codeSize
+//        return 3067;    // or HashSet could just be able to rehash
+//        return 6143;
+<span class="fc" id="L89">        return 12289;</span>
+    }
+    
+    /**
+     * Decompress ins into outs. The output stream is not flushed.
+     *
+     * @param ins
+     * @param outs
+     * @throws IOException
+     */
+    public static void decompress(BitInputStream ins, OutputStream outs) throws IOException {
+<span class="fc" id="L100">        List&lt;List&lt;Integer&gt;&gt; dict = new List&lt;&gt;(lastCode() + 1, true);</span>
+<span class="fc" id="L101">        Set&lt;List&lt;Integer&gt;&gt; values = new Set&lt;&gt;(hashTableSize());</span>
+<span class="fc" id="L102">        int nextCode = 256;</span>
+<span class="fc" id="L103">        int curCodeSize = 9;</span>
+
+<span class="fc" id="L105">        List&lt;Integer&gt; lastOutput = new List&lt;&gt;();</span>
+        while (true) {
+<span class="fc" id="L107">            Integer code = ins.readBits(curCodeSize);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">            if (code == null) {</span>
+<span class="fc" id="L109">                break;</span>
+            }
+<span class="fc bfc" id="L111" title="All 2 branches covered.">            if (code == growCode(curCodeSize)) {</span>
+<span class="fc" id="L112">                ++curCodeSize;</span>
+<span class="fc" id="L113">                continue;</span>
+            }
+<span class="fc bfc" id="L115" title="All 2 branches covered.">            if (code == resetCode(curCodeSize)) {</span>
+<span class="fc" id="L116">                dict = new List&lt;&gt;(lastCode() + 1, true);</span>
+<span class="fc" id="L117">                values.clear();</span>
+<span class="fc" id="L118">                lastOutput.clear();</span>
+<span class="fc" id="L119">                nextCode = 256;</span>
+<span class="fc" id="L120">                curCodeSize = 9;</span>
+//                System.out.println(&quot;values load factor = &quot; + values.loadFactor());
+<span class="fc" id="L122">                continue;</span>
+            }
+            List&lt;Integer&gt; toDict;
+<span class="fc bfc" id="L125" title="All 2 branches covered.">            if (code &lt; 256) {</span>
+<span class="fc" id="L126">                toDict = lastOutput;</span>
+<span class="fc" id="L127">                toDict.add(code);</span>
+<span class="fc" id="L128">                lastOutput = new List&lt;&gt;();</span>
+<span class="fc" id="L129">                lastOutput.add(code);</span>
+<span class="fc" id="L130">                outs.write(code);</span>
+            } else {
+<span class="fc" id="L132">                List&lt;Integer&gt; decoded = dict.get(code);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">                if (decoded == null) {</span>
+                    // code is not in the dictionary; this is the exception case
+                    // in the LZW decompression algorithm
+<span class="fc" id="L136">                    lastOutput.add(lastOutput.get(0));</span>
+<span class="fc" id="L137">                    decoded = lastOutput;</span>
+<span class="fc" id="L138">                    toDict = new List&lt;&gt;(decoded);</span>
+                } else {
+<span class="fc" id="L140">                    toDict = new List&lt;&gt;(lastOutput);</span>
+<span class="fc" id="L141">                    toDict.add(decoded.get(0));</span>
+<span class="fc" id="L142">                    lastOutput = new List&lt;&gt;(decoded);</span>
+                }
+<span class="fc bfc" id="L144" title="All 2 branches covered.">                for (int i : decoded) {</span>
+<span class="fc" id="L145">                    outs.write(i);</span>
+<span class="fc" id="L146">                }</span>
+            }
+<span class="pc bpc" id="L148" title="1 of 4 branches missed.">            if (toDict.size() &gt; 1 &amp;&amp; !values.contains(toDict)) {</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">                if (nextCode &lt;= lastCode()) {</span>
+<span class="fc" id="L150">                    dict.set(nextCode++, toDict);</span>
+<span class="fc" id="L151">                    values.put(toDict);</span>
+                }
+            }
+<span class="fc" id="L154">        }</span>
+//        System.out.println(&quot;values load factor = &quot; + values.loadFactor());
+<span class="fc" id="L156">    }</span>
+
+    private static final int headerMagik = ('T' &lt;&lt; 24) | ('L' &lt;&lt; 16) | (1 &lt;&lt; 8) | 6;
+
+    /**
+     * Compress ins into outs using the given code size. A header is written to
+     * the output stream.
+     *
+     * @param ins
+     * @param outs
+     * @throws IOException
+     */
+    public static void compressFile(InputStream ins, OutputStream outs) throws IOException {
+<span class="fc" id="L169">        BitOutputStream bouts = new BitOutputStream(outs);</span>
+
+        // the header
+<span class="fc" id="L172">        bouts.writeBits(32, headerMagik);</span>
+<span class="fc" id="L173">        bouts.writeBits(5, maxCodeSize);</span>
+
+<span class="fc" id="L175">        LZW.compress(ins, bouts);</span>
+<span class="fc" id="L176">        bouts.flush();</span>
+<span class="fc" id="L177">    }</span>
+
+    /**
+     * Decompress ins into outs. The input stream must contain a header.
+     *
+     * @param ins
+     * @param outs
+     * @throws IOException
+     */
+    public static void decompressFile(InputStream ins, OutputStream outs) throws IOException {
+<span class="fc" id="L187">        BitInputStream bins = new BitInputStream(ins);</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">        if (bins.readBits(32) != headerMagik) {</span>
+<span class="nc" id="L189">            throw new IllegalArgumentException(&quot;Bad file.&quot;);</span>
+        }
+<span class="fc" id="L191">        int fileCodeSize = bins.readBits(5);</span>
+<span class="fc" id="L192">        System.out.println(&quot;Using max code size &quot; + fileCodeSize);</span>
+<span class="fc" id="L193">        LZW.init(fileCodeSize);</span>
+<span class="fc" id="L194">        LZW.decompress(bins, outs);</span>
+<span class="fc" id="L195">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

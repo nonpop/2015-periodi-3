@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Math.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;tl15&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">tl15.utils</a> &gt; <span class="el_source">Math.java</span></div><h1>Math.java</h1><pre class="source lang-java linenums">package tl15.utils;
+
+/**
+ * A couple simple math functions, just for the heck of it.
+ */
+<span class="pc bpc" id="L6" title="1 of 2 branches missed.">public class Math {</span>
+    /**
+     * Raise 2 to the given natural power.
+     * @param n Must be non-negative.
+     * @return 
+     */
+    public static int twoTo(int n) {
+<span class="pc bpc" id="L13" title="2 of 4 branches missed.">        assert(n &gt;= 0);</span>
+<span class="fc" id="L14">        int res = 1;</span>
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        while (n-- &gt; 0) {</span>
+<span class="fc" id="L16">            res *= 2;</span>
+        }
+<span class="fc" id="L18">        return res;</span>
+    }
+
+    /**
+     * Return the larger of the given values.
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static int max(int a, int b) {
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        return (a &gt; b)? a : b;</span>
+    }
+
+    /**
+     * Return the smaller of the given values.
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static int min(int a, int b) {
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        return (a &lt; b)? a : b;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

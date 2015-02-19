@@ -82,10 +82,9 @@ public class LZW {
      * @return A very good number.
      */
     private static int hashTableSize() {
-        // some prime close to 2^n+2^(n+1) should be best
 //        return 769;
 //        return 1531;    // TODO: This should depend on codeSize
-//        return 3067;
+//        return 3067;    // or HashSet could just be able to rehash
 //        return 6143;
         return 12289;
     }

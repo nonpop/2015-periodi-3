@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HuffmanHeap.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;tl15&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">tl15.huffman</a> &gt; <span class="el_source">HuffmanHeap.java</span></div><h1>HuffmanHeap.java</h1><pre class="source lang-java linenums">package tl15.huffman;
+
+/** 
+ * A fixed-size minheap containing HuffmanTreeNodes.
+ * This is pretty much just copied from &quot;Tietorakenteet,
+ * kevät 2011&quot; by Matti Luukkainen.
+ */
+public class HuffmanHeap {
+    private final HuffmanTreeNode[] heap;
+
+    /** Current size of the heap. */
+    private int size;
+
+    /**
+     * @param limit The size limit of the heap. Adding more than limit nodes
+     *              will cause an explosion.
+     */
+<span class="fc" id="L18">    public HuffmanHeap(int limit) {</span>
+<span class="fc" id="L19">        heap = new HuffmanTreeNode[limit];</span>
+<span class="fc" id="L20">        this.size = 0;</span>
+<span class="fc" id="L21">    }</span>
+
+    /**
+     * Get the parent node of child.
+     * 
+     * @param child The index of the child node. The result is meaningful iff
+     *              child is in the interval (0,size).
+     *              
+     * @return The index of the parent node.
+     */
+    private int parent(int child) {
+<span class="fc" id="L32">        return (child - 1) / 2;</span>
+    }
+
+    /**
+     * Get the left child of a node.
+     * 
+     * @param parent The index of the parent node. Must be in the interval [0,size).
+     * @return The index of the left child node. The caller must check that the value
+     *         is valid (i.e. in the interval [0,size)).
+     */
+    private int left(int parent) {
+<span class="fc" id="L43">        return parent * 2 + 1;</span>
+    }
+
+    /**
+     * Get the right child of a node.
+     * @see #left(int)
+     */
+    private int right(int parent) {
+<span class="fc" id="L51">        return parent * 2 + 2;</span>
+    }
+
+    /**
+     * Swap two elements in the heap.
+     * 
+     * @param a Index of the first element. Must be in the interval [0, size).
+     * @param b Index of the second element. Must be in the interval [0, size).
+     */
+    private void swap(int a, int b) {
+<span class="fc" id="L61">        HuffmanTreeNode tmp = heap[a];</span>
+<span class="fc" id="L62">        heap[a] = heap[b];</span>
+<span class="fc" id="L63">        heap[b] = tmp;</span>
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * Fix the heap, assuming the subtrees of node are good.
+     * 
+     * @param node The node to start the fixing from. Must be in [0,size).
+     */
+    private void heapify(int node) {
+        while (true) {
+<span class="fc" id="L73">            int left = left(node);</span>
+<span class="fc" id="L74">            int right = right(node);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">            if (right &lt; size) {</span>
+                int smallest;
+<span class="fc bfc" id="L77" title="All 2 branches covered.">                if (heap[left].sum &lt; heap[right].sum) {</span>
+<span class="fc" id="L78">                    smallest = left;</span>
+                } else {
+<span class="fc" id="L80">                    smallest = right;</span>
+                }
+<span class="fc" id="L82">                swap(node, smallest);</span>
+<span class="fc" id="L83">                node = smallest;</span>
+<span class="fc" id="L84">            } else {</span>
+<span class="fc bfc" id="L85" title="All 4 branches covered.">                if (left == size - 1 &amp;&amp; heap[node].sum &gt; heap[left].sum) {</span>
+<span class="fc" id="L86">                    swap(node, left);</span>
+                }
+                break;
+            }
+<span class="fc" id="L90">        }</span>
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * Return the least element of the heap, i.e. the HuffmanTreeNode with the least sum.
+     * 
+     * @return Guess.
+     */
+    public HuffmanTreeNode peek() {
+<span class="fc" id="L99">        return heap[0];</span>
+    }
+
+    /**
+     * Return and remove the least element of the heap.
+     * @see #peek()
+     * @return The least element of the heap.
+     */
+    public HuffmanTreeNode pop() {
+<span class="fc" id="L108">        HuffmanTreeNode min = heap[0];</span>
+<span class="fc" id="L109">        heap[0] = heap[--size];</span>
+<span class="fc" id="L110">        heapify(0);</span>
+<span class="fc" id="L111">        return min;</span>
+    }
+
+    /**
+     * Add an element to the heap.
+     * 
+     * @param x The element to add.
+     * @see #HuffmanHeap(int)
+     */
+    public void push(HuffmanTreeNode x) {
+<span class="fc" id="L121">        int i = size++;</span>
+<span class="fc bfc" id="L122" title="All 4 branches covered.">        while (i &gt; 0 &amp;&amp; heap[parent(i)].sum &gt; x.sum) {</span>
+<span class="fc" id="L123">            heap[i] = heap[parent(i)];</span>
+<span class="fc" id="L124">            i = parent(i);</span>
+        }
+<span class="fc" id="L126">        heap[i] = x;</span>
+<span class="fc" id="L127">    }</span>
+    
+    /**
+     * @return The number of elements in the heap.
+     */
+    public int size() {
+<span class="fc" id="L133">        return size;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

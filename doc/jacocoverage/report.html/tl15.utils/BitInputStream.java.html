@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BitInputStream.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;tl15&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">tl15.utils</a> &gt; <span class="el_source">BitInputStream.java</span></div><h1>BitInputStream.java</h1><pre class="source lang-java linenums">package tl15.utils;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+/**
+ * A bit input stream.
+ */
+public class BitInputStream extends InputStream {
+    private final InputStream ins;
+
+    /**
+     * Position in the current byte. 8 indicates a new byte must be read from ins.
+     */
+<span class="fc" id="L15">    private int bytePos = 8;</span>
+
+    /**
+     * The current byte. bytePos is a 0-based index into this.
+     */
+<span class="fc" id="L20">    private int curByte = 0;</span>
+
+    /**
+     * 
+     * @param ins The stream to convert into a bit stream.
+     */
+<span class="fc" id="L26">    public BitInputStream(InputStream ins) {</span>
+<span class="fc" id="L27">        this.ins = ins;</span>
+<span class="fc" id="L28">    }</span>
+
+    /**
+     * Read bits from the stream.
+     * @param bitsToRead How many bits to read. Can be between 0..32.
+     * @return The bits read are the last n bits of the return value, in the order
+     *         they were in the stream. The other bits of the return value are zero.
+     *         Null is returned in case there were not enough bits in the stream.
+     *         In this case the last bits of the stream are lost forever.
+     * @throws java.io.IOException
+     */
+    public Integer readBits(int bitsToRead) throws IOException {
+<span class="fc" id="L40">        int result = 0;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        while (bitsToRead &gt; 0) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            if (bytePos == 8) {</span>
+<span class="fc" id="L43">                curByte = ins.read();</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">                if (curByte == -1) {</span>
+<span class="fc" id="L45">                    curByte = 0;</span>
+<span class="fc" id="L46">                    return null;</span>
+                }
+<span class="fc" id="L48">                bytePos = 0;</span>
+            }
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            if ((curByte &amp; (0x80 &gt;&gt; bytePos)) != 0) {</span>
+<span class="fc" id="L51">                result |= 1 &lt;&lt; (bitsToRead - 1);</span>
+            }
+<span class="fc" id="L53">            ++bytePos;</span>
+<span class="fc" id="L54">            --bitsToRead;</span>
+        }
+<span class="fc" id="L56">        return result;</span>
+    }
+
+    @Override
+    public int read() throws IOException {
+<span class="nc" id="L61">        Integer result = readBits(8);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        return (result == null)? -1 : result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

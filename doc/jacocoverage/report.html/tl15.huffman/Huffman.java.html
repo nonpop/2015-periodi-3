@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Huffman.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;tl15&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">tl15.huffman</a> &gt; <span class="el_source">Huffman.java</span></div><h1>Huffman.java</h1><pre class="source lang-java linenums">package tl15.huffman;
+
+import tl15.utils.BitInputStream;
+import tl15.utils.BitOutputStream;
+import tl15.utils.List;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+/**
+ * Methods implementing (de)compression by Huffman coding.
+ */
+<span class="nc" id="L14">public class Huffman {</span>
+    /**
+     * Calculate the frequencies of characters in the input.
+     * @param ins The input stream. All remaining data is consumed.
+     * @return An array where the element with index &lt;code&gt;i&lt;/code&gt; is the 
+     *         frequency of the character &lt;code&gt;i&lt;/code&gt; in the data.
+     * @throws java.io.IOException
+     */
+    private static int[] calculateFrequencies(InputStream ins) throws IOException {
+<span class="fc" id="L23">        int[] freqs = new int[256];</span>
+        int b;
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        while ((b = ins.read()) != -1) {</span>
+<span class="fc" id="L26">            ++freqs[b];</span>
+        }
+<span class="fc" id="L28">        return freqs;</span>
+    }
+
+    /**
+     * Build a Huffman tree from the given frequencies.
+     * @param freqs The frequencies. Must be a size 256 array of (non-negative) integers.
+     * @return A corresponding Huffman tree.
+     */
+    private static HuffmanTree buildTree(int[] freqs) {
+<span class="fc" id="L37">        HuffmanTreeNode[] leaves = new HuffmanTreeNode[256];</span>
+<span class="fc" id="L38">        HuffmanHeap q = new HuffmanHeap(256);</span>
+
+        // First create the leaf nodes from the given frequencies.
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int b = 0; b &lt; 256; ++b) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            if (freqs[b] &gt; 0) {</span>
+<span class="fc" id="L43">                HuffmanTreeNode t = new HuffmanTreeNode(freqs[b], null, null, b);</span>
+<span class="fc" id="L44">                leaves[b] = t;</span>
+<span class="fc" id="L45">                q.push(t);</span>
+            }
+        }
+
+        // Then start pushing the nodes with least frequencies away from the (imaginary) root.
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        while (q.size() &gt;= 2) {</span>
+<span class="fc" id="L51">            HuffmanTreeNode a = q.pop();</span>
+<span class="fc" id="L52">            HuffmanTreeNode b = q.pop();</span>
+<span class="fc" id="L53">            HuffmanTreeNode t = new HuffmanTreeNode(a.sum + b.sum, a, b, (byte)0);</span>
+<span class="fc" id="L54">            a.parent = t;</span>
+<span class="fc" id="L55">            b.parent = t;</span>
+<span class="fc" id="L56">            q.push(t);</span>
+<span class="fc" id="L57">        } </span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        HuffmanTreeNode root = (q.size() &gt; 0)? q.pop() : null;</span>
+<span class="fc" id="L60">        return new HuffmanTree(root, leaves);</span>
+    }
+
+    /**
+     * Find the Huffman code of a given input character.
+     * @param node A leaf node representing the character.
+     * @return The code for the character.
+     */
+    private static List&lt;Boolean&gt; findCode(HuffmanTreeNode node) {
+<span class="fc" id="L69">        List&lt;Boolean&gt; res = new List&lt;&gt;(8, false);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        while (node.parent != null) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            if (node == node.parent.right) {</span>
+<span class="fc" id="L72">                res.add(true);</span>
+            } else {
+<span class="fc" id="L74">                res.add(false);</span>
+            }
+<span class="fc" id="L76">            node = node.parent;</span>
+        }
+<span class="fc" id="L78">        res.reverse();</span>
+<span class="fc" id="L79">        return res;</span>
+    }
+
+    /**
+     * Compress a list of bytes.
+     * 
+     * @param ins The input data. All remaining data is consumed.
+     * @param freqs The character frequencies for &lt;code&gt;data&lt;/code&gt;.
+     * @param outs The bit stream to write the compressed data to.
+     * @throws java.io.IOException
+     */
+    public static void compress(InputStream ins, int[] freqs, BitOutputStream outs) throws IOException {
+<span class="fc" id="L91">        HuffmanTree tree = buildTree(freqs);</span>
+<span class="fc" id="L92">        int inBytes = 0;</span>
+        int b;
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        while ((b = ins.read()) != -1) {</span>
+<span class="fc" id="L95">            outs.writeBits(findCode(tree.leaves[b]));</span>
+<span class="fc" id="L96">            ++inBytes;</span>
+        }
+
+<span class="fc" id="L99">        System.out.println(&quot;Compressed/original (no headers) = &quot; + 100 * (outs.getBitCount() / 8.0) / inBytes + &quot;%&quot;);</span>
+<span class="fc" id="L100">    }</span>
+
+    /**
+     * Decompress a list of bits.
+     * 
+     * @param bits The input bits. Must be something produced by compress().
+     * @param freqs The frequencies of the bytes in the original input.
+     * @param outs The stream to append the decompressed data to.
+     * @throws java.io.IOException
+     */
+
+    public static void decompress(BitInputStream bits, int[] freqs, OutputStream outs) throws IOException {
+<span class="fc" id="L112">        HuffmanTree tree = buildTree(freqs);</span>
+<span class="fc" id="L113">        int inputChars = 0;</span>
+<span class="fc" id="L114">        int chr = 0, count = 0;</span>
+        
+        // First check if the original input had more than one different characters
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (int i = 0; i &lt; freqs.length; ++i) {</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            if (freqs[i] &gt; 0) {</span>
+<span class="fc" id="L119">                chr = i;</span>
+<span class="fc" id="L120">                count = freqs[i];</span>
+<span class="fc" id="L121">                ++inputChars;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">                if (inputChars &gt;= 2) {</span>
+                    // yes it did
+<span class="fc" id="L124">                    break;</span>
+                }
+            }
+        }
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        if (inputChars &lt;= 1) {</span>
+            // All characters in the original input were the same.
+<span class="fc bfc" id="L130" title="All 2 branches covered.">            if (inputChars == 1) {</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">                for (int i = 0; i &lt; count; ++i) {</span>
+<span class="fc" id="L132">                    outs.write(chr);</span>
+                }
+            }
+<span class="fc" id="L135">            return;</span>
+        }
+        
+        // The original input had at least two different characters so now all
+        // codes have a length of at least one bit.
+<span class="fc" id="L140">        int bytesToWrite = sizeFromFreqs(freqs);</span>
+<span class="fc" id="L141">        HuffmanTreeNode node = tree.root;</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        while (bytesToWrite &gt; 0) {</span>
+<span class="fc" id="L143">            int bit = bits.readBits(1);</span>
+//            if (bit == null) {
+//                break;
+//            }
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            if (bit == 0) {</span>
+<span class="fc" id="L148">                node = node.left;</span>
+            } else {
+<span class="fc" id="L150">                node = node.right;</span>
+            }
+<span class="fc bfc" id="L152" title="All 2 branches covered.">            if (node.left == null) {</span>
+<span class="fc" id="L153">                outs.write(node.data);</span>
+<span class="fc" id="L154">                --bytesToWrite;</span>
+<span class="fc" id="L155">                node = tree.root;</span>
+            }
+<span class="fc" id="L157">        }</span>
+<span class="fc" id="L158">    }</span>
+
+    /** Just some random bytes to identify a compressed file. */
+    private static final int headerMagik = ('T' &lt;&lt; 24) | ('L' &lt;&lt; 16) | (1 &lt;&lt; 8) | 5;
+    
+    /**
+     * Write header information to a stream. The header consists of:
+     *  - the four headerMagik bytes
+     *  - a byte 'n' telling how many entries the following table has
+     *  - a table of 'n' pairs (b,i), where b is a byte and i 4-byte integer 
+     *    expressing the frequency of byte b
+     * @param outs The stream.
+     * @param freqs The frequencies.
+     * @throws IOException 
+     */
+    private static void writeHeader(BitOutputStream outs, int[] freqs) throws IOException {
+<span class="fc" id="L174">        outs.writeBits(32, headerMagik);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        for (int freq : freqs) {</span>
+<span class="fc" id="L176">            outs.writeBits(32, freq);</span>
+        }
+<span class="fc" id="L178">    }</span>
+
+    /**
+     * Read header information from a stream.
+     * @see #writeHeader(OutputStream, int[], int)
+     * @param ins The stream.
+     * @return The frequencies.
+     * @throws IOException 
+     */
+    private static int[] readHeader(BitInputStream ins) throws IOException {
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">        if (ins.readBits(32) != headerMagik) {</span>
+<span class="nc" id="L189">            throw new IllegalArgumentException(&quot;Bad file.&quot;);</span>
+        }
+<span class="fc" id="L191">        int[] freqs = new int[256];</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        for (int i = 0; i &lt; 256; ++i) {</span>
+<span class="fc" id="L193">            freqs[i] = ins.readBits(32);</span>
+        }
+<span class="fc" id="L195">        return freqs;</span>
+    }
+
+    /**
+     * Calculate the number of characters from the frequency table.
+     * @param freqs The frequency table.
+     * @return The sum of all frequencies.
+     */
+    private static int sizeFromFreqs(int[] freqs) {
+<span class="fc" id="L204">        int size = 0;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        for (int f : freqs) {</span>
+<span class="fc" id="L206">            size += f;</span>
+        }
+<span class="fc" id="L208">        return size;</span>
+    }
+
+    /**
+     * Compress a file into another file.
+     * @param ins Input stream. Must be resettable.
+     * @param outs Output stream. Will contain a header.
+     * @throws IOException 
+     */
+    public static void compressFile(InputStream ins, OutputStream outs) throws IOException {
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">        if (!ins.markSupported()) {</span>
+<span class="nc" id="L219">            throw new IllegalArgumentException(&quot;input stream must support mark&quot;);</span>
+        }
+<span class="fc" id="L221">        ins.mark(Integer.MAX_VALUE);</span>
+<span class="fc" id="L222">        int[] freqs = calculateFrequencies(ins);</span>
+<span class="fc" id="L223">        ins.reset();</span>
+
+        // the compressed data is written to compressedBytes through compressedBits
+<span class="fc" id="L226">        ByteArrayOutputStream compressedBytes = new ByteArrayOutputStream();</span>
+<span class="fc" id="L227">        BitOutputStream compressedBits = new BitOutputStream(compressedBytes);</span>
+<span class="fc" id="L228">        compress(ins, freqs, compressedBits);</span>
+<span class="fc" id="L229">        compressedBits.flush();</span>
+
+<span class="fc" id="L231">        BitOutputStream bouts = new BitOutputStream(outs);</span>
+<span class="fc" id="L232">        writeHeader(bouts, freqs);</span>
+<span class="fc" id="L233">        bouts.write(compressedBytes.toByteArray());</span>
+<span class="fc" id="L234">        bouts.flush();</span>
+
+<span class="fc" id="L236">        System.out.println(&quot;Compressed/original = &quot; + 100 * (bouts.getBitCount() / 8.0) / sizeFromFreqs(freqs) + &quot; %&quot;);</span>
+<span class="fc" id="L237">    }</span>
+
+    /**
+     * Decompress a file into another file.
+     * @param ins Input stream. Must contain a header.
+     * @param outs Output stream.
+     * @throws IOException 
+     */
+    public static void decompressFile(InputStream ins, OutputStream outs) throws IOException {
+<span class="fc" id="L246">        BitInputStream compressed = new BitInputStream(ins);</span>
+<span class="fc" id="L247">        int freqs[] = readHeader(compressed);</span>
+<span class="fc" id="L248">        decompress(compressed, freqs, outs);</span>
+<span class="fc" id="L249">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>
