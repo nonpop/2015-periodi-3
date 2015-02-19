@@ -188,8 +188,8 @@ Pakkaus- ja purkualgoritmeja on testattu antamalla niille syötteeksi (a)
 \end_layout
 
 \begin_layout Standard
-Automaattitestit kattavat käytännössä kaiken; Jacocoverage ei anna 100 %
- kattavuutta, mutta (ainakin melkein) kaikissa tapauksissa se johtuu jommasta
+Automaattitestit kattavat käytännössä kaiken; Jacocoverage/Pitest eivät
+ anna 100% kattavuutta, mutta melkein kaikissa tapauksissa se johtuu jommasta
  kummasta seuraavista:
 \end_layout
 
@@ -199,7 +199,7 @@ Koodissa on virheentarkistus (index out of bounds tms.), mutta algoritmit
 \end_layout
 
 \begin_layout Enumerate
-Kyseessä on työn kannalta vähemmän tärkeä osa koodia (kuten 
+Kyseessä on työn kannalta vähemmän tärkeä osa koodia, kuten 
 \begin_inset Flex Code
 status open
 
@@ -219,7 +219,7 @@ Options
 
 \end_inset
 
--luokan metodit).
+-luokan metodit tai lokiviestit.
 \end_layout
 
 \begin_layout Section
@@ -1288,5 +1288,62 @@ LZW-16
 \end_layout
 
 \end_deeper
+\begin_layout Section
+Hyvät ja huonot syötteet
+\end_layout
+
+\begin_layout Standard
+Taulukoista näkyy, että sekä Huffman että LZW pakkaavat tekstitiedostoja
+ kohtalaisen hyvin.
+ (Pakattu) binääritiedosto taas ei pakkaudu hyvin.
+ Tässä Huffmanin pakkaussuhde on olematon ja LZW:n jopa negatiivinen.
+\end_layout
+
+\begin_layout Standard
+Tekstitiedostoissa toiset merkit ovat toisia yleisempiä, minkä ansiosta
+ Huffman toimii hyvin; sehän nimenomaan antaa yleisimmille merkeille lyhimmät
+ koodisanat.
+ Jos taas syötteessä on kaikkia merkkejä suunnilleen yhtä monta, niin Huffman-pu
+usta tulee tasapainoinen, jolloin jokaisen koodisanan pituus on suunnilleen
+ 
+\begin_inset Formula $\log_{2}256=8$
+\end_inset
+
+ bittiä.
+ Koska myös ei-koodatun merkin pituus on 8 bittiä, niin pakkausta ei tapahdu
+ (eikä toisaalta laajenemistakaan).
+\end_layout
+
+\begin_layout Standard
+Tekstitiedostoissa on myös paljon toistoa, joita LZW pystyy hyödyntämään.
+ Nimittäin jos algoritmi törmää merkkijonoon, joka jo on sanastossa, niin
+ tämä merkkijono (joka voi olla 12 bitin koodisanoilla parhaimmillaan n.
+ 4000 merkkiä pitkä) voidaan korvata yhdellä (tässä esimerkissä 12 bitin)
+ koodisanalla.
+ Kyseinen merkkijono pakkautuu silloin n.
+ 
+\begin_inset Formula $12/(4000\cdot8)\approx2\%$
+\end_inset
+
+ alkuperäisestä.
+ Jos taas tiedostossa ei ole yhtään toistoa, niin jokainen merkki koodataan
+ itsellään.
+ Mutta pienin koodisanan pituus on 9 bittiä, jolloin syöte kasvaa n.
+ 
+\begin_inset Formula $9/8\approx113\%$
+\end_inset
+
+ alkuperäisestä.
+ Tämä vastaa yllä viimeisen taulukon LZW-9 -riviä.
+ Se, että suuremmilla koodisanoilla teho edelleen huononee johtuu siitä,
+ että koodisanan koko kasvaa sitä mukaa kun sanasto täyttyy, jolloin pahimmillaa
+n kasvu on esimerkiksi 12 bitin tapauksessa n.
+ 
+\begin_inset Formula $12/8=150\%$
+\end_inset
+
+ merkkiä kohden.
+\end_layout
+
 \end_body
 \end_document
