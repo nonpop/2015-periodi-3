@@ -172,6 +172,10 @@ enumitem
 Testausdokumentti
 \end_layout
 
+\begin_layout Section
+Oikeellisuus
+\end_layout
+
 \begin_layout Standard
 Pakkaus- ja purkualgoritmeja on testattu antamalla niille syötteeksi (a)
  käsin muodostettuja pieniä testisyötteitä, (b) ohjelmallisesti generoituja
@@ -181,6 +185,10 @@ Pakkaus- ja purkualgoritmeja on testattu antamalla niille syötteeksi (a)
  Purkualgoritmin antaman tuloksen on oltava täsmälleen sama kuin alkuperäinen
  syöte.
  Real-world-tiedostoja lukuun ottamatta testit on automatisoitu jUnitilla.
+\end_layout
+
+\begin_layout Section
+Suorituskyky
 \end_layout
 
 \begin_layout Standard
