@@ -1335,7 +1335,7 @@ Tekstitiedostoissa on myös paljon toistoa, joita LZW pystyy hyödyntämään.
 
  alkuperäisestä.
  Tämä vastaa yllä viimeisen taulukon LZW-9 -riviä.
- Se, että suuremmilla koodisanoilla teho edelleen huononee johtuu siitä,
+ Se, että suuremmilla koodisanoilla teho edelleen huononee, johtuu siitä,
  että koodisanan koko kasvaa sitä mukaa kun sanasto täyttyy, jolloin pahimmillaa
 n kasvu on esimerkiksi 12 bitin tapauksessa n.
  
