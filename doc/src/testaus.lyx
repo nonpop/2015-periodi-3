@@ -187,6 +187,41 @@ Pakkaus- ja purkualgoritmeja on testattu antamalla niille syötteeksi (a)
  Real-world-tiedostoja lukuun ottamatta testit on automatisoitu jUnitilla.
 \end_layout
 
+\begin_layout Standard
+Automaattitestit kattavat käytännössä kaiken; Jacocoverage ei anna 100 %
+ kattavuutta, mutta (ainakin melkein) kaikissa tapauksissa se johtuu jommasta
+ kummasta seuraavista:
+\end_layout
+
+\begin_layout Enumerate
+Koodissa on virheentarkistus (index out of bounds tms.), mutta algoritmit
+ eivät aiheuta kyseistä virhettä.
+\end_layout
+
+\begin_layout Enumerate
+Kyseessä on työn kannalta vähemmän tärkeä osa koodia (kuten 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+main()
+\end_layout
+
+\end_inset
+
+ tai 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Options
+\end_layout
+
+\end_inset
+
+-luokan metodit).
+\end_layout
+
 \begin_layout Section
 Suorituskyky
 \end_layout
