@@ -507,32 +507,26 @@ write()
 \end_layout
 
 \begin_layout Verbatim
-
 compress():
 \end_layout
 
 \begin_layout Verbatim
-
   frequencies = calculateFrequencies()
 \end_layout
 
 \begin_layout Verbatim
-
   tree = buildTree(frequencies)
 \end_layout
 
 \begin_layout Verbatim
-
   while !EOF:
 \end_layout
 
 \begin_layout Verbatim
-
     b = read()
 \end_layout
 
 \begin_layout Verbatim
-
     write(findCode(tree, b))
 \end_layout
 
@@ -551,32 +545,26 @@ calculateFrequencies()
 \end_layout
 
 \begin_layout Verbatim
-
 calculateFrequencies():
 \end_layout
 
 \begin_layout Verbatim
-
   result = int[256]
 \end_layout
 
 \begin_layout Verbatim
-
   while !EOF:
 \end_layout
 
 \begin_layout Verbatim
-
     b = read()
 \end_layout
 
 \begin_layout Verbatim
-
     result[b]++
 \end_layout
 
 \begin_layout Verbatim
-
   return result
 \end_layout
 
@@ -607,58 +595,47 @@ buildTree()
 \end_layout
 
 \begin_layout Verbatim
-
 buildTree(frequencies):
 \end_layout
 
 \begin_layout Verbatim
-
   queue = new MinHeap()
 \end_layout
 
 \begin_layout Verbatim
-
   for b = 0 ...
  255:
 \end_layout
 
 \begin_layout Verbatim
-
     queue.push(TreeNode(frequencies[b]))
 \end_layout
 
 \begin_layout Verbatim
-
   
 \end_layout
 
 \begin_layout Verbatim
-
   while queue.size >= 2:
 \end_layout
 
 \begin_layout Verbatim
-
     a = queue.pop()
 \end_layout
 
 \begin_layout Verbatim
-
     b = queue.pop()
 \end_layout
 
 \begin_layout Verbatim
-
     queue.push(new Node(a.frequency + b.frequency))
 \end_layout
 
 \begin_layout Verbatim
-
   
 \end_layout
 
 \begin_layout Verbatim
-
   return queue.pop()
 \end_layout
 
@@ -694,47 +671,38 @@ findCode()
 \end_layout
 
 \begin_layout Verbatim
-
 findCode(node):
 \end_layout
 
 \begin_layout Verbatim
-
   result = new List()
 \end_layout
 
 \begin_layout Verbatim
-
   while node.parent:
 \end_layout
 
 \begin_layout Verbatim
-
     if node == node.parent.right:
 \end_layout
 
 \begin_layout Verbatim
-
       res.add(true)
 \end_layout
 
 \begin_layout Verbatim
-
     else:
 \end_layout
 
 \begin_layout Verbatim
-
       res.add(false)
 \end_layout
 
 \begin_layout Verbatim
-
     node = node.parent
 \end_layout
 
 \begin_layout Verbatim
-
   return res.reverse()
 \end_layout
 
@@ -826,57 +794,46 @@ write()
 \end_layout
 
 \begin_layout Verbatim
-
 decompress():
 \end_layout
 
 \begin_layout Verbatim
-
   tree = buildTree(freqs)
 \end_layout
 
 \begin_layout Verbatim
-
   node = tree.root
 \end_layout
 
 \begin_layout Verbatim
-
   while !EOF:
 \end_layout
 
 \begin_layout Verbatim
-
     if read() == 0:
 \end_layout
 
 \begin_layout Verbatim
-
       node = node.left
 \end_layout
 
 \begin_layout Verbatim
-
     else:
 \end_layout
 
 \begin_layout Verbatim
-
       node = node.right
 \end_layout
 
 \begin_layout Verbatim
-
     if node.left == null:
 \end_layout
 
 \begin_layout Verbatim
-
       write(node.character)
 \end_layout
 
 \begin_layout Verbatim
-
       node = tree.root
 \end_layout
 
@@ -918,67 +875,54 @@ Perusversio LZW-pakkausalgoritmista on seuraava:
 \end_layout
 
 \begin_layout Verbatim
-
 compress():
 \end_layout
 
 \begin_layout Verbatim
-
   dict = LZWDictionary()
 \end_layout
 
 \begin_layout Verbatim
-
   currentString = []
 \end_layout
 
 \begin_layout Verbatim
-
   while !EOF:
 \end_layout
 
 \begin_layout Verbatim
-
     b = read()
 \end_layout
 
 \begin_layout Verbatim
-
     if not dict.hasCodeFor(currentString + b)
 \end_layout
 
 \begin_layout Verbatim
-
       write(dict.getCodeFor(currentString))
 \end_layout
 
 \begin_layout Verbatim
-
       dict.addCodeFor(currentString + b)
 \end_layout
 
 \begin_layout Verbatim
-
       currentString = [b]
 \end_layout
 
 \begin_layout Verbatim
-
     else:
 \end_layout
 
 \begin_layout Verbatim
-
       currentString += b
 \end_layout
 
 \begin_layout Verbatim
-
   if currentString.notEmpty():
 \end_layout
 
 \begin_layout Verbatim
-
     write(dict.getCode(currentString))
 \end_layout
 
@@ -1070,67 +1014,54 @@ LZW-purkualgoritmin perusversio:
 \end_layout
 
 \begin_layout Verbatim
-
 decompress():
 \end_layout
 
 \begin_layout Verbatim
-
   dict = List<List<Integer>>()
 \end_layout
 
 \begin_layout Verbatim
-
   inDict = HashSet<Integer>()
 \end_layout
 
 \begin_layout Verbatim
-
   lastOutput = []
 \end_layout
 
 \begin_layout Verbatim
-
   while !EOF:
 \end_layout
 
 \begin_layout Verbatim
-
     code = read()
 \end_layout
 
 \begin_layout Verbatim
-
     decoded = dict[code]
 \end_layout
 
 \begin_layout Verbatim
-
     toDict = lastOutput + decoded[0]
 \end_layout
 
 \begin_layout Verbatim
-
     if not inDict(toDict):
 \end_layout
 
 \begin_layout Verbatim
-
       dict.set(nextCode++, toDict)
 \end_layout
 
 \begin_layout Verbatim
-
       inDict.add(toDict)
 \end_layout
 
 \begin_layout Verbatim
-
     for i in decoded:
 \end_layout
 
 \begin_layout Verbatim
-
       write(i)http://en.wikipedia.org/wiki/Lossless_compression
 \end_layout
 
@@ -1169,7 +1100,16 @@ Työn mahdolliset puutteet ja parannusehdotukset
 \end_layout
 
 \begin_layout Standard
-Työ on täydellinen.
+Yksi tapa parantaa pakkausalgoritmia voisi olla parantaa tapaa, jolla sanaston
+ täyttyminen käsitellään.
+ Tällä hetkellä täyttynyt sanasto tyhjennetään välittömästi ja aloitetaan
+ alusta.
+ Parempi tapa voisi olla tarkkailla pakkaussuhdetta ja tyhjentää sanasto
+ vasta, kun pakkaussuhde laskee alle jonkin rajan.
+ Toinen tapa olisi, että kun sanasto täyttyy, niin poistetaan siitä kauimmin
+ sitten lisätty (tai luettu) sana.
+ Tällöin ei tosin koodisanan kokoa voi resetoida, vaan se pysyy maksimissa
+ loppuun asti.
 \end_layout
 
 \begin_layout Section
@@ -1177,7 +1117,17 @@ Lähteet
 \end_layout
 
 \begin_layout Standard
-Wikipedia ym.
+Wikipedia ja muutama sivu, jotka Google löytää esim.
+ hakusanalla 
+\begin_inset Quotes sld
+\end_inset
+
+lzw
+\begin_inset Quotes srd
+\end_inset
+
+ (en muista tarkemmin\SpecialChar \ldots{}
+).
 \end_layout
 
 \end_body
