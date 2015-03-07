@@ -535,6 +535,18 @@ Testien ajaminen
 
 \begin_layout Standard
 Yksikkötestit voi ajaa vaikka NetBeansista tavalliseen tapaan.
+ Jos NetBeans valittaa Project Problemseista (lib-hakemistoa ei löydy),
+ niin resolvaa se kertomalla, että kyseinen hakemisto on 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+tl15/lib/
+\end_layout
+
+\end_inset
+
+.
  Suorituskyky/vertailutestejä voi tehdä 
 \begin_inset Flex Code
 status open
@@ -571,6 +583,17 @@ test.orig
  sekä bz2-ohjelmalla.
  Jokaisesta tulostetaan aika- ja kokostatistiikkaa, mutta muutakin ruudulle
  tulee, joten se on käsin parsittava.
+ Skripti ajetaan yksinkertaisesti komennolla 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+./runtest
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \end_body
