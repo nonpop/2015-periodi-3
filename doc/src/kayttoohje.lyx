@@ -181,7 +181,17 @@ Komentoriviargumentit
 \end_layout
 
 \begin_layout Itemize
-Ohjelma ajetaan komennolla 
+Jar-tiedosto on 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+tl15/dist/
+\end_layout
+
+\end_inset
+
+-hakemistossa, missä ohjelman voi ajaa komennolla 
 \begin_inset Flex Code
 status open
 
@@ -521,6 +531,46 @@ java -jar tl15.jar -i teksti.txt.lc -o teksti.txt -d
 \end_deeper
 \begin_layout Section
 Testien ajaminen
+\end_layout
+
+\begin_layout Standard
+Yksikkötestit voi ajaa vaikka NetBeansista tavalliseen tapaan.
+ Suorituskyky/vertailutestejä voi tehdä 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+tl15/
+\end_layout
+
+\end_inset
+
+-hakemiston 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+runtest
+\end_layout
+
+\end_inset
+
+-skriptillä.
+ Se olettaa, että hakemistossa on 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+test.orig
+\end_layout
+
+\end_inset
+
+-niminen tiedosto.
+ Skripti pakkaa tämän Huffmanilla, LZW:llä muutamalla eri koodisanan koolla
+ sekä bz2-ohjelmalla.
+ Jokaisesta tulostetaan aika- ja kokostatistiikkaa, mutta muutakin ruudulle
+ tulee, joten se on käsin parsittava.
 \end_layout
 
 \end_body
