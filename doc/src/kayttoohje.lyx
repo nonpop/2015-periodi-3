@@ -186,7 +186,7 @@ Ohjelma ajetaan komennolla
 status open
 
 \begin_layout Plain Layout
-java -jar tl15 [argumentit]
+java -jar tl15.jar [argumentit]
 \end_layout
 
 \end_inset
@@ -210,7 +210,7 @@ status open
 status open
 
 \begin_layout Plain Layout
-java -jar tl15 -h
+java -jar tl15.jar -h
 \end_layout
 
 \end_inset

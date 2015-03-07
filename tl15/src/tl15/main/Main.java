@@ -22,7 +22,7 @@ public class Main {
      * @param args The command line arguments.
      */
     public static void initOptions(String[] args) {
-        opts = new Options("java -jar tl15");
+        opts = new Options("java -jar tl15.jar");
         opts.addOption("algorithm", "a", "algorithm_name", "lzw", "Choose the algorithm to use. Available algorithms: huffman, lzw");
         opts.addOption("inputFile", "i", "input_file", null, "The file to compress/decompress");   // TODO: allow -/empty for stdin
         opts.addOption("outputFile", "o", "output_file", null, "The file to write the compressed/decompressed data to");   // TODO: allow -/empty for stdout
