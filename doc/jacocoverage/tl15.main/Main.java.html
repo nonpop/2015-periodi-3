@@ -22,7 +22,7 @@ import tl15.lzw.LZW;
      * @param args The command line arguments.
      */
     public static void initOptions(String[] args) {
-<span class="nc" id="L25">        opts = new Options(&quot;java -jar tl15&quot;);</span>
+<span class="nc" id="L25">        opts = new Options(&quot;java -jar tl15.jar&quot;);</span>
 <span class="nc" id="L26">        opts.addOption(&quot;algorithm&quot;, &quot;a&quot;, &quot;algorithm_name&quot;, &quot;lzw&quot;, &quot;Choose the algorithm to use. Available algorithms: huffman, lzw&quot;);</span>
 <span class="nc" id="L27">        opts.addOption(&quot;inputFile&quot;, &quot;i&quot;, &quot;input_file&quot;, null, &quot;The file to compress/decompress&quot;);   // TODO: allow -/empty for stdin</span>
 <span class="nc" id="L28">        opts.addOption(&quot;outputFile&quot;, &quot;o&quot;, &quot;output_file&quot;, null, &quot;The file to write the compressed/decompressed data to&quot;);   // TODO: allow -/empty for stdout</span>
